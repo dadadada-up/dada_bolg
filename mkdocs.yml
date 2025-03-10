@@ -1,5 +1,5 @@
 site_name: 产品经理的AI探索之路
-site_url: https://your-github-username.github.io/dada_bolg
+site_url: https://dadadada-up.github.io/dada_bolg
 site_author: dada
 site_description: 从保险产品经理到 AI 实践者的学习和转型之路
 
@@ -13,10 +13,17 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.indexes
+    - navigation.top
+    - toc.follow
     - search.highlight
     - search.share
     - search.suggest
     - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - content.action.edit
+    - content.action.view
   palette:
     - scheme: default
       primary: indigo
@@ -30,78 +37,114 @@ theme:
       toggle:
         icon: material/brightness-4
         name: 切换到浅色模式
+  icon:
+    repo: fontawesome/brands/github
+  custom_dir: overrides
 
 plugins:
   - search:
-      lang: zh
-  - tags
-  - git-revision-date
+      separator: '[\s\u200b\-]'
+      lang:
+        - en
+        - ja
   - blog
   - rss:
-      match_path: blog/posts/.*
+      match_path: blog/posts/.* 
       date_from_meta:
         as_creation: date
       categories:
         - categories
         - tags
+  - social:
+      cards_layout: default
+      cards_layout_options:
+        background_color: "#FFFFFF"
+        color: "#000000"
+  - tags
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+  - git-revision-date
+  - git-authors
+  - redirects:
+      redirect_maps:
+        'old.md': 'new.md'
 
 markdown_extensions:
-  - abbr
-  - admonition
-  - attr_list
-  - def_list
-  - footnotes
-  - md_in_html
   - toc:
       permalink: true
-  - pymdownx.arithmatex:
-      generic: true
-  - pymdownx.betterem:
-      smart_enable: all
-  - pymdownx.caret
+      toc_depth: 4
+  - meta
+  - def_list
+  - attr_list
+  - md_in_html
+  - footnotes
+  - admonition
   - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
-  - pymdownx.keys
-  - pymdownx.mark
-  - pymdownx.smartsymbols
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.snippets
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
-  - pymdownx.tilde
 
 nav:
   - 首页: index.md
   - AI:
     - ai/index.md
-    - 项目: ai/projects/
-    - 学习: ai/learning/
-    - 工具: ai/tools/
+    - 项目: ai/projects/index.md
+    - 学习: ai/learning/index.md
+    - 工具: ai/tools/index.md
   - 产品:
     - product/index.md
-    - 保险: product/insurance/
-    - 方法论: product/methodology/
+    - 保险: product/insurance/index.md
+    - 方法论: product/methodology/index.md
   - 技术:
     - tech/index.md
-    - Python: tech/python/
-    - 工具: tech/tools/
-  - 博客:
-    - blog/index.md
+    - Python: tech/python/index.md
+    - 工具: tech/tools/index.md
+  - 投资理财:
+    - finance/index.md
+    - 基金投资: blog/posts/investment/fund/index.md
+    - 股票投资: blog/posts/investment/stock/index.md
+    - 保险理财: blog/posts/investment/insurance/index.md
+    - 房地产: blog/posts/investment/property/index.md
+    - 投资策略: blog/posts/investment/strategy/index.md
   - 关于: about.md
 
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/yourusername
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/yourusername
+      link: https://github.com/dadadada-up
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_KEY
+  alternate:
+    - name: English
+      link: /en/ 
+      lang: en
+  consent:
+    title: Cookie consent
+    description: >- 
+      我们使用 cookies 来识别您的重复访问和偏好，以及衡量我们文档的有效性和用户是否找到他们要找的内容。
+  generator: false   # 移除页脚的"使用 MkDocs 构建"
+  comments:         # Giscus 评论系统
+    provider: giscus
+    repo: dadadada-up/dada_bolg
+    repo-id: R_kgDOLf6xXw
+    category: General
+    category-id: DIC_kwDOLf6xX84CdgK8
+    mapping: pathname
+    reactions-enabled: 1
+    emit-metadata: 0
+    theme: light
+    lang: zh-CN
+
+edit_uri: edit/main/docs/
+repo_url: https://github.com/dadadada-up/dada_bolg.git

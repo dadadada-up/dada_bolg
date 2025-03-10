@@ -1,0 +1,22 @@
+{
+  "foam.edit.linkReferenceDefinitions": "withoutExtensions",
+  "foam.openDailyNote.directory": "docs/blog/posts/life/articles",
+  "foam.openDailyNote.filenameFormat": "weekly-notes-${week}",
+  "foam.openDailyNote.titleFormat": "达总的生活周记 NO.${week}",
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "on",
+    "editor.suggestSelection": "recentlyUsedByPrefix"
+  },
+  "files.defaultLanguage": "markdown",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/site": true,
+    "**/__pycache__": true
+  },
+  "markdown.preview.breaks": true,
+  "markdown.preview.doubleClickToSwitchToEditor": false,
+  "markdown.updateLinksOnFileMove.enabled": "always",
+  "prettier.proseWrap": "always"
+}

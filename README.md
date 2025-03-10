@@ -1,95 +1,106 @@
 # 产品经理的AI探索之路
 
-这是一个基于 Hugo 构建的个人博客系统，用于记录从保险产品经理到 AI 实践者的学习和转型之路。
+这是一个基于 MkDocs Material 构建的个人知识库，用于记录从保险产品经理到 AI 实践者的学习和转型之路。
 
-## 项目架构
+## 目录结构
 
-项目采用双站点结构：
+```
+dada_bolg/
+├── docs/                     # 文档目录
+│   ├── ai/                  # AI 相关内容
+│   │   ├── projects/       # AI 项目实践
+│   │   ├── learning/       # AI 学习笔记
+│   │   └── tools/         # AI 工具分享
+│   ├── product/            # 产品相关内容
+│   │   ├── insurance/     # 保险产品管理
+│   │   └── methodology/   # 产品方法论
+│   ├── tech/              # 技术相关内容
+│   │   ├── python/       # Python 开发笔记
+│   │   └── tools/        # 效率工具分享
+│   ├── blog/              # 博客文章
+│   │   └── posts/        # 文章存放目录
+│   └── assets/            # 静态资源
+│       └── images/        # 图片资源
+├── tools/                  # 工具脚本
+└── mkdocs.yml             # MkDocs 配置文件
+```
 
-- 主站（Hugo + GitHub Pages）
-  - 用于托管深度技术文章和经验分享
-  - 支持 Markdown 写作
-  - 支持文章分类和标签管理
-  - 集成访问统计功能
+## 特性
 
-- 子站（NotionNext + Vercel）
-  - 用于展示 AI 项目的交互式 demo
-  - 与 Notion 笔记系统无缝集成
-  - 支持动态内容更新
+- 🎨 基于 Material for MkDocs 主题
+- 📱 响应式设计，移动端友好
+- 🔍 全站搜索功能
+- 🌓 深色/浅色主题切换
+- 📝 博客系统支持
+- ✨ 代码高亮和复制
+- 📰 RSS 订阅支持
 
-## 内容架构
+## 本地开发
 
-1. 文章分类
-   - 产品经理经验
-   - AI 技术学习
-   - 项目实践
-   - 个人成长
+1. 克隆仓库
+```bash
+git clone https://github.com/dadadada-up/dada_bolg.git
+cd dada_bolg
+```
 
-2. 知识管理
-   - 支持标准化的 front matter
-   - 集成知识图谱
-   - 支持内容检索
+2. 安装依赖
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows 使用 venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-3. 项目展示
-   - Notion API 任务提醒系统
-   - 跨平台资产管理工具
-   - 更多进行中的项目...
+3. 本地预览
+```bash
+python -m mkdocs serve
+```
 
-## 技术栈
+4. 构建静态文件
+```bash
+python -m mkdocs build
+```
 
-- 主站
-  - Hugo（静态站点生成器）
-  - PaperMod（主题）
-  - GitHub Actions（自动部署）
-  - Google Analytics（访问统计）
+## 写作指南
 
-- 子站
-  - NotionNext
-  - Vercel（部署）
-  - Notion API（内容管理）
+### 创建新文章
 
-## 部署流程
+1. 在 `docs/blog/posts` 目录下创建 Markdown 文件
+2. 添加 front matter：
+```yaml
+---
+title: 文章标题
+date: YYYY-MM-DD
+categories:
+  - 分类名称 # AI/Python/工具/产品
+tags:
+  - 标签1
+  - 标签2
+---
 
-1. 内容创作
-   ```
-   hugo new posts/新文章.md
-   ```
+文章摘要
 
-2. 本地预览
-   ```
-   hugo server -D
-   ```
+<!-- more -->
 
-3. 构建部署
-   ```
-   hugo
-   git push
-   ```
+正文内容
+```
 
-## 自动化工作流
+### 添加图片
 
-使用 GitHub Actions 实现：
-- Markdown 文档自动同步
-- 站点自动构建和部署
-- 内容格式检查
+1. 将图片放在 `docs/assets/images` 目录下
+2. 在文章中使用相对路径引用：
+```markdown
+![图片描述](/assets/images/example.png)
+```
 
-## 待开发功能
+## 部署
 
-- [ ] 评论系统集成
-- [ ] 全文搜索功能
-- [ ] 访问统计面板
-- [ ] RSS 订阅功能
-- [ ] 知识图谱可视化
-- [ ] AI 助手集成
-
-## 贡献指南
-
-欢迎通过以下方式参与项目：
-1. 提交 Issue
-2. 提交 Pull Request
-3. 分享使用经验
+本站使用 GitHub Pages 部署，通过 GitHub Actions 自动构建和发布。
 
 ## 许可证
 
 MIT License
+
+## 联系方式
+
+- GitHub: [@dadadada-up](https://github.com/dadadada-up)
 

@@ -1,16 +1,18 @@
----
-categories: [技术工具]
-date: '2025-02-10'
-description: Cursor Free Trial 的教程1. 为什么使用 Cursor Free Trial？Cursor 是一款强大的 AI 编程助手，能够帮助开发者提高编程效率。然而，在使用免费试用版本时，可能会遇到以下限制：问题
-  1：试用账户限制Too many free trial accounts...
-image: ''
-original_title: Cursor 满血使用
-published: true
-tags: [AI Cursor GitHub 技术]
-title: Cursor 满血使用
-yuque_url: ''
----
 
+---"
+categories: "
+  - "技术工具"
+date: "2025-02-10'"
+description: "Cursor Free Trial 的教程1. 为什么使用 Cursor Free Trial？Cursor 是一款强大的 AI 编程助手，能够帮助开发者提高编程效率。然而，在使用免费试用版本时，可能会遇到以下限制：问题"
+  1：试用账户限制Too many free trial accounts..."
+image: "/assets/images/posts/tech-tools/2025-02-10-cursor/''""
+original_title: "Cursor 满血使用""
+---published: true"
+tags: "
+  - "AI Cursor GitHub 技术"
+title: "cursor full usage"
+yuque_url: ''"
+---"
 ### Cursor Free Trial 的教程
 
 #### 1\. 为什么使用 Cursor Free Trial？

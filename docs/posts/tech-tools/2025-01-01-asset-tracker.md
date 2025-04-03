@@ -1,17 +1,19 @@
----
-categories: [技术工具]
-date: '2025-01-01'
-description: 1、需求目的我在做一个基于微信小程序的收支记录、家庭资产负债的财务管理工具，该小程序包括几个功能注册登陆：微信免登录注册流程记账模块账本功能新增账本，邀请他人一起加入账本，一个账本可以有多个成员。账本存在默认账本分类，账本分类可以编辑记账功能：可以手动
-  添加/编辑/删除收入、支出记录允许上传支...
-image: images/asset-tracker/image_47.jpeg
-original_title: Asset Tracker
-published: true
-tags: [技术]
-title: Asset Tracker
-yuque_url: ''
----
 
-# 1、需求目的
+---"
+categories: "
+  - "技术工具"
+date: "2025-01-01'"
+description: "1、需求目的我在做一个基于微信小程序的收支记录、家庭资产负债的财务管理工具，该小程序包括几个功能注册登陆：微信免登录注册流程记账模块账本功能新增账本，邀请他人一起加入账本，一个账本可以有多个成员。账本存在默认账本分类，账本分类可以编辑记账功能：可以手动"
+  添加/编辑/删除收入、支出记录允许上传支..."
+/assets/images/posts/tech-tools/2025-01-01-assettracker/image: /assets/images/posts/tech-tools/2025-01-01-assettracker/image_47.jpeg"
+original_title: "Asset Tracker""
+---published: true"
+tags: "
+  - "技术"
+title: "Asset Tracker"
+yuque_url: ''"
+---"
+## 1、需求目的
 
 我在做一个基于微信小程序的收支记录、家庭资产负债的财务管理工具，该小程序包括几个功能
 
@@ -62,7 +64,7 @@ yuque_url: ''
 
     * 账单导入/导出
 
-# 2、需求实现方案
+## 2、需求实现方案
 
   1. 前端：微信小程序
   2. 后端：微信云开发
@@ -70,7 +72,7 @@ yuque_url: ''
   4. AppID：wx54bd7f9370888355
   5. 小程序名称：Asset Tracker
 
-# 3、需求背景
+## 3、需求背景
 
 ## 3.1 业务背景
 
@@ -83,7 +85,7 @@ yuque_url: ''
   2. 目前没办法查看家庭成员的收支数据情况，期望能够针对家庭成员的收支情况统一管理和查看。
   3. 每个月更新资产负债情况时，目前依赖于本地excel表格更新，导致没办法形成每个月/每年的汇总数据以及不同维度的汇总数据分析，检阅家庭资产负债情况。
 
-# 4、需求方案概述
+## 4、需求方案概述
 
 ## 4.1 产品信息架构
 
@@ -157,7 +159,7 @@ yuque_url: ''
 
   
 
-# 5.前端布局设计
+## 5.前端布局设计
 
 ## 5.1 页面目录结构
     
@@ -409,7 +411,7 @@ yuque_url: ''
 
 ### 5.5.1 资产负债
 
-![](/assets/images/asset-tracker/image_47.jpeg)
+![](/assets//assets/images/posts/tech-tools/2025-01-01-assettracker/image_47.jpeg)
 
   
 

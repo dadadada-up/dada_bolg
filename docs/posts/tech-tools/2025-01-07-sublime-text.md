@@ -1,16 +1,18 @@
----
-categories: [技术工具]
-date: '2025-01-07'
-description: 下载链接sublimetext设置成中文：要在 Sublime Text 中设置中文界面，你可以按照以下步骤操作：安装 Package Control
-  插件打开 Sublime Text。按下快捷键 Ctrl + Shift + P（Windows/Linux）或 Cmd + Shift + ...
-image: ''
-original_title: Sublime Text
-published: true
-tags: [技术]
-title: Sublime Text
-yuque_url: ''
----
 
+---"
+categories: "
+  - "技术工具"
+date: "2025-01-07'"
+description: "下载链接sublimetext设置成中文：要在 Sublime Text 中设置中文界面，你可以按照以下步骤操作：安装 Package Control"
+  插件打开 Sublime Text。按下快捷键 Ctrl + Shift + P（Windows/Linux）或 Cmd + Shift + ..."
+image: "/assets/images/posts/tech-tools/2025-01-07-sublimetext/''""
+original_title: "Sublime Text""
+---published: true"
+tags: "
+  - "技术"
+title: "Sublime Text"
+yuque_url: ''"
+---"
 ## 下载链接
 
 [sublimetext](https://www.sublimetext.com/)

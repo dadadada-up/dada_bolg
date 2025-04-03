@@ -1,0 +1,46 @@
+# 剩余文件修复日志
+生成时间: 2025年 04月 03日 星期四 20时50分24秒 CST
+
+## 开始修复剩余文件名问题
+### 重命名中文文件名
+已重命名: docs/posts/personal-blog/2024-03-20个人博客项目需求说明书.md -> docs/posts/personal-blog/2024-03-20-personal-blog-requirements.md
+已重命名: docs/posts/open-source/2025-04-03钉钉消息监控助手.md -> docs/posts/open-source/2025-04-03-dingtalk-message-monitor.md
+已重命名: docs/posts/open-source/2024-03-18-dingtalk-monitor-打造企业级钉钉监控利器.md -> docs/posts/open-source/2024-03-18-dingtalk-monitor-enterprise.md
+已重命名: docs/posts/family-life/2025-04-03家庭生活要求文档.md -> docs/posts/family-life/2025-04-03-family-life-requirements.md
+已重命名: docs/posts/family-life/travel/2024-03-20杭州周边周末出行计划.md -> docs/posts/family-life/travel/2024-03-20-hangzhou-weekend-trip-plan.md
+已重命名: docs/posts/family-life/travel/2024-03-20-2025清明泉州三日游详细行程.md -> docs/posts/family-life/travel/2024-03-20-2025-quanzhou-qingming-trip.md
+已重命名: docs/posts/family-life/travel/2024-01-01-杭州2024年元旦走运计划.md -> docs/posts/family-life/travel/2024-01-01-hangzhou-2024-new-year-plan.md
+已重命名: docs/posts/tech-tools/2025-02-16未命名文档.md -> docs/posts/tech-tools/2025-02-16-unnamed-document.md
+已重命名: docs/posts/tech-tools/2025-02-20未命名文档.md -> docs/posts/tech-tools/2025-02-20-unnamed-document.md
+已重命名: docs/posts/tech-tools/2025-01-08未命名文档.md -> docs/posts/tech-tools/2025-01-08-unnamed-document.md
+已重命名: docs/posts/tech-tools/2025-01-01未命名文档.md -> docs/posts/tech-tools/2025-01-01-unnamed-document.md
+已重命名: docs/posts/tech-tools/2025-02-27未命名文档.md -> docs/posts/tech-tools/2025-02-27-unnamed-document.md
+已重命名: docs/posts/product-management/2025-02-06未命名文档.md -> docs/posts/product-management/2025-02-06-unnamed-document.md
+已重命名: docs/posts/product-management/2024-10-30未命名文档.md -> docs/posts/product-management/2024-10-30-unnamed-document.md
+已重命名: docs/posts/product-management/2025-01-15未命名文档.md -> docs/posts/product-management/2025-01-15-unnamed-document.md
+已重命名: docs/posts/product-management/2025-01-06未命名文档.md -> docs/posts/product-management/2025-01-06-unnamed-document.md
+已重命名: docs/posts/finance/2025-03-27未命名文档.md -> docs/posts/finance/2025-03-27-unnamed-document.md
+已重命名: docs/posts/insurance/agriculture-insurance/2025-03-18未命名文档.md -> docs/posts/insurance/agriculture-insurance/2025-03-18-unnamed-document.md
+已重命名: docs/posts/insurance/agriculture-insurance/2024-11-01未命名文档.md -> docs/posts/insurance/agriculture-insurance/2024-11-01-unnamed-document.md
+已重命名: docs/posts/insurance/agriculture-insurance/2024-10-31未命名文档.md -> docs/posts/insurance/agriculture-insurance/2024-10-31-unnamed-document.md
+已重命名: docs/posts/product-management/2024-10-28交易产品经理相关内容.md -> docs/posts/product-management/2024-10-28-trading-product-manager.md
+已重命名: docs/posts/product-management/2024-12-30支付宝医疗健康模块产品体验.md -> docs/posts/product-management/2024-12-30-alipay-health-module-experience.md
+已重命名: docs/posts/finance/2025-02-09港币和美债学习总结.md -> docs/posts/finance/2025-02-09-hkd-us-bonds-study.md
+已重命名: docs/posts/finance/2024-10-29-房地产系列.md -> docs/posts/finance/2024-10-29-real-estate-series.md
+已重命名: docs/posts/insurance/2024-03-18农业保险产品研究.md -> docs/posts/insurance/2024-03-18-agriculture-insurance-research.md
+已重命名: docs/posts/insurance/agriculture-insurance/2024-01-10农户保险分析文档-保单分层、用户画像与产品关联推荐策略.md -> docs/posts/insurance/agriculture-insurance/2024-01-10-farmer-insurance-analysis.md
+### 修复标题不匹配问题
+已更新标题: docs/posts/tech-tools/2024-04-03-Cursor-介绍.md -> 'Cursor 介绍'
+已更新标题: docs/posts/tech-tools/2025-02-14-AI编程-DeepSeek-R1-vs-Claude-3.5-Sonnet.md -> 'AI编程 DeepSeek R1 vs Claude 3.5 Sonnet'
+已更新标题: docs/posts/tech-tools/2025-02-07-GitHub-Desktop安装与汉化.md -> 'GitHub Desktop 安装与汉化'
+已更新标题: docs/posts/tech-tools/2025-02-05-Notion-API.md -> 'Notion API'
+已更新标题: docs/posts/tech-tools/2025-01-07-Sublime-Text.md -> 'Sublime Text'
+已更新标题: docs/posts/tech-tools/2025-01-01-Asset-Tracker.md -> 'Asset Tracker'
+已更新标题: docs/posts/tech-tools/2024-03-18-VS-Code中使用Draw.io完全指南.md -> 'VS Code中使用Draw.io完全指南'
+已重命名: docs/posts/tech-tools/2025-02-06-在-macOS-上轻松部署-Docker-详细安装与配置步骤.md -> docs/posts/tech-tools/2025-02-06-macos-docker-installation-guide.md
+已重命名: docs/posts/tech-tools/2025-02-10-Cursor-满血使用.md -> docs/posts/tech-tools/2025-02-10-cursor-full-usage.md
+已更新标题: docs/posts/tech-tools/2025-01-07-Cursor-rules.md -> 'Cursor rules'
+已重命名: docs/posts/product-management/2025-02-06-BRD-业务需求文档模板.md -> docs/posts/product-management/2025-02-06-brd-business-requirements-template.md
+## 执行最终检查
+## 文件名修复完成
+所有操作都已记录到 fix_remaining_files_log.txt

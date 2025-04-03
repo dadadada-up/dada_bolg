@@ -1,22 +1,24 @@
----
-categories: [财务金融]
-date: '2024-10-29'
-description: 买房子，每个中国人基本上绕不开的话题。今天讲讲我关于买房的认知。在观望2年后，今年顺利在某省会城市的主城区购入了一套小房子，刚需属性不明显，但因为实在价格实惠，比21年那会整体要便宜30%左右，且房产也是硬通货，我还是决定购入了。首先，我想聊聊关于房地产的底层逻辑。1、短期内影响房地产市场的主...
-image: images/fang-di-chan-xi-lie/image_63.png
-original_title: 房地产系列
-published: true
-tags: [投资 财务 房地产]
-title: 房地产系列
-yuque_url: ''
----
 
+---"
+categories: "
+  - "财务金融"
+date: "2024-10-29"
+description: "买房子，每个中国人基本上绕不开的话题。今天讲讲我关于买房的认知。在观望2年后，今年顺利在某省会城市的主城区购入了一套小房子，刚需属性不明显，但因为实在价格实惠，比21年那会整体要便宜30%左右，且房产也是硬通货，我还是决定购入了。首先，我想聊聊关于房地产的底层逻辑。1、短期内影响房地产市场的主..."
+image: "/assets/images/posts/finance/2024-10-29-房地产系列/image_63.png"
+original_title: "房地产系列""
+published: true"
+---tags: "
+  - "投资 财务 房地产"
+title: "real estate series"
+yuque_url: ''"
+---"
 买房子，每个中国人基本上绕不开的话题。
 
 今天讲讲我关于买房的认知。
 
 在观望2年后，今年顺利在某省会城市的主城区购入了一套小房子，刚需属性不明显，但因为实在价格实惠，比21年那会整体要便宜30%左右，且房产也是硬通货，我还是决定购入了。
 
-#**首先，我想聊聊关于房地产的底层逻辑。**![](/assets/images/fang-di-chan-xi-lie/image_63.png)
+#**首先，我想聊聊关于房地产的底层逻辑。**![](/assets/images/posts/finance/2024-10-29-房地产系列/image_63.png)
 
 1、短期内影响房地产市场的主要因素是**房贷利率和房价**。较低的房贷利率会降低购房者的成本，从而刺激购房需求；而房价的波动则直接影响购房者的购买能力和意愿。
 
@@ -38,7 +40,7 @@ yuque_url: ''
 
 从人口结构变化来看，老龄化目前确实严重，但是流入省会城市肯定还是整体趋势。
 
-![](/assets/images/fang-di-chan-xi-lie/image_62.png)
+![](/assets/images/posts/finance/2024-10-29-房地产系列/image_62.png)
 
 武汉购房政策
 
@@ -58,13 +60,13 @@ https://wh.bendibao.com/live/2023217/158813.shtm
 
 武汉房贷利率最新消息2023年
 
-# 其次**，聊聊如何判断购置房产的需求。**从几个方面展开讲讲。
+## 其次**，聊聊如何判断购置房产的需求。**从几个方面展开讲讲。
 
 暂时无法在飞书文档外展示此内容
 
 ## 1、买房的目的是什么
 
-![](/assets/images/fang-di-chan-xi-lie/image_64.png)
+![](/assets/images/posts/finance/2024-10-29-房地产系列/image_64.png)
 
 比较常见的比如刚需、投资亦或者两者之间。
 
@@ -86,21 +88,21 @@ https://wh.bendibao.com/live/2023217/158813.shtm
 
 ## 3、区域
 
-![](/assets/images/fang-di-chan-xi-lie/image_65.png)
+![](/assets/images/posts/finance/2024-10-29-房地产系列/image_65.png)
 
 购置房子，必不可免的要去研究城市的区域板块。
 
 选择主城区还是远城区，主城区通常配套更加完善，交通更好、学区比较多，区域板块核心，房产的流通性价值更高；而远城区通常来讲，很多都是城市发展，重新划分进来的区域板块，通常配套一般，学区一般。
 
-![](/assets/images/fang-di-chan-xi-lie/image_66.png)
+![](/assets/images/posts/finance/2024-10-29-房地产系列/image_66.png)
 
 除此之外，我们还要去研究区域发展潜力，包括企业分布、区政府的财政收入、区域的人口流入流出情况、区政府的地铁规划、政府规划等等，这些研究我们大概会知道这个区域板块的情况，也会增强我们的购买信心。
 
-# 然后**，聊聊楼盘价值如何评估**从宏观层面，要看区域，比如武汉市洪山区。
+## 然后**，聊聊楼盘价值如何评估**从宏观层面，要看区域，比如武汉市洪山区。
 
 从围观层面，要看具体楼盘。
 
-![](/assets/images/fang-di-chan-xi-lie/image_67.png)
+![](/assets/images/posts/finance/2024-10-29-房地产系列/image_67.png)
 
 我个人在微观层面，更在意以下信息：
 
@@ -135,8 +137,8 @@ https://wh.bendibao.com/live/2023217/158813.shtm
 
 [https://shimo.im/file-invite/CiahUMChdJv4SYkhx6uhM3PgbQ65/](https://shimo.im/file-invite/CiahUMChdJv4SYkhx6uhM3PgbQ65/) dadadada 邀请您协作《大华城市公园》，点击链接开始编辑
 
-# 附大纲：
+## 附大纲：
 
-![](/assets/images/fang-di-chan-xi-lie/image_68.jpeg)
+![](/assets/images/posts/finance/2024-10-29-房地产系列/image_68.jpeg)
 
-[📎购房逻辑.xmind](https://www.yuque.com/attachments/yuque/0/2024/xmind/40701240/1730181497793-2bb13b43-973a-4555-abc7-45806c7a66f3.xmind)
+[📎购房逻辑.xmind](/assets/images/posts/finance/2024-10-29-房地产系列/1743684081_yuque_1743684081.png

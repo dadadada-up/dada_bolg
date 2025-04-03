@@ -1,23 +1,23 @@
----
-title: 个人博客项目需求说明书
-date: 2024-03-20
-categories:
-  - 个人博客
-  - 项目文档
-  - 技术方案
-tags:
-  - 博客
-  - 需求文档
-  - 博客
-  - Next.js
-  - TypeScript
-  - 技术架构
-description: 基于语雀API的个人博客系统需求说明书，包含详细的功能需求、技术方案和开发计划。
-image: /assets/images/blog-project-cover.png
-published: true
----
 
-# 个人博客项目需求说明书
+---"
+title: "personal blog requirements"
+date: "2024-03-20"
+categories: "
+  - "个人博客"
+  - "项目文档"
+  - "技术方案"
+tags: "
+---  - "博客"
+  - "需求文档"
+  - "博客"
+  - "Next.js"
+  - "TypeScript"
+  - "技术架构"
+description: "基于语雀API的个人博客系统需求说明书，包含详细的功能需求、技术方案和开发计划。"
+image: "/assets/images/posts/personal-blog/2024-03-20-/blog-project-cover.png""
+published: true"
+---"
+## 个人博客项目需求说明书
 
 ## 1. 项目概述
 
@@ -360,7 +360,7 @@ published: true
   interface Article {
     id: string;              // 唯一标识符
     yuque_id: string;        // 语雀文档ID
-    title: string;           // 文章标题
+    title: "string;           // 文章标题"
     slug: string;            // URL友好的路径
     content: string;         // Markdown内容
     html_content?: string;   // 渲染后的HTML（可选缓存）

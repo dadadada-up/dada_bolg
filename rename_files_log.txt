@@ -1,0 +1,42 @@
+# 文件重命名日志
+执行时间: 2025年 4月 3日 星期四 20时41分22秒 CST
+
+警告: 处理后的标题为空，跳过重命名: docs/posts/personal-blog/2024-03-20-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/open-source/2025-04-03-.md
+已重命名: docs/posts/open-source/2024-03-18-dingtalkmonitor.md -> docs/posts/open-source/2024-03-18-dingtalkmonitor打造企业级钉钉监控利器.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/family-life/2025-04-03-.md
+已重命名: docs/posts/family-life/travel/2024-01-01-2024.md -> docs/posts/family-life/travel/2024-01-01-杭州2024年元旦走运计划.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/family-life/travel/2024-03-20-.md
+已重命名: docs/posts/family-life/travel/2024-03-20-2025.md -> docs/posts/family-life/travel/2024-03-20-2025清明泉州三日游详细行程.md
+已重命名: docs/posts/tech-tools/2025-02-07-githubdesktop.md -> docs/posts/tech-tools/2025-02-07-GitHub Desktop安装与汉化.md
+已重命名: docs/posts/tech-tools/2025-02-17-aisql.md -> docs/posts/tech-tools/2025-02-17-AI帮我写SQL十倍效率提升.md
+已重命名: docs/posts/tech-tools/2025-02-05-deepseek.md -> docs/posts/tech-tools/2025-02-05-deepseek本地化部署.md
+已重命名: docs/posts/tech-tools/2025-01-24-notioncursor.md -> docs/posts/tech-tools/2025-01-24-notioncursor.md
+已重命名: docs/posts/tech-tools/2024-04-03-cursor.md -> docs/posts/tech-tools/2024-04-03-Cursor 介绍.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/tech-tools/2025-02-16-.md
+已重命名: docs/posts/tech-tools/2025-02-10-cursor.md -> docs/posts/tech-tools/2025-02-10-Cursor 满血使用.md
+已重命名: docs/posts/tech-tools/2025-01-07-cursorrules.md -> docs/posts/tech-tools/2025-01-07-cursorrules.md
+已重命名: docs/posts/tech-tools/2025-02-07-github.md -> docs/posts/tech-tools/2025-02-07-GitHub仓库三种克隆方式.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/tech-tools/2025-02-20-.md
+已重命名: docs/posts/tech-tools/2025-02-06-notionpushplus.md -> docs/posts/tech-tools/2025-02-06-notionpushplus公众号任务提醒.md
+已重命名: docs/posts/tech-tools/2025-02-06-macosdocker.md -> docs/posts/tech-tools/2025-02-06-在 macOS 上轻松部署 Docker详细安装与配置步骤.md
+已重命名: docs/posts/tech-tools/2025-02-14-r1vsclaude35sonnet.md -> docs/posts/tech-tools/2025-02-14-r1vsclaude35sonnet.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/tech-tools/2025-02-27-.md
+已重命名: docs/posts/tech-tools/2023-09-01-notion.md -> docs/posts/tech-tools/2023-09-01-如何获取Notion数据库字段信息.md
+已重命名: docs/posts/tech-tools/2025-02-05-notionapi.md -> docs/posts/tech-tools/2025-02-05-notionapi.md
+已重命名: docs/posts/tech-tools/2024-03-18-vscodedrawio.md -> docs/posts/tech-tools/2024-03-18-VS Code中使用Drawio完全指南.md
+已重命名: docs/posts/tech-tools/2025-01-07-sublimetext.md -> docs/posts/tech-tools/2025-01-07-sublimetext.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/tech-tools/2025-01-01-.md
+已重命名: docs/posts/tech-tools/2025-01-01-assettracker.md -> docs/posts/tech-tools/2025-01-01-assettracker.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/product-management/2024-10-28-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/product-management/2024-12-30-.md
+已重命名: docs/posts/product-management/2025-02-06-brd.md -> docs/posts/product-management/2025-02-06-BRD 业务需求文档模板.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/product-management/2025-01-15-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/product-management/2024-10-30-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/finance/2025-03-27-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/finance/2025-02-09-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/insurance/2024-03-18-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/insurance/agriculture-insurance/2025-03-18-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/insurance/agriculture-insurance/2024-01-10-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/insurance/agriculture-insurance/2024-11-01-.md
+警告: 处理后的标题为空，跳过重命名: docs/posts/insurance/agriculture-insurance/2024-10-31-.md

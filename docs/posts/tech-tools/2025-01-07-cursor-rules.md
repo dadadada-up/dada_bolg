@@ -1,16 +1,18 @@
----
-categories: [技术工具]
-date: '2025-01-07'
-description: 数据库表设计规范表名命名：表名应准确反映其存储的数据内容，且使用单数形式，以便清晰地表达表的含义。字段设置：每个表必须包含一个自增主键 id
-  和一个业务主键 id，以确保数据的唯一性和业务逻辑的完整性。字段命名：避免使用 _id 类似的命名方式，除非微信小程序有明确要求。字段名应使用单数形式，...
-image: ''
-original_title: Cursor rules
-published: true
-tags: [Cursor 技术]
-title: Cursor rules
-yuque_url: ''
----
 
+---"
+categories: "
+  - "技术工具"
+date: "2025-01-07'"
+description: "数据库表设计规范表名命名：表名应准确反映其存储的数据内容，且使用单数形式，以便清晰地表达表的含义。字段设置：每个表必须包含一个自增主键 id"
+  和一个业务主键 id，以确保数据的唯一性和业务逻辑的完整性。字段命名：避免使用 _id 类似的命名方式，除非微信小程序有明确要求。字段名应使用单数形式，..."
+image: "/assets/images/posts/tech-tools/2025-01-07-cursorrules/''""
+original_title: "Cursor rules""
+---published: true"
+tags: "
+  - "Cursor 技术"
+title: "Cursor rules"
+yuque_url: ''"
+---"
 ### 数据库表设计规范
 
   ***表名命名**：

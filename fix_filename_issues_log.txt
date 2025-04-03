@@ -1,0 +1,37 @@
+# 文件名修复日志
+生成时间: 2025年 04月 03日 星期四 20时45分39秒 CST
+
+## 开始修复文件名问题
+### 处理缺少标题的文件
+### 处理文件名分段的问题
+未发现文件名分段问题
+### 处理文件名与标题不匹配的问题
+已重命名: docs/posts/open-source/2025-04-03-钉钉消息监控助手.md -> docs/posts/open-source/2025-04-03-"钉钉消息监控助手".md (标题不匹配修复)
+已重命名: docs/posts/open-source/2024-03-18-dingtalk-monitor：打造企业级钉钉监控利器.md -> docs/posts/open-source/2024-03-18-"dingtalk-monitor：打造企业级钉钉监控利器".md (标题不匹配修复)
+已重命名: docs/posts/family-life/travel/2024-03-20-2025清明泉州三日游详细行程.md -> docs/posts/family-life/travel/2024-03-20-"2025清明泉州三日游详细行程.md (标题不匹配修复)
+已重命名: docs/posts/family-life/travel/2024-01-01-杭州2024年元旦走运计划.md -> docs/posts/family-life/travel/2024-01-01-"杭州2024年元旦走运计划".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-04-03-how-to-get-notion-database-fields-summary.md -> docs/posts/tech-tools/2025-04-03-"how-to-get-notion-database-fields-summary".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2024-04-03-Cursor-介绍.md -> docs/posts/tech-tools/2024-04-03-"Cursor-介绍".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-07-GitHub仓库三种克隆方式.md -> docs/posts/tech-tools/2025-02-07-"GitHub仓库三种克隆方式".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2023-09-01-如何获取Notion数据库字段信息.md -> docs/posts/tech-tools/2023-09-01-"如何获取Notion数据库字段信息".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-06-在 macOS 上轻松部署 Docker详细安装与配置步骤.md -> docs/posts/tech-tools/2025-02-06-"在-macOS-上轻松部署-Docker：详细安装与配置步骤".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-01-24-notioncursor.md -> docs/posts/tech-tools/2025-01-24-original_"notion+cursor".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-10-Cursor 满血使用.md -> docs/posts/tech-tools/2025-02-10-"Cursor-满血使用".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-07-GitHub Desktop安装与汉化.md -> docs/posts/tech-tools/2025-02-07-"GitHub-Desktop安装与汉化".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-05-deepseek本地化部署.md -> docs/posts/tech-tools/2025-02-05-"deepseek本地化部署.md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2024-03-18-VS-Code中使用Draw.io完全指南.md -> docs/posts/tech-tools/2024-03-18-"VS-Code中使用Draw.io完全指南".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-01-07-cursorrules.md -> docs/posts/tech-tools/2025-01-07-"Cursor-rules".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-05-asset.md -> docs/posts/tech-tools/2025-02-05-"asset.md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-14-r1vsclaude35sonnet.md -> docs/posts/tech-tools/2025-02-14--original_"AI编程：DeepSeek-R1-vs-Claude-3.5-Sonnet".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-17-AI帮我写SQL十倍效率提升.md -> docs/posts/tech-tools/2025-02-17-"AI帮我写SQL，十倍效率提升".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-05-notionapi.md -> docs/posts/tech-tools/2025-02-05-"Notion-API".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-04-03-vscode-drawio-usage.md -> docs/posts/tech-tools/2025-04-03-"vscode-drawio-usage".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-02-06-notionpushplus公众号任务提醒.md -> docs/posts/tech-tools/2025-02-06-"notion+pushplus公众号任务提醒".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-01-07-sublimetext.md -> docs/posts/tech-tools/2025-01-07-"Sublime-Text".md (标题不匹配修复)
+已重命名: docs/posts/tech-tools/2025-01-01-assettracker.md -> docs/posts/tech-tools/2025-01-01-"Asset-Tracker".md (标题不匹配修复)
+已重命名: docs/posts/product-management/2025-02-06-BRD 业务需求文档模板.md -> docs/posts/product-management/2025-02-06-"BRD-业务需求文档模板".md (标题不匹配修复)
+已重命名: docs/posts/finance/2024-10-29-房地产系列.md -> docs/posts/finance/2024-10-29-"房地产系列".md (标题不匹配修复)
+已重命名: docs/posts/insurance/2025-04-03-financing-credit-insurance.md -> docs/posts/insurance/2025-04-03-"financing-credit-insurance".md (标题不匹配修复)
+## 执行最终检查
+## 文件名修复完成
+所有操作都已记录到 fix_filename_issues_log.txt

@@ -1,12 +1,14 @@
----
-title: vscode-drawio-usage
-date: 2025-04-03
-categories: [技术工具]
-tags: [GitHub 技术]
-published: true
----
 
-# VS Code中使用Draw.io完全指南
+---"
+title: "vscode drawio usage"
+date: "2025-04-03"
+categories: "
+  - "技术工具"
+tags: "
+  - "GitHub 技术"
+published: true"
+------"
+## VS Code中使用Draw.io完全指南
 
 ## 1. 基础设置
 ### 1.1 安装配置
@@ -79,7 +81,7 @@ flowchart TD
 1. 创建一个`.drawio.svg`文件
 2. 在Markdown中使用图片语法引用：
 ```markdown
-![流程图](./your-diagram.drawio.svg)
+![流程图](/assets/images/posts/tech-tools/2025-04-03-vscode-drawio-usage/your-diagram.drawio.svg)
 ```
 
 #### 方法三：混合文档

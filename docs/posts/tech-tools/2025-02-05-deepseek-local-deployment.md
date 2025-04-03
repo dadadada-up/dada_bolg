@@ -1,0 +1,100 @@
+---
+categories: [技术工具]
+date: '2025-02-05'
+description: 前提：MacBook Pro（Apple M3，16GB）如何选择 DeepSeek 的模型？模型版本参数量适用场景最低硬件配置要求适用设备DeepSeek-R1-Distill-Qwen-1.5B1.5B简单智能助手、轻量级文本生成8GB
+  RAM，无显卡加速旧款手机、低端电脑DeepSeek...
+image: images/deepseekben-di-hua-bu-shu/image_21.png
+original_title: deepseek本地化部署
+published: true
+tags: [AI DeepSeek 技术]
+title: deepseek本地化部署
+yuque_url: ''
+---
+
+前提：MacBook Pro（Apple M3，16GB）
+
+![](/assets/images/deepseekben-di-hua-bu-shu/image_21.png)
+
+# 如何选择 DeepSeek 的模型？
+
+模型版本| 参数量| 适用场景| 最低硬件配置要求| 适用设备  
+---
+DeepSeek-R1-Distill-Qwen-1.5B| 1.5B| 简单智能助手、轻量级文本生成| 8GB RAM，无显卡加速| 旧款手机、低端电脑  
+DeepSeek-R1-Distill-Qwen-7B| 7B| 中等复杂度任务，如简单智能客服、日常文本处理| 16GB RAM，8GB 显存（GPU加速）| 中端电脑（如 MacBook Pro M3 16GB RAM）  
+DeepSeek-R1-Distill-Qwen-14B| 14B| 复杂文本处理、专业领域问答| 32GB RAM，26GB 显存（GPU加速）| 高端电脑（如配备 RTX 4080 的台式机）  
+DeepSeek-R1-Distill-Qwen-32B| 32B| 高精度文本生成、复杂逻辑推理| 64GB RAM，64GB 显存（GPU加速）| 专业工作站（如多 GPU 配置的服务器）  
+DeepSeek-R1-Distill-Llama-70B| 70B| 高精度长文本生成、复杂任务处理| 128GB RAM，140GB 显存（GPU加速）| 高端服务器（如配备多张 A100 GPU）  
+  
+## 说明
+
+  ***参数量**：模型的参数数量，直接影响模型的复杂度和性能。
+  ***适用场景**：根据模型的大小和性能特点，适合不同复杂度的任务。
+  ***最低硬件配置要求**：运行该模型所需的最低硬件配置，包括内存和显存。
+  ***适用设备**：根据硬件配置要求，推荐的设备类型。
+
+根据你的设备配置（MacBook Pro M3，16GB RAM），建议选择**DeepSeek-R1-Distill-Qwen-7B**模型，它可以在你的设备上运行，同时提供较好的性能和准确性。
+
+# 推荐部署方法：使用Ollama部署
+
+Ollama是一个免费开源的工具，支持在本地运行和部署大型语言模型，适合macOS系统。
+
+## 部署步骤：
+
+### 1\. 安装Ollama
+
+    * 访问[Ollama官网](https://ollama.com/)，下载适合macOS的安装包。
+    * 安装完成后，在终端运行以下命令验证安装：
+
+    
+    
+    ollama --version
+
+如果显示版本信息，则安装成功。
+
+### 2\. 下载DeepSeek模型
+
+    * 根据你的硬件配置，推荐下载1.5B或7B版本的DeepSeek模型。在终端运行以下命令：
+
+    
+    
+    ollama pull deepseek-r1:1.5b
+
+或者：
+    
+    
+    ollama pull deepseek-r1:7b
+
+下载完成后，使用以下命令启动模型：
+    
+    
+    ollama run deepseek-r1:1.5b
+
+或：
+    
+    
+    ollama run deepseek-r1:7b
+
+模型启动后，你可以在终端与模型进行交互。
+
+### 3\. 增强交互体验（可选）
+
+    * 如果你希望获得更丰富的交互体验，可以部署Open-WebUI。确保你的机器上安装了Docker，然后运行以下命令：
+
+    
+    
+    docker run -d -p 3000:8080 \
+      --add-host=host.docker.internal:host-gateway \
+      -v open-webui:/app/backend/data \
+      --name open-webui \
+      --restart always \
+      ghcr.io/open-webui/open-webui:main
+
+访问`http://localhost:3000`，选择`deepseek-r1:latest`即可。
+
+## 费用说明
+
+  ***Ollama部署**：完全免费。
+  ***DeepSeek模型**：本地部署时免费。
+  ***Open-WebUI**：免费开源。
+
+综上所述，使用Ollama在你的MacBook Pro上本地部署DeepSeek是完全免费的，无需支付任何费用。

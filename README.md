@@ -1,77 +1,117 @@
-# 大大的博客系统
+# dada的博客系统
 
-这是一个基于GitHub Pages和GitHub API构建的静态博客系统，包含内容管理系统和前端展示两部分。
+这是一个基于GitHub Pages和GitHub API构建的静态博客系统，专注于前端展示，通过GitHub直接管理内容。
 
 ## 系统架构
 
 本博客系统由两个主要部分组成：
 
 1. **博客前端展示系统**：位于`blog`目录，负责展示文章和提供用户界面
-2. **内容管理系统**：位于`admin`目录，负责内容的创建、编辑和管理
+2. **内容存储**：所有文章存储在仓库的`content/posts`目录下，通过GitHub直接管理
 
-系统通过GitHub API与GitHub仓库交互，所有文章存储在仓库的`content/posts`目录下。
+系统通过GitHub API与GitHub仓库交互，自动识别文章的Front Matter信息。
 
-## 目录结构
+## 优化后的目录结构
 
 ```
 / (根目录)
-├── admin/                # 内容管理系统
-│   ├── assets/           # 管理系统资源
-│   │   ├── css/          # 样式文件
-│   │   └── js/           # 脚本文件
-│   └── index.html        # 管理系统入口
-│
 ├── blog/                 # 博客前端展示系统
-│   ├── assets/           # 前端资源
-│   │   ├── css/          # 样式文件
-│   │   ├── js/           # 脚本文件
-│   │   └── images/       # 前端界面图片
 │   ├── index.html        # 博客首页
-│   └── ...               # 其他页面
+│   ├── article.html      # 文章详情页
+│   ├── articles.html     # 文章列表页
+│   ├── categories.html   # 分类页面
+│   ├── tags.html         # 标签页面
+│   ├── about.html        # 关于页面
+│   └── assets/           # 前端资源
+│       ├── css/          # 样式文件
+│       ├── js/           # 脚本文件
+│       └── images/       # 图片资源
 │
 ├── content/              # 内容存储目录
-│   ├── posts/            # 正式发布的文章
-│   ├── drafts/           # 草稿文章
-│   ├── reports/          # 项目报告
-│   └── assets/           # 内容相关资源
-│       └── images/       # 文章图片
+│   ├── posts/            # 文章存储目录（主要）
+│   │   ├── category1/    # 分类目录
+│   │   ├── category2/    # 分类目录
+│   │   └── ...
+│   └── assets/           # 内容相关资源（如文章图片等）
 │
-└── temp/                 # 临时文件目录
-    └── oldLogs/          # 旧日志备份
+├── scripts/              # 脚本工具目录
+│   ├── manage_blog.sh    # 博客管理主脚本
+│   └── image_tools/      # 图片处理工具
+│
+├── docs/                 # 文档目录
+│   └── directory-structure.md # 目录结构说明
+│
+├── temp/                 # 临时文件目录
+│   └── backups/          # 备份文件
+│
+├── manage.sh             # 便捷管理脚本
+├── server.py             # 本地预览服务器
+└── README.md             # 本文件：项目说明文档
 ```
 
-## 已完成的工作
+## 文章内容管理
 
-1. **目录结构整理**
-   - 统一文章存储路径为`content/posts`
-   - 移动并整合资源文件到合适的目录
-   - 删除冗余和过时的文件
+所有博客文章通过GitHub网站或Git客户端直接管理，存储在`content/posts`目录下，按类别分类。
 
-2. **配置更新**
-   - 确保所有配置文件中的路径指向正确的目录
-   - 更新文章中的图片引用路径
+### Front Matter 规范
 
-3. **系统链接修复**
-   - 修正HTML文件中指向管理系统的链接
+每篇文章的元数据使用YAML格式的Front Matter定义，位于Markdown文件顶部。
 
-## 本地预览
+**必填字段**：
+- `title`: 文章标题
+- `date`: 发布日期，格式为 YYYY-MM-DD
+- `categories`: 文章分类（可以是字符串或数组）
 
-项目提供了一个简单的Python HTTP服务器脚本，用于本地预览：
+**可选字段**：
+- `updateDate`: 最近修改日期
+- `tags`: 文章标签（可以更细化的分类）
+- `description`: 文章描述（建议50-150字）
+- `image`: 封面图片路径
+- `published`: 发布状态（默认为true）
+
+**示例**：
+```yaml
+---
+title: "使用Next.js和TypeScript构建现代博客"
+date: "2023-06-15"
+updateDate: "2023-06-20"
+categories: 
+  - "前端开发"
+tags:
+  - "Next.js"
+  - "TypeScript"
+  - "React"
+description: "本文介绍如何使用Next.js和TypeScript构建一个现代化、高性能的博客系统。"
+image: "/assets/images/posts/tech/2023-06-15-nextjs-blog/cover.jpg"
+published: true
+---
+```
+
+## 本地预览和管理
+
+使用统一的管理脚本进行博客系统的操作：
 
 ```bash
-# 基本用法（在macOS上使用python3）
-python3 server.py
+# 启动博客预览服务器
+./manage.sh preview
 
-# 指定端口（默认8000）
-python3 server.py -p 8080
+# 检查图片引用
+./manage.sh check-images
 
-# 指定服务根目录（默认当前目录）
-python3 server.py -d ./blog
+# 修复图片引用问题
+./manage.sh fix-images
+
+# 创建博客内容备份
+./manage.sh backup
+
+# 清理临时文件
+./manage.sh clean
+
+# 显示帮助信息
+./manage.sh help
 ```
 
-访问地址：
-- 博客首页：http://localhost:8000/blog/index.html
-- 管理系统：http://localhost:8000/admin/index.html
+访问博客预览：http://localhost:8000
 
 ## 开发计划
 

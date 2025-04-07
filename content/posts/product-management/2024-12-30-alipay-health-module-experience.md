@@ -71,7 +71,7 @@ image: "/assets/images/posts/product-management/2024-12-30-/image_48.png
 
 ### 产品结构图
 
-![](/assets/images/product-management/2024-12-30-alipay-health-module-experience/image_48.png)
+![](/content/assets/images/product-management/2024-12-30-alipay-health-module-experience/image_48.png)
 
 总结：
 
@@ -153,7 +153,7 @@ image: "/assets/images/posts/product-management/2024-12-30-/image_48.png
 
 ### 产品结构图
 
-![](/assets/images/product-management/2024-12-30-alipay-health-module-experience/image_48.png)
+![](/content/assets/images/product-management/2024-12-30-alipay-health-module-experience/image_48.png)
 
 总结：
 

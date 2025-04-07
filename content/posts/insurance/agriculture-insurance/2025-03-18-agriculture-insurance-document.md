@@ -41,28 +41,28 @@ yuque_url: ''"
 
 ## 2.1 融资信保保险分类
 
-![占位图](/assets/images/insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
 
 ## 2.2 融资信保主要参与主体及服务内容
 
 融资性信用保证保险业务主要参与主体为融资方、资金方、保险人三方，在融资性信用保险模式下，资金方既是投保人也是被保险人，而在融资性保证保险模式下， 融资方为投保人，资金方为被保险人。
 
-![占位图](/assets/images/insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
 
-![占位图](/assets/images/insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
 
 ## 3、行业发展现状
 
-![占位图](/assets/images/insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
 
-![占位图](/assets/images/insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
 
 2019年，原本仅次于平安产险的人保财险在信用保证保险业务上出现亏损，承保利润为-28.84亿元，综合成本率达到121.7%；中华联合财险由于不规范开展信用贷款保证保险业务，导致投诉集中爆发。
 
 ## 4、信用保证保险业务流程
 
-![占位图](/assets/images/insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
 
-![占位图](/assets/images/insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
 
 

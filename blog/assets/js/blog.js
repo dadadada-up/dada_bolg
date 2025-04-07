@@ -9,9 +9,11 @@ const config = {
     repo: 'dada_blog',
     branch: 'main',
     docsPath: 'content/posts',
+    token: process.env.GITHUB_TOKEN=your_token_here  || '', // 从环境变量获取token
     endpoints: {
         contents: 'https://api.github.com/repos/{owner}/{repo}/contents/{path}?ref={branch}',
-        raw: 'https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}'
+        raw: 'https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}',
+        searchCode: 'https://api.github.com/search/code?q=repo:{owner}/{repo}+path:{path}'
     },
     cache: {
         ttl: 60 * 60 * 1000, // 缓存有效期1小时
@@ -71,6 +73,8 @@ async function initBlog() {
 // 获取所有文章
 async function fetchAllPosts() {
     try {
+        console.log('开始获取所有文章...');
+        
         // 获取所有分类目录
         const categoriesUrl = config.endpoints.contents
             .replace('{owner}', config.owner)
@@ -78,13 +82,22 @@ async function fetchAllPosts() {
             .replace('{path}', config.docsPath)
             .replace('{branch}', config.branch);
         
-        const categoriesResponse = await fetch(categoriesUrl);
+        console.log('获取分类目录:', categoriesUrl);
+        
+        const categoriesResponse = await fetch(categoriesUrl, {
+            headers: {
+                'Authorization': `token ${config.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
         
         if (!categoriesResponse.ok) {
+            console.error('获取分类失败:', categoriesResponse.status, categoriesResponse.statusText);
             throw new Error('获取分类失败');
         }
         
         const categoriesData = await categoriesResponse.json();
+        console.log('获取到的分类:', categoriesData);
         
         // 过滤出目录
         const categories = categoriesData.filter(item => item.type === 'dir');
@@ -94,23 +107,36 @@ async function fetchAllPosts() {
             count: 0
         }));
         
+        console.log('处理后的分类:', state.categories);
+        
         // 遍历每个分类，获取文章
         state.allPosts = [];
         
         for (const category of categories) {
+            console.log('处理分类:', category.name);
+            
             const postsUrl = config.endpoints.contents
                 .replace('{owner}', config.owner)
                 .replace('{repo}', config.repo)
                 .replace('{path}', category.path)
                 .replace('{branch}', config.branch);
             
-            const postsResponse = await fetch(postsUrl);
+            console.log('获取文章列表:', postsUrl);
+            
+            const postsResponse = await fetch(postsUrl, {
+                headers: {
+                    'Authorization': `token ${config.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
             
             if (!postsResponse.ok) {
+                console.error(`获取分类 ${category.name} 的文章列表失败:`, postsResponse.status, postsResponse.statusText);
                 continue;
             }
             
             const postsData = await postsResponse.json();
+            console.log(`分类 ${category.name} 的文章列表:`, postsData);
             
             // 过滤出Markdown文件
             const posts = postsData.filter(item => item.type === 'file' && item.name.endsWith('.md'));
@@ -118,6 +144,8 @@ async function fetchAllPosts() {
             // 获取每篇文章的内容
             for (const post of posts) {
                 try {
+                    console.log('处理文章:', post.path);
+                    
                     // 获取文章内容
                     const postUrl = config.endpoints.raw
                         .replace('{owner}', config.owner)
@@ -125,28 +153,40 @@ async function fetchAllPosts() {
                         .replace('{branch}', config.branch)
                         .replace('{path}', post.path);
                     
-                    const postResponse = await fetch(postUrl);
+                    console.log('获取文章内容:', postUrl);
+                    
+                    const postResponse = await fetch(postUrl, {
+                        headers: {
+                            'Authorization': `token ${config.token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
                     
                     if (!postResponse.ok) {
+                        console.error(`获取文章 ${post.path} 失败:`, postResponse.status, postResponse.statusText);
                         continue;
                     }
                     
                     const postContent = await postResponse.text();
+                    console.log(`文章 ${post.path} 内容获取成功`);
                     
                     // 解析文章内容
                     const parsedPost = parsePost(postContent, post.path, category.name);
                     
                     if (parsedPost) {
                         state.allPosts.push(parsedPost);
+                        console.log(`文章 ${post.path} 解析成功`);
                     }
                 } catch (error) {
-                    console.error(`解析文章 ${post.path} 失败:`, error);
+                    console.error(`处理文章 ${post.path} 失败:`, error);
                 }
             }
         }
+        
+        console.log('所有文章处理完成，共获取文章数:', state.allPosts.length);
     } catch (error) {
         console.error('获取文章失败:', error);
-        throw new Error('获取文章失败，请稍后再试');
+        throw error;
     }
 }
 
@@ -157,17 +197,49 @@ function parsePost(content, path, category) {
         const frontMatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
         
         if (!frontMatterMatch) {
-            return null;
+            // 如果没有前言，尝试直接解析内容
+            return {
+                title: path.split('/').pop().replace('.md', ''),
+                date: new Date(),
+                formattedDate: formatDate(new Date()),
+                category: category,
+                subcategory: '',
+                tags: [],
+                description: '',
+                excerpt: content.slice(0, 200) + '...',
+                content: content.trim(),
+                path: path,
+                url: path.replace(config.docsPath, '').replace('.md', '.html'),
+            };
         }
         
         const frontMatter = frontMatterMatch[1];
         const metadata = {};
         
+        // 更健壮的前言解析
         frontMatter.split('\n').forEach(line => {
-            const [key, ...valueParts] = line.split(':');
-            if (key && valueParts.length > 0) {
-                const value = valueParts.join(':').trim();
-                metadata[key.trim()] = value;
+            if (line.includes(':')) {
+                const [key, ...valueParts] = line.split(':');
+                if (key && valueParts.length > 0) {
+                    let value = valueParts.join(':').trim();
+                    
+                    // 处理带引号的值
+                    if (value.startsWith('"') && value.endsWith('"')) {
+                        value = value.slice(1, -1);
+                    }
+                    
+                    // 处理数组格式的值，如tags
+                    if (value.startsWith('[') && value.endsWith(']')) {
+                        try {
+                            const arrayContent = value.slice(1, -1);
+                            metadata[key.trim()] = arrayContent.split(',').map(item => item.trim());
+                        } catch (e) {
+                            metadata[key.trim()] = value;
+                        }
+                    } else {
+                        metadata[key.trim()] = value;
+                    }
+                }
             }
         });
         
@@ -180,8 +252,15 @@ function parsePost(content, path, category) {
             excerpt += '...';
         }
         
-        // 处理标签
-        const tags = metadata.tags ? metadata.tags.split(',').map(tag => tag.trim()) : [];
+        // 处理标签 - 支持字符串和数组两种格式
+        let tags = [];
+        if (metadata.tags) {
+            if (Array.isArray(metadata.tags)) {
+                tags = metadata.tags;
+            } else if (typeof metadata.tags === 'string') {
+                tags = metadata.tags.split(',').map(tag => tag.trim());
+            }
+        }
         
         // 处理日期
         const date = metadata.date ? new Date(metadata.date) : new Date();
@@ -190,7 +269,7 @@ function parsePost(content, path, category) {
             title: metadata.title || path.split('/').pop().replace('.md', ''),
             date: date,
             formattedDate: formatDate(date),
-            category: category,
+            category: metadata.categories ? (Array.isArray(metadata.categories) ? metadata.categories[0] : metadata.categories) : category,
             subcategory: metadata.subcategory || '',
             tags: tags,
             description: metadata.description || '',
@@ -198,11 +277,19 @@ function parsePost(content, path, category) {
             content: contentBody,
             path: path,
             url: path.replace(config.docsPath, '').replace('.md', '.html'),
-            featured: metadata.featured === 'true'
         };
     } catch (error) {
-        console.error(`解析文章内容失败:`, error);
-        return null;
+        console.error(`解析文章 ${path} 失败:`, error);
+        // 发生错误时，尝试返回一个基本对象
+        return {
+            title: path.split('/').pop().replace('.md', ''),
+            date: new Date(),
+            formattedDate: formatDate(new Date()),
+            category: category,
+            content: content.replace(/^---\n[\s\S]*?\n---/, '').trim() || content,
+            path: path,
+            url: path.replace(config.docsPath, '').replace('.md', '.html'),
+        };
     }
 }
 

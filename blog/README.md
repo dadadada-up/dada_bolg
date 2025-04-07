@@ -1,4 +1,4 @@
-# 大大的博客系统
+# dada的博客系统
 
 这是一个基于GitHub Pages和GitHub API构建的静态博客系统，包含内容管理系统和前端展示两部分。
 
@@ -105,4 +105,4 @@ const config = {
 
 ## 作者
 
-- 大大 (@dadadada-up) 
+- dada (@dadadada-up) 

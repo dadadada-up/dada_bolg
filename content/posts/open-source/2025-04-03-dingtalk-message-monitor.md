@@ -54,7 +54,7 @@ DingTalk Monitor 通过智能化手段解决这些痛点：
 
 ## 效果展示
 
-![占位图](/assets/images/open-source/2025-04-03-dingtalk-message-monitor/placeholder.png)
+![占位图](/content/assets/images/open-source/2025-04-03-dingtalk-message-monitor/placeholder.png)
 
 ## 快速开始
 

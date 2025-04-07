@@ -17,9 +17,9 @@ tags: "
 - 路线来源：[官方攻略](https://mp.weixin.qq.com/s/OZM5p1OBrnsQK-jAWOb1IQ)
 - 全程距离：约8公里
 
-![占位图](/assets/images/family-life/2024-01-01-hangzhou-2024-new-year-plan/placeholder.png)
+![占位图](/content/assets/images/travel/2024-01-01-hangzhou-2024-new-year-plan/placeholder.png)
 
-![占位图](/assets/images/family-life/2024-01-01-hangzhou-2024-new-year-plan/placeholder.png)
+![占位图](/content/assets/images/travel/2024-01-01-hangzhou-2024-new-year-plan/placeholder.png)
 
 ## 交通信息
 

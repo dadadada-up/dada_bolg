@@ -80,7 +80,7 @@ async function loadArticleFromPath(path) {
         const content = await response.text();
         
         // 解析文章内容
-        const category = path.split('/')[1] || '未分类'; // 假设路径格式为 docs/posts/category/article.md
+        const category = path.split('/')[1] || '未分类'; // 假设路径格式为 content/posts/category/article.md
         const parsedArticle = parsePost(content, path, category);
         
         if (!parsedArticle) {
@@ -102,25 +102,62 @@ function parsePost(content, path, category) {
         const frontMatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
         
         if (!frontMatterMatch) {
-            return null;
+            // 如果没有前言，尝试直接解析内容
+            return {
+                title: path.split('/').pop().replace('.md', ''),
+                date: new Date(),
+                formattedDate: formatDate(new Date()),
+                category: category,
+                subcategory: '',
+                tags: [],
+                description: '',
+                content: content.trim(),
+                path: path
+            };
         }
         
         const frontMatter = frontMatterMatch[1];
         const metadata = {};
         
+        // 更健壮的前言解析
         frontMatter.split('\n').forEach(line => {
-            const [key, ...valueParts] = line.split(':');
-            if (key && valueParts.length > 0) {
-                const value = valueParts.join(':').trim();
-                metadata[key.trim()] = value;
+            if (line.includes(':')) {
+                const [key, ...valueParts] = line.split(':');
+                if (key && valueParts.length > 0) {
+                    let value = valueParts.join(':').trim();
+                    
+                    // 处理带引号的值
+                    if (value.startsWith('"') && value.endsWith('"')) {
+                        value = value.slice(1, -1);
+                    }
+                    
+                    // 处理数组格式的值，如tags
+                    if (value.startsWith('[') && value.endsWith(']')) {
+                        try {
+                            const arrayContent = value.slice(1, -1);
+                            metadata[key.trim()] = arrayContent.split(',').map(item => item.trim());
+                        } catch (e) {
+                            metadata[key.trim()] = value;
+                        }
+                    } else {
+                        metadata[key.trim()] = value;
+                    }
+                }
             }
         });
         
         // 获取文章正文
         const contentBody = content.replace(/^---\n[\s\S]*?\n---/, '').trim();
         
-        // 处理标签
-        const tags = metadata.tags ? metadata.tags.split(',').map(tag => tag.trim()) : [];
+        // 处理标签 - 支持字符串和数组两种格式
+        let tags = [];
+        if (metadata.tags) {
+            if (Array.isArray(metadata.tags)) {
+                tags = metadata.tags;
+            } else if (typeof metadata.tags === 'string') {
+                tags = metadata.tags.split(',').map(tag => tag.trim());
+            }
+        }
         
         // 处理日期
         const date = metadata.date ? new Date(metadata.date) : new Date();
@@ -129,7 +166,7 @@ function parsePost(content, path, category) {
             title: metadata.title || path.split('/').pop().replace('.md', ''),
             date: date,
             formattedDate: formatDate(date),
-            category: metadata.category || category,
+            category: metadata.categories ? (Array.isArray(metadata.categories) ? metadata.categories[0] : metadata.categories) : category,
             subcategory: metadata.subcategory || '',
             tags: tags,
             description: metadata.description || '',
@@ -138,7 +175,15 @@ function parsePost(content, path, category) {
         };
     } catch (error) {
         console.error('解析文章内容失败:', error);
-        return null;
+        // 发生错误时，尝试返回一个基本对象
+        return {
+            title: path.split('/').pop().replace('.md', ''),
+            date: new Date(),
+            formattedDate: formatDate(new Date()),
+            category: category,
+            content: content.replace(/^---\n[\s\S]*?\n---/, '').trim() || content,
+            path: path
+        };
     }
 }
 
@@ -148,7 +193,7 @@ function displayArticle(article) {
     articleState.currentArticle = article;
     
     // 更新文档标题
-    document.title = `${article.title} - 大大的博客`;
+    document.title = `${article.title} - dada的博客`;
     
     // 更新文章头部
     document.getElementById('article-title').textContent = article.title;

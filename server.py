@@ -24,7 +24,7 @@ class BlogServerHandler(http.server.SimpleHTTPRequestHandler):
         self.protocol_version = 'HTTP/1.1'
         return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
-def run_server(port=8000, directory=None):
+def run_server(port=8000, directory="blog"):
     """运行HTTP服务器"""
     handler = BlogServerHandler
     
@@ -44,7 +44,7 @@ def run_server(port=8000, directory=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='博客系统本地预览服务器')
     parser.add_argument('-p', '--port', type=int, default=8000, help='服务器端口 (默认: 8000)')
-    parser.add_argument('-d', '--directory', type=str, help='服务器根目录，默认为当前目录')
+    parser.add_argument('-d', '--directory', type=str, default="blog", help='服务器根目录，默认为blog目录')
     args = parser.parse_args()
     
     run_server(args.port, args.directory) 

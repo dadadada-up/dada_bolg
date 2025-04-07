@@ -30,7 +30,7 @@ description: "基于农户画像的保险产品分层分析与推荐策略研究
 | **农业主体类型**  | 个体农户/家庭农场/农民专业合作社  | 家庭农场                 | 差异化承保方案               |
 
 ### 2. **经营特征画像**
-![占位图](/assets/images/insurance/2024-01-10-farmer-insurance-analysis/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2024-01-10-farmer-insurance-analysis/placeholder.png)
 *图1：经营类型与规模分布矩阵分析*
 
 | 维度                | 细分标准                          | 数据来源                    |
@@ -134,7 +134,7 @@ graph TD
 | **农业主体类型**  | 个体农户/家庭农场/农民专业合作社  | 家庭农场                 | 差异化承保方案               |
 
 ### 2. **经营特征画像**
-![占位图](/assets/images/insurance/2024-01-10-farmer-insurance-analysis/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2024-01-10-farmer-insurance-analysis/placeholder.png)
 *图1：经营类型与规模分布矩阵分析*
 
 | 维度                | 细分标准                          | 数据来源                    |
@@ -172,7 +172,7 @@ graph LR
 
 ## **保单分层分析框架**
 ### 1. **农险特色分层模型**
-![占位图](/assets/images/insurance/2024-01-10-farmer-insurance-analysis/placeholder.png)
+![占位图](/content/assets/images/agriculture-insurance/2024-01-10-farmer-insurance-analysis/placeholder.png)
 *图2：农户保单分层模型示意图*
 
 #### (1) **保单状态分层**

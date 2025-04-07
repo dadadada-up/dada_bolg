@@ -39,14 +39,14 @@ yuque_url: ''"
 
   1. 安装拓展程序
 
-![](/assets/images/tech-tools/2025-01-24-notion+cursor/image_23.png)
+![](/content/assets/images/tech-tools/2025-01-24-notion+cursor/image_23.png)
 
   2. Open Command Palette in VS Code (Cmd/Ctrl + Shift + P)  
-在 VS Code 中打开命令面板 （Cmd/Ctrl + Shift + P）![](/assets/images/tech-tools/2025-01-24-notion+cursor/image_22.png)
+在 VS Code 中打开命令面板 （Cmd/Ctrl + Shift + P）![](/content/assets/images/tech-tools/2025-01-24-notion+cursor/image_22.png)
   3. Search for "Notion: Configure Settings"  
 搜索 “Notion： Configure Settings”
 
-![](/assets/images/tech-tools/2025-01-24-notion+cursor/image_24.png)
+![](/content/assets/images/tech-tools/2025-01-24-notion+cursor/image_24.png)
 
   4. Paste your Integration Token when prompted  
 出现提示时粘贴您的集成令牌
@@ -60,7 +60,7 @@ notion 页面链接：
 
 [https://www.notion.so/daboss/asset-tracker-18dca1806c5b8058a1eac5390ebeb973](https://www.notion.so/daboss/asset-tracker-18dca1806c5b8058a1eac5390ebeb973)
 
-![](/assets/images/tech-tools/2025-01-24-notion+cursor/image_25.png)
+![](/content/assets/images/tech-tools/2025-01-24-notion+cursor/image_25.png)
 
   
 
@@ -73,7 +73,7 @@ notion 页面链接：
   3. 在弹出的菜单中找到 Connections，点击 Add connections
   4. 在搜索框中找到你刚才创建的 Integration 名称并选择
 
-![](/assets/images/tech-tools/2025-01-24-notion+cursor/image_26.png)
+![](/content/assets/images/tech-tools/2025-01-24-notion+cursor/image_26.png)
 
 完成这些步骤后，你就可以获取数据库 ID 了：
 

@@ -24,7 +24,7 @@ yuque_url: ''"
   6.**账本与管理员**：一个账本可以有多个管理员。
   7.**账本与创建者**：一个账本有一个创建者。
 
-![占位图](/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
+![占位图](/content/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
 
   
 
@@ -175,17 +175,17 @@ yuque_url: ''"
 
 ## 2.1 用户登陆流程
 
-![占位图](/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
+![占位图](/content/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
 
 ## 2.2 小程序初始化流程
 
-![占位图](/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
+![占位图](/content/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
 
 ## 2.3 记账模块功能
 
 ### 2.3.1 记账流程
 
-![占位图](/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
+![占位图](/content/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
 
   
 
@@ -205,7 +205,7 @@ yuque_url: ''"
 
 ## 2.3.3 账目分类管理流程
 
-![占位图](/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
+![占位图](/content/assets/images/tech-tools/2025-01-01-tech-tools-document/placeholder.png)
 
 所有表都采用软删除策略（`is_valid` 字段），保证数据的可追溯性。同时，关键操作都有相应的错误处理和数据验证机制。
 

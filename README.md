@@ -1,11 +1,11 @@
 # Dada博客文档项目
 
-这个仓库包含了个人博客的所有文档和资源，按照不同主题和用途组织。
+这个仓库包含了个人博客的所有文档和资源，按照不同主题和用途组织，采用统一的规范便于管理和展示。
 
 ## 项目结构
 
 ```
-dada_bolg/
+dada_blog/
 ├── docs/                           # 主文档目录
 │   ├── posts/                      # 博客文章
 │   │   ├── product-management/     # 产品管理相关
@@ -19,37 +19,116 @@ dada_bolg/
 │   │       └── travel/             # 旅行计划相关
 │   ├── assets/                     # 静态资源
 │   │   ├── images/                 # 图片资源
+│   │   │   └── posts/              # 按文章分类存放图片
 │   │   └── files/                  # 其他文件
 │   └── drafts/                     # 草稿文章
-├── 家庭生活/                        # 家庭生活相关文档(已整合到docs)
-├── 个人博客建设项目/                 # 博客建设相关文档(已整合到docs)
-├── 开源项目/                        # 开源项目相关文档(已整合到docs)
-├── 技术知识/                        # 技术知识相关文档(已整合到docs)
-└── 保险/                           # 保险相关文档(已整合到docs)
 ```
 
-## 主要内容
+## 文档规范
 
-本仓库主要包含以下几类内容：
+### 文件命名规范
 
-1. **博客文章**：按主题分类的正式博客文章，位于 `docs/posts/` 目录下
-2. **静态资源**：包括图片、附件等，位于 `docs/assets/` 目录下
-3. **草稿文章**：尚未完成或正在编辑的文章，位于 `docs/drafts/` 目录下
-4. **原始文件夹**：原始的分类文件夹（已整合到docs目录）
+- **格式**：`YYYY-MM-DD-标题.md`
+- **中文标题**：使用英文命名，如：`2024-10-29-real-estate-series.md`（原"房地产系列"）
+- **英文标题**：直接使用英文命名，如：`2024-03-18-vscode-drawio-guide.md`
+- **注意事项**：
+  - 文件名中不要使用空格，用连字符(-)替代
+  - 避免使用特殊字符
+  - URL会自动转换中文为拼音或编码形式
 
-## 文档命名规范
+### Front Matter 规范
 
-- 文件名格式：`YYYY-MM-DD-标题.md`
-- 中文标题使用英文命名：`2024-10-29-real-estate-series.md`（原"房地产系列"）
-- 英文标题使用英文命名：`2024-03-18-vscode-drawio-guide.md`
+**必填字段**：
+- `title`: 文章标题（建议用双引号包裹）
+- `date`: 发布日期（格式：YYYY-MM-DD）
+- `categories`: 至少一个分类（建议从以下主分类选择）
+  - 技术（Tech）
+  - 金融（Finance）
+  - 生活（Life）
+  - 读书（Reading）
+  - 观点（Opinion）
 
-## 已完成的文档标准化工作
+**可选字段**：
+- `updateDate`: 最近修改日期
+- `tags`: 文章标签（可以更细化的分类）
+- `description`: 文章描述（建议50-150字）
+- `image`: 封面图片路径
+- `published`: 发布状态（默认为true）
+- `original_title`: 原始标题（用于从其他平台导入的文章）
+- `author`: 作者名称（多作者博客时使用）
+- `series`: 系列文章名称（如"React教程系列"）
+
+**YAML格式注意事项**：
+1. 必须使用三个破折号`---`开始和结束
+2. 冒号后必须有空格：例如`title: "标题"` 而非 `title:"标题"`
+3. 包含特殊字符的字符串应使用双引号包裹
+4. 列表项必须使用正确缩进（通常是2个空格）
+5. 避免特殊标记：不要在values中使用YAML特殊字符如`: { } [ ] & * # ? | - < > = ! % @ \`
+
+**标准格式示例**：
+```yaml
+---
+title: "使用Next.js和TypeScript构建现代博客"
+date: "2023-06-15"
+updateDate: "2023-06-20"
+categories: 
+  - "前端开发"
+  - "网站建设"
+tags:
+  - "Next.js"
+  - "TypeScript"
+  - "React"
+description: "本文介绍如何使用Next.js和TypeScript构建一个现代化、高性能的博客系统。"
+image: "/assets/images/posts/tech/2023-06-15-nextjs-blog/cover.jpg"
+published: true
+---
+```
+
+### Markdown 书写规范
+
+1. **标题层级**
+   - 文章正文从 h2 (##) 开始
+   - 最多使用到 h4 (####)
+
+2. **图片引用**
+   - 使用相对路径
+   - 格式：`![描述](/assets/images/posts/分类/YYYY-MM-DD-标题/图片名.jpg)`
+   - 图片放在相应的目录下：`/assets/images/posts/分类/YYYY-MM-DD-标题/`
+
+3. **代码块**
+   - 指定语言类型
+   - 使用 ``` 标记
+   - 示例：
+     ```javascript
+     const greeting = "你好，世界！";
+     console.log(greeting);
+     ```
+
+4. **表格**
+   - 使用标准Markdown表格语法
+   - 示例：
+     ```
+     | 列1 | 列2 | 列3 |
+     |-----|-----|-----|
+     | 内容1 | 内容2 | 内容3 |
+     ```
+
+5. **引用与注释**
+   - 使用 > 标记引用
+   - 示例：`> 这是一段引用文字。`
+
+6. **图片处理建议**
+   - 单张图片不超过500KB
+   - 宽度控制在800px-1200px之间
+   - 优先使用WebP格式，其次是JPG、PNG
+   - 使用有意义的文件名，避免随机字符串
+
+## 已完成的标准化工作
 
 1. **文件重命名**：
    - 中文文件名已标准化为英文命名，如：
      - `2024-03-20个人博客项目需求说明书.md` → `2024-03-20-personal-blog-requirements.md`
      - `2025-04-03钉钉消息监控助手.md` → `2025-04-03-dingtalk-message-monitor.md`
-     - `2024-03-18-dingtalk-monitor-打造企业级钉钉监控利器.md` → `2024-03-18-dingtalk-monitor-enterprise.md`
 
 2. **Front Matter修复**：
    - 添加缺失的Front Matter
@@ -73,14 +152,7 @@ dada_bolg/
    - 确保文件名与Front Matter中的标题一致
    - 优化了比较算法，允许空格与连字符的差异
 
-## 修复成果
-
-- **格式统一**：50个文件现在全部符合命名规范
-- **标题匹配**：所有文件名与Front Matter标题保持一致
-- **路径规范**：所有图片路径都已标准化
-- **元数据完整**：所有文档都有完整的Front Matter
-
-## 辅助脚本
+## 维护工具
 
 为了帮助维护文档规范，我们提供了以下辅助脚本：
 
@@ -89,74 +161,107 @@ dada_bolg/
    chmod +x check_filename_format.sh
    ./check_filename_format.sh
    ```
-   脚本会生成一个报告文件`filename_check_results.txt`，列出所有不符合命名规范的文件。
+   脚本会生成一个报告文件，列出所有不符合命名规范的文件。
 
-2. **fix_image_paths.sh**：修复图片路径，使其符合规范
-   ```bash
-   chmod +x fix_image_paths.sh
-   ./fix_image_paths.sh
-   ```
-   脚本会自动将不规范的图片路径调整为`/assets/images/posts/分类/YYYY-MM-DD-标题/图片名.jpg`格式。
-
-3. **fix_front_matter.sh**：修复Front Matter格式问题
-   ```bash
-   chmod +x fix_front_matter.sh
-   ./fix_front_matter.sh
-   ```
-   脚本会修复常见的Front Matter格式问题，如冒号后无空格、缺少引号、数组格式不正确等。
-
-4. **fix_remote_images.sh**：处理远程图片
-   ```bash
-   chmod +x fix_remote_images.sh
-   ./fix_remote_images.sh
-   ```
-   脚本会下载远程图片到本地，并更新引用路径。
-
-5. **fix_front_matter_structure.sh**：修复Front Matter结构问题
-   ```bash
-   chmod +x fix_front_matter_structure.sh
-   ./fix_front_matter_structure.sh
-   ```
-   脚本会修复Front Matter的起始和结束标记，并添加缺失的Front Matter。
-
-6. **fix_filename_quotes.sh**：修复文件名中的引号问题
-   ```bash
-   chmod +x fix_filename_quotes.sh
-   ./fix_filename_quotes.sh
-   ```
-   脚本会移除文件名中的引号和特殊字符。
-
-7. **fix_remaining_files.sh**：处理剩余的文件命名问题
-   ```bash
-   chmod +x fix_remaining_files.sh
-   ./fix_remaining_files.sh
-   ```
-   脚本会处理特定的中文文件名，并修复标题不匹配问题。
-
-8. **fix_title_match.sh**：修复标题匹配问题
-   ```bash
-   chmod +x fix_title_match.sh
-   ./fix_title_match.sh
-   ```
-   脚本会确保文件名与Front Matter中的标题保持一致。
-
-9. **fix_all.sh**：一次性执行所有修复脚本
+2. **fix_all.sh**：一次性执行所有修复脚本
    ```bash
    chmod +x fix_all.sh
    ./fix_all.sh
    ```
-   综合脚本，按顺序执行所有修复操作，并生成详细的日志文件。
+   综合脚本，按顺序执行所有修复操作，并生成详细的日志文件。该脚本包含以下功能：
+   - 修复Front Matter格式和结构
+   - 修复本地图片路径
+   - 处理远程图片
+   - 修复文件名问题
+   - 修复标题匹配问题
 
 ## 后续维护建议
 
-1. **新增文档**：使用标准格式 `YYYY-MM-DD-英文标题.md`
-2. **图片管理**：将图片存放在对应的 `/assets/images/posts/分类/YYYY-MM-DD-标题/` 目录下
-3. **定期检查**：运行 `./check_filename_format.sh` 检查是否有不符合规范的文件
-4. **批量修复**：如有多个文件需要修复，运行 `./fix_all.sh` 进行一键修复
+1. **新增文档**：
+   - 使用标准格式 `YYYY-MM-DD-英文标题.md`
+   - 确保完整的Front Matter
+   - 参考下方的文章模板创建内容
 
-## 贡献指南
+2. **图片管理**：
+   - 将图片存放在对应的 `/assets/images/posts/分类/YYYY-MM-DD-标题/` 目录下
+   - 压缩图片以减小体积
+   - 使用有意义的文件名
 
-如需贡献内容，请参考 [CONTRIBUTING.md](./CONTRIBUTING.md) 文件中的规范。
+3. **定期检查**：
+   - 运行 `./check_filename_format.sh` 检查是否有不符合规范的文件
+   - 如有多个文件需要修复，运行 `./fix_all.sh` 进行一键修复
+
+4. **SEO优化**：
+   - 标题应包含关键词，长度控制在60个字符以内
+   - 描述应准确概括文章内容，包含关键词
+   - 图片添加alt属性
+   - 适当添加站内其他相关文章的链接
+
+## 文章模板
+
+以下是一个标准博客文章的模板结构：
+
+```markdown
+---
+title: "文章标题"
+date: "YYYY-MM-DD"
+categories: 
+  - "主分类"
+tags:
+  - "标签1"
+  - "标签2"
+description: "文章简短描述，会显示在列表页和SEO中"
+image: "/assets/images/posts/分类/YYYY-MM-DD-标题/cover.jpg"
+---
+
+## 引言
+
+简短介绍文章内容和目的。
+
+## 主要内容
+
+### 小节标题
+
+正文内容...
+
+![图片描述](/assets/images/posts/分类/YYYY-MM-DD-标题/image1.jpg)
+
+### 另一个小节
+
+更多内容...
+
+## 总结
+
+总结文章要点和结论。
+
+## 参考资料
+
+- [资料名称](链接)
+- [资料名称](链接)
+```
+
+## 常见问题解答
+
+1. **Front Matter格式错误**：
+   - 确保使用三个破折号`---`开始和结束
+   - 检查冒号后是否有空格
+   - 特殊字符需要用引号包裹
+
+2. **图片不显示**：
+   - 检查图片路径是否正确
+   - 确认图片文件是否存在
+   - 使用相对路径引用图片
+
+3. **标题层级混乱**：
+   - 文章正文应从二级标题(##)开始
+   - 保持标题层级的连贯性
+   - 避免跳级使用标题
+
+4. **YAML解析错误**：
+   - 确保Front Matter前后都有三个破折号`---`
+   - 确保冒号后有空格
+   - 多行字段需要正确缩进
+   - 每个列表项必须保持一致的格式和缩进
 
 ## 版权说明
 

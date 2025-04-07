@@ -25,7 +25,7 @@ title: "unnamed-document"
 
   1. 根据和湖南业务沟通，湖南省财政厅关于印发《湖南省农业保险财政奖补管理办法》的通知（湘财金〔2023〕60号），自2024年11月起全面实施签单到户政策，进一步强调了推进农业保险承保理赔实现“线上化”，这对于业务员的展业工作带来极大的压力，因此湖南业务希望能够实现农户自主投保。
 
-![](/assets/images/ge-ren/image_4.png)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_4.png)
 
 来源：[《关于改革完善财政引导和绩效奖惩机制全面提升农业保险服务质效的实施意见》解读](https: //czt.hunan.gov.cn/czt/xxgk/zcfg/zcjd/202304/t20230424_32482451.html)
 
@@ -50,7 +50,7 @@ title: "unnamed-document"
 
   
 
-![](/assets/images/ge-ren/image_8.jpeg)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_8.jpeg)
 
   
 
@@ -82,7 +82,7 @@ title: "unnamed-document"
 
 截至2024年9月，“爱农宝”服务线上农户超70万，通过爱农宝缴纳保费2.9亿、自助报案13.3万笔;提供灾前有效预警7622.3万条，远程免费问答近1万人，推动农户从“靠天吃饭”向“知天而作”转变。
 
-![](/assets/images/ge-ren/image_3.png)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_3.png)
 
 来源：[中国平安财产保险股份有限公司 科技赋能护航乡村振兴](http://journal.crnews.net/ncpsczk/2024n/d22q/jgdx/969286_20250109103343.html)
 
@@ -90,7 +90,7 @@ title: "unnamed-document"
 
   
 
-![](/assets/images/ge-ren/image_2.jpeg)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_2.jpeg)
 
   
 
@@ -110,7 +110,7 @@ title: "unnamed-document"
 
   1. 根据和湖南业务沟通，湖南省财政厅关于印发《湖南省农业保险财政奖补管理办法》的通知（湘财金〔2023〕60号），自2024年11月起全面实施签单到户政策，进一步强调了推进农业保险承保理赔实现“线上化”，这对于业务员的展业工作带来极大的压力，因此湖南业务希望能够实现农户自主投保。
 
-![](/assets/images/ge-ren/image_4.png)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_4.png)
 
 来源：[《关于改革完善财政引导和绩效奖惩机制全面提升农业保险服务质效的实施意见》解读](https://czt.hunan.gov.cn/czt/xxgk/zcfg/zcjd/202304/t20230424_32482451.html)
 
@@ -147,7 +147,7 @@ title: "unnamed-document"
 
 （产品 roadmap）
 
-![](/assets/images/ge-ren/image_6.jpeg)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_6.jpeg)
 
 ## 2\. 建设规划
 
@@ -171,7 +171,7 @@ title: "unnamed-document"
 
 根据2023年7月至2025年3月的下载数据，平安爱农宝在各大应用商店的下载量呈现稳步增长趋势：
 
-![](/assets/images/ge-ren/image_5.png)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_5.png)
 
 ##### 2.1.2.1.1. 主要应用商店下载量对比（2025年3月数据）
 
@@ -207,7 +207,7 @@ title: "unnamed-document"
 
 ##### 2.1.2.2.1. 生命周期分析
 
-![](/assets/images/ge-ren/image_7.png)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_7.png)
 
 ##### 2.1.2.2.2. 关键策略
 
@@ -225,7 +225,7 @@ title: "unnamed-document"
 
   
 
-![](/assets/images/ge-ren/image_8.jpeg)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_8.jpeg)
 
   
 
@@ -379,7 +379,7 @@ M 端| C 端可投保列表管理|
   
   
 
-![](/assets/images/ge-ren/image_9.jpeg)
+![](/assets/images/finance/2025-03-27-unnamed-document/image_9.jpeg)
 
 ## 3.2. 本期实施方案
 

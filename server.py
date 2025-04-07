@@ -1,49 +1,50 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+博客系统本地预览服务器
+这个脚本提供一个简单的HTTP服务器，用于本地预览博客系统
+"""
+
 import http.server
 import socketserver
-import json
 import os
-from pathlib import Path
+import argparse
 
-class BlogRequestHandler(http.server.SimpleHTTPRequestHandler):
+class BlogServerHandler(http.server.SimpleHTTPRequestHandler):
+    """处理博客预览请求的Handler类"""
+    
+    def end_headers(self):
+        # 添加CORS头，允许所有来源的请求，方便本地开发测试
+        self.send_header('Access-Control-Allow-Origin', '*')
+        super().end_headers()
+    
     def do_GET(self):
-        if self.path.startswith('/docs/posts'):
-            # 处理目录请求
-            path = self.path[1:]  # 移除开头的斜杠
-            if os.path.isdir(path):
-                items = []
-                for item in os.listdir(path):
-                    full_path = os.path.join(path, item)
-                    is_dir = os.path.isdir(full_path)
-                    items.append({
-                        'name': item,
-                        'type': 'dir' if is_dir else 'file',
-                        'path': full_path
-                    })
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps(items).encode())
-                return
-            elif os.path.isfile(path):
-                # 处理文件请求
-                with open(path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                self.send_response(200)
-                self.send_header('Content-type', 'text/plain')
-                self.end_headers()
-                self.wfile.write(content.encode())
-                return
-        
-        # 默认处理其他请求
+        # 设置默认编码为UTF-8
+        self.protocol_version = 'HTTP/1.1'
         return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
-def run_server():
-    PORT = 8000
-    Handler = BlogRequestHandler
+def run_server(port=8000, directory=None):
+    """运行HTTP服务器"""
+    handler = BlogServerHandler
     
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print(f"服务器运行在 http://localhost:{PORT}")
-        httpd.serve_forever()
+    # 如果指定了目录，设置为当前工作目录
+    if directory:
+        os.chdir(directory)
+        print(f"工作目录已设置为: {directory}")
+    
+    with socketserver.TCPServer(("", port), handler) as httpd:
+        print(f"博客预览服务器运行在: http://localhost:{port}")
+        print("按Ctrl+C停止服务器")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("\n服务器已停止")
 
 if __name__ == "__main__":
-    run_server() 
+    parser = argparse.ArgumentParser(description='博客系统本地预览服务器')
+    parser.add_argument('-p', '--port', type=int, default=8000, help='服务器端口 (默认: 8000)')
+    parser.add_argument('-d', '--directory', type=str, help='服务器根目录，默认为当前目录')
+    args = parser.parse_args()
+    
+    run_server(args.port, args.directory) 

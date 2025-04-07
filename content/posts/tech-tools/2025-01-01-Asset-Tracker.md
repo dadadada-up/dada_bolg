@@ -411,7 +411,7 @@ yuque_url: ''"
 
 ### 5.5.1 资产负债
 
-![](/assets//assets/images/posts/tech-tools/2025-01-01-assettracker/image_47.jpeg)
+![占位图](/assets/images/tech-tools/2025-01-01-Asset-Tracker/placeholder.png)
 
   
 

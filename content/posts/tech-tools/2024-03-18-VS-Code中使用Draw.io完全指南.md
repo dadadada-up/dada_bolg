@@ -86,7 +86,7 @@ flowchart TD
 1. 创建一个`.drawio.svg`文件
 2. 在Markdown中使用图片语法引用：
 ```markdown
-![流程图](/assets/images/posts/tech-tools/2024-03-18-vscodedrawio/your-diagram.drawio.svg)
+![占位图](/assets/images/tech-tools/2024-03-18-VS-Code中使用Draw.io完全指南/placeholder.png)
 ```
 
 #### 方法三：混合文档

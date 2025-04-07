@@ -71,7 +71,7 @@ image: "/assets/images/posts/product-management/2024-12-30-/image_48.png
 
 ### 产品结构图
 
-![](/assets/images/zhi-fu-bao-yi-liao-jian-kang-mo-kuai-chan-pin-ti-yan/image_48.png)
+![](/assets/images/product-management/2024-12-30-alipay-health-module-experience/image_48.png)
 
 总结：
 
@@ -153,7 +153,7 @@ image: "/assets/images/posts/product-management/2024-12-30-/image_48.png
 
 ### 产品结构图
 
-![](/assets/images/zhi-fu-bao-yi-liao-jian-kang-mo-kuai-chan-pin-ti-yan/image_48.png)
+![](/assets/images/product-management/2024-12-30-alipay-health-module-experience/image_48.png)
 
 总结：
 

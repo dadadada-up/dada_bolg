@@ -81,5 +81,5 @@ published: true"
   * 开通香港券商的国际账户
   * 通过香港银行转账到香港券商账户上
   * 在香港券商上进行海外资产购买
-  * 银行费用对比：![](/assets/images/gang-bi-gou-mai-mei-zhai-xue-xi/image_20.png)
+  * 银行费用对比：![](/assets/images/finance/2025-02-09-hkd-us-bonds-study/image_20.png)
 

@@ -5,21 +5,11 @@
 
 // 配置
 const config = {
-    // GitHub配置
-    owner: 'dadadada-up',  // GitHub用户名
-    repo: 'dada_blog',    // 仓库名称
-    branch: 'main',       // 分支名称
+    // 本地文件配置
     docsPath: 'docs/posts', // 文档路径
     
     // 分页配置
     itemsPerPage: 10,
-    
-    // API端点
-    endpoints: {
-        contents: 'https://api.github.com/repos/{owner}/{repo}/contents/{path}',
-        searchCode: 'https://api.github.com/search/code',
-        deleteFile: 'https://api.github.com/repos/{owner}/{repo}/contents/{path}',
-    },
     
     // 本地存储键
     storage: {
@@ -185,17 +175,7 @@ function loadUserData() {
 // 获取分类列表
 async function fetchCategories() {
     try {
-        const url = config.endpoints.contents
-            .replace('{owner}', config.owner)
-            .replace('{repo}', config.repo)
-            .replace('{path}', config.docsPath);
-        
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`获取分类列表失败: ${response.statusText}`);
-        }
-        
+        const response = await fetch('/docs/posts');
         const data = await response.json();
         
         // 处理分类
@@ -247,42 +227,18 @@ async function fetchDocuments() {
 // 递归获取目录内容
 async function fetchDirectoryContents(path) {
     try {
-        const url = config.endpoints.contents
-            .replace('{owner}', config.owner)
-            .replace('{repo}', config.repo)
-            .replace('{path}', path);
-        
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`获取目录内容失败: ${response.statusText}`);
-        }
-        
+        const response = await fetch(`/${path}`);
         const data = await response.json();
         
-        // 处理文件和目录
         for (const item of data) {
-            if (item.type === 'file' && item.name.endsWith('.md')) {
-                state.documents.push({
-                    name: item.name,
-                    path: item.path,
-                    sha: item.sha,
-                    download_url: item.download_url,
-                    html_url: item.html_url,
-                    category: path.replace(config.docsPath + '/', '').split('/')[0] || '根目录',
-                    subcategory: path.replace(config.docsPath + '/', '').split('/')[1] || '',
-                    title: item.name.replace('.md', ''),
-                    date: '',
-                    tags: [],
-                    description: '',
-                    content: null
-                });
-            } else if (item.type === 'dir') {
-                await fetchDirectoryContents(item.path);
+            if (item.type === 'dir') {
+                await fetchDirectoryContents(`${path}/${item.name}`);
+            } else if (item.type === 'file' && item.name.endsWith('.md')) {
+                state.documents.push(item);
             }
         }
     } catch (error) {
-        console.error(`获取目录 ${path} 失败:`, error);
+        console.error(`获取目录内容失败: ${path}`, error);
     }
 }
 

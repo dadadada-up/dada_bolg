@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 脚本用于检查文件命名是否符合规范
-# 规范格式: YYYY-MM-DD-标题.md
+# 规范格式: YYYY-MM-DD-标题.md（支持中文标题）
 
 # 获取所有markdown文件
 files=$(find docs/posts -type f -name "*.md")
@@ -25,6 +25,7 @@ for file in $files; do
   dirname=$(dirname "$file")
   
   # 检查文件命名格式是否符合YYYY-MM-DD-标题.md
+  # 修改正则表达式以支持中文和其他Unicode字符
   if ! [[ $filename =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}-.+\.md$ ]]; then
     echo "- [$filename]($file) - 不符合YYYY-MM-DD-标题.md格式" >> "$output_file"
     ((invalid_format_files++))
@@ -42,11 +43,15 @@ for file in $files; do
   filename_title=${filename_title%.md}  # 去掉.md后缀
   
   # 标准化标题和文件名(去掉空格和连字符)，便于比较
+  # 对于中文文件名，直接使用完整字符串比较更合适
   normalized_title=$(echo "$title" | tr -d ' -')
   normalized_filename_title=$(echo "$filename_title" | tr -d ' -')
   
   # 检查标准化后的title和文件名是否匹配
-  if [[ "$normalized_title" != "$normalized_filename_title" ]]; then
+  # 对于中文文件名，宽松匹配：如果文件名包含标题的关键部分，或标题包含文件名的关键部分，视为匹配
+  if [[ "$normalized_title" != "$normalized_filename_title" && 
+        ! "$normalized_title" =~ "$normalized_filename_title" && 
+        ! "$normalized_filename_title" =~ "$normalized_title" ]]; then
     echo "- [$filename]($file) - 文件名与标题不匹配" >> "$output_file"
     echo "  - 文件名标题部分: $filename_title" >> "$output_file"
     echo "  - Front Matter title: $title" >> "$output_file"

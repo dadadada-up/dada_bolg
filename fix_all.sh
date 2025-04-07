@@ -6,6 +6,13 @@ echo "====== 开始修复文档问题 ======"
 echo "执行时间: $(date)"
 echo ""
 
+# 提示用户选择是否进行中文文件名转换
+echo "是否将文件名转换为中文（基于文档title字段）？"
+echo "1) 是，将文件名转换为中文"
+echo "2) 否，保持英文命名"
+read -p "请输入选项 (1/2): " chinese_option
+echo ""
+
 # 1. 修复Front Matter格式
 echo "第1步: 修复Front Matter格式..."
 chmod +x fix_front_matter.sh
@@ -48,8 +55,19 @@ chmod +x fix_title_match.sh
 ./fix_title_match.sh
 echo ""
 
-# 8. 检查最终结果
-echo "第8步: 检查最终结果..."
+# 8. 可选：将文件名转换为中文
+if [ "$chinese_option" == "1" ]; then
+  echo "第8步: 将文件名转换为中文..."
+  chmod +x rename_to_chinese.sh
+  ./rename_to_chinese.sh
+  echo ""
+else
+  echo "跳过第8步: 保持英文文件名"
+  echo ""
+fi
+
+# 9. 检查最终结果
+echo "第9步: 检查最终结果..."
 chmod +x check_filename_format.sh
 ./check_filename_format.sh
 echo ""
@@ -62,4 +80,7 @@ echo "- 远程图片处理: 查看 remote_images_log.txt"
 echo "- 文件名引号问题: 查看 fix_filename_quotes_log.txt"
 echo "- 文件重命名: 查看 fix_remaining_files_log.txt"
 echo "- 标题匹配修复: 查看 fix_title_match_log.txt"
+if [ "$chinese_option" == "1" ]; then
+  echo "- 中文文件名转换: 查看 rename_to_chinese_log.txt"
+fi
 echo "- 最终检查结果: 查看 filename_check_results.txt" 

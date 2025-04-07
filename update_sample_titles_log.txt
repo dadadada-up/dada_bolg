@@ -1,0 +1,11 @@
+开始更新示例文件标题 2025年 4月 7日 星期一 10时08分58秒 CST
+2025-04-07 10:08:58 - 开始更新文件标题...
+2025-04-07 10:08:58 - 已更新标题: docs/posts/personal-blog/2024-03-20-personal-blog-requirements.md -> "个人博客项目需求说明书"
+2025-04-07 10:08:58 - 已更新标题: docs/posts/open-source/2024-03-18-dingtalk-monitor-enterprise.md -> "钉钉监控：企业级应用实践"
+2025-04-07 10:08:58 - 已更新标题: docs/posts/finance/2024-10-29-real-estate-series.md -> "房地产系列分析"
+2025-04-07 10:08:58 - 已更新标题: docs/posts/tech-tools/2025-04-03-vscode-drawio-usage.md -> "VSCode绘图插件使用指南"
+2025-04-07 10:08:58 - 已更新标题: docs/posts/insurance/2024-03-18-agriculture-insurance-research.md -> "农业保险研究报告"
+2025-04-07 10:08:58 - 标题更新完成
+2025-04-07 10:08:58 - 已清理备份文件
+2025-04-07 10:08:58 - 运行文件名转换脚本...
+2025-04-07 10:08:59 - 文件名转换完成

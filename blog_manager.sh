@@ -39,6 +39,7 @@ show_help() {
   print_color "green" "  stats        - 生成文档统计"
   print_color "green" "  backup       - 创建脚本和日志备份"
   print_color "green" "  report       - 查看标准化报告"
+  print_color "green" "  manage       - 打开文档管理界面"
   print_color "green" "  help         - 显示帮助信息"
   echo ""
   echo "选项:"
@@ -50,6 +51,7 @@ show_help() {
   echo "  $0 fix --all    修复所有文档问题"
   echo "  $0 stats        生成文档统计"
   echo "  $0 report       查看标准化报告"
+  echo "  $0 manage       打开文档管理界面"
   echo "  $0 final        执行最终清理并生成完整报告"
 }
 
@@ -159,6 +161,43 @@ view_report() {
   fi
 }
 
+# 打开文档管理界面
+open_document_manager() {
+  local doc_manager_path="${WORK_DIR}/docs/document-manager.html"
+  
+  if [ ! -f "$doc_manager_path" ]; then
+    print_color "red" "错误: 文档管理界面文件不存在: $doc_manager_path"
+    exit 1
+  fi
+  
+  print_color "blue" "正在打开文档管理界面..."
+  
+  # 根据操作系统打开浏览器
+  case "$(uname)" in
+    "Darwin") # macOS
+      open "$doc_manager_path"
+      ;;
+    "Linux")
+      if command -v xdg-open > /dev/null; then
+        xdg-open "$doc_manager_path"
+      elif command -v sensible-browser > /dev/null; then
+        sensible-browser "$doc_manager_path"
+      else
+        print_color "yellow" "无法自动打开浏览器，请手动访问: $doc_manager_path"
+      fi
+      ;;
+    "MINGW"*|"MSYS"*|"CYGWIN"*) # Windows
+      start "$doc_manager_path"
+      ;;
+    *)
+      print_color "yellow" "未知操作系统，请手动访问: $doc_manager_path"
+      ;;
+  esac
+  
+  echo ""
+  print_color "green" "文档管理界面地址: $doc_manager_path"
+}
+
 # 主函数
 main() {
   # 创建必要的目录
@@ -203,6 +242,9 @@ main() {
       ;;
     "report")
       view_report
+      ;;
+    "manage")
+      open_document_manager
       ;;
     "help"|"-h"|"--help")
       show_help

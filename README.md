@@ -2,6 +2,12 @@
 
 这个仓库包含了个人博客的所有文档和资源，按照不同主题和用途组织，采用统一的规范便于管理和展示。
 
+## 快速链接
+
+- [文档统计](/docs/stats.md) - 查看博客文档的分类统计信息
+- [维护工具](#维护工具) - 博客文档管理工具指南
+- [文档规范](#文档规范) - 查看博客文档的格式规范
+
 ## 项目结构
 
 ```
@@ -34,6 +40,9 @@ dada_blog/
 │   └── project_summary.md          # 项目总结
 ├── backups/                        # 备份文件目录
 │   └── *.tar.gz                    # 备份文件
+├── .github/                        # GitHub配置文件
+│   └── workflows/                  # GitHub Actions工作流
+│       └── update-doc-stats.yml    # 自动更新文档统计
 ├── blog_manager.sh                 # 博客管理主脚本
 └── README.md                       # 项目说明文档
 ```

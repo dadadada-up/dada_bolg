@@ -36,6 +36,7 @@ show_help() {
   print_color "green" "  rename       - 重命名文件为中文命名"
   print_color "green" "  cleanup      - 清理临时文件"
   print_color "green" "  final        - 执行最终清理并生成报告"
+  print_color "green" "  stats        - 生成文档统计"
   print_color "green" "  backup       - 创建脚本和日志备份"
   print_color "green" "  report       - 查看标准化报告"
   print_color "green" "  help         - 显示帮助信息"
@@ -47,6 +48,7 @@ show_help() {
   echo "示例:"
   echo "  $0 check        检查所有文件的命名格式"
   echo "  $0 fix --all    修复所有文档问题"
+  echo "  $0 stats        生成文档统计"
   echo "  $0 report       查看标准化报告"
   echo "  $0 final        执行最终清理并生成完整报告"
 }
@@ -112,6 +114,14 @@ create_backup() {
   bash "${SCRIPTS_DIR}/create_backup.sh"
   echo ""
   print_color "green" "备份完成，备份文件保存在: ${BACKUPS_DIR}/"
+}
+
+# 生成文档统计
+generate_stats() {
+  print_color "blue" "开始生成文档统计..."
+  bash "${SCRIPTS_DIR}/generate_doc_stats.sh"
+  echo ""
+  print_color "green" "统计生成完成，请查看: ${WORK_DIR}/docs/stats.md"
 }
 
 # 执行最终清理
@@ -184,6 +194,9 @@ main() {
       ;;
     "backup")
       create_backup
+      ;;
+    "stats")
+      generate_stats
       ;;
     "final")
       final_cleanup

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大大的博客</title>
+    <link rel="stylesheet" href="assets/css/blog.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="site-title">大大的博客</h1>
+                <p class="site-description">分享技术、生活和思考</p>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html" class="active">首页</a></li>
+                    <li><a href="articles.html">全部文章</a></li>
+                    <li><a href="categories.html">分类</a></li>
+                    <li><a href="tags.html">标签</a></li>
+                    <li><a href="about.html">关于</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h2>欢迎来到我的博客</h2>
+                <p>这里记录我的编程旅程、技术见解和生活随想</p>
+            </section>
+
+            <section class="featured-posts">
+                <h2 class="section-title">推荐文章</h2>
+                <div id="featured-posts-container" class="posts-grid">
+                    <!-- 推荐文章将通过JS动态加载 -->
+                    <div class="loading">加载中...</div>
+                </div>
+            </section>
+
+            <section class="recent-posts">
+                <h2 class="section-title">最新文章</h2>
+                <div id="recent-posts-container" class="posts-list">
+                    <!-- 最新文章将通过JS动态加载 -->
+                    <div class="loading">加载中...</div>
+                </div>
+                <div class="view-more">
+                    <a href="articles.html" class="btn">查看全部文章</a>
+                </div>
+            </section>
+
+            <section class="categories">
+                <h2 class="section-title">分类浏览</h2>
+                <div id="categories-container" class="categories-grid">
+                    <!-- 分类将通过JS动态加载 -->
+                    <div class="loading">加载中...</div>
+                </div>
+            </section>
+        </main>
+
+        <aside class="sidebar">
+            <div class="widget about-me">
+                <h3 class="widget-title">关于我</h3>
+                <div class="widget-content">
+                    <div class="profile-image">
+                        <img src="assets/images/avatar.jpg" alt="博主头像" id="profile-image">
+                    </div>
+                    <p>一名热爱技术与创新的程序员，喜欢分享自己的学习心得与生活感悟。</p>
+                    <div class="social-links">
+                        <a href="https://github.com/dadadada-up" target="_blank" title="GitHub"><i class="icon-github"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget tags">
+                <h3 class="widget-title">热门标签</h3>
+                <div class="widget-content" id="tags-cloud">
+                    <!-- 标签云将通过JS动态加载 -->
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+        </aside>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-left">
+                    <p>&copy; 2023 大大的博客 - 保留所有权利</p>
+                </div>
+                <div class="footer-right">
+                    <a href="document-manager.html">内容管理</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="assets/js/blog.js"></script>
+</body>
+</html> 

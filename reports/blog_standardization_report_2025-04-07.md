@@ -22,11 +22,11 @@
 ## 目录统计
 - **family-life**:        4个文件
 - **finance**:        9个文件
-- **insurance**:       11个文件
+- **insurance**:        8个文件
 - **open-source**:        2个文件
 - **personal-blog**:        1个文件
 - **product-management**:       36个文件
-- **reading**:        4个文件
+- **reading**:        7个文件
 - **tech-tools**:       39个文件
 
 **总计**:      106个Markdown文件

@@ -82,3 +82,4 @@ published: true"
   * 通过香港银行转账到香港券商账户上
   * 在香港券商上进行海外资产购买
   * 银行费用对比：![](/assets/images/gang-bi-gou-mai-mei-zhai-xue-xi/image_20.png)
+

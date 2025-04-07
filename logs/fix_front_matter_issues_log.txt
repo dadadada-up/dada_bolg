@@ -1,0 +1,275 @@
+开始修复Front Matter格式问题 2025年 4月 7日 星期一 11时37分59秒 CST
+2025-04-07 11:37:59 - 开始修复文档的Front Matter问题...
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/reading/2025-04-07-《认知觉醒》读后感.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/reading/2025-04-07-《小狗钱钱》读后感.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/reading/2025-04-07-《精力管理》读后感.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/reading/2025-04-07-《大国经济学》读书感.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/personal-blog/2024-03-20-个人博客项目需求说明书.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/open-source/2024-03-18-钉钉监控：企业级应用实践.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/open-source/2025-04-03-dingtalk-message-monitor.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/family-life/2025-04-03-个人博客项目需求说明书.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/family-life/travel/2024-03-20-hangzhou-weekend-trip-plan.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/family-life/travel/2024-03-20-2025-quanzhou-qingming-trip.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/family-life/travel/2024-01-01-hangzhou-2024-new-year-plan.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-Desktop安装与汉化.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-03-how-to-get-notion-database-fields-summary.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-在.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-Text.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2024-04-03-Cursor-介绍.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-14-AI编程-DeepSeek-R1-vs-Claude-3.5-Sonnet.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-03-VSCode绘图插件使用指南.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-07-GitHub仓库三种克隆方式.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-满血使用.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2023-09-01-如何获取Notion数据库字段信息.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:37:59 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-rules.md
+2025-04-07 11:37:59 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-07-GitHub-Desktop安装与汉化.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-05-Notion-API.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-10-cursor-full-usage.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-Docker：详细安装与配置步骤.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-10-deepseek.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-macOS.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-06-macos-docker-installation-guide.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-01-07-Sublime-Text.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-05-deepseek本地化部署.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-01-01-Asset-Tracker.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-语雀文档能力支持整理.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2024-03-18-VS-Code中使用Draw.io完全指南.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-05-asset.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-06-notion+pushplus公众号任务提醒.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-Cursor.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-01-24-notion+cursor.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-16-unnamed-document.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理未命名文档: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-16-unnamed-document.md
+2025-04-07 11:38:00 -   已重命名: 2025-02-16-unnamed-document.md -> 2025-02-16-description- -.md
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-16-description- -.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-介绍.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-GitHub.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-17-AI帮我写SQL，十倍效率提升.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-Sublime.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-02-27-废品回收调研.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-_.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-GitHub仓库三种克隆方式.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-01-07-Cursor-rules.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-01-01-unnamed-document.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理未命名文档: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-01-01-unnamed-document.md
+2025-04-07 11:38:00 -   已重命名: 2025-01-01-unnamed-document.md -> 2025-01-01-.md
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-01-01-.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-HMW分析法.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/tech-tools/2025-04-07-上轻松部署.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-PRD模版.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-如何理解中台？.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-PMF.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-电商场景险有哪些？.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-后台产品经理感悟.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2024-10-30-unnamed-document.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理未命名文档: /Users/dada/Documents/dada_blog/docs/posts/product-management/2024-10-30-unnamed-document.md
+2025-04-07 11:38:00 -   已重命名: 2024-10-30-unnamed-document.md -> 2024-10-30-description- -.md
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2024-10-30-description- -.md
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-产品经理必备技能：功能和流程.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-产品经理入门篇：什么是产品经理，相关角色有哪些？.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-产品生命周期理论.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-支付宝医疗健康模块产品体验.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-《供给侧改革背景下中国多层次农业保险产品结构研究》读书笔记.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-产品经理基础篇：如何做用户需求分析？.md
+2025-04-07 11:38:00 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:00 -   已修复Front Matter
+2025-04-07 11:38:00 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-产品经理的核心竞争力思考.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-从小青龙3号解析保险产品模型.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-BRD.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-竞品分析如何写？.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-02-06-brd-business-requirements-template.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-黄金.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-知识管理的认知.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-支付宝基金产品分析.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-规则引擎——产品设计高阶思维.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-业务需求文档模板.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-01-15-unnamed-document.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理未命名文档: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-01-15-unnamed-document.md
+2025-04-07 11:38:01 -   已重命名: 2025-01-15-unnamed-document.md -> 2025-01-15-description- -.md
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-01-15-description- -.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-产品架构设计之产品实体设计一，二.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-港币购买美债学习.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-超级用户方法论.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-需求分析.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-保全系统建设.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-PM12条.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2024-10-28-trading-product-manager.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-产品经理如何做项目管理？.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-产品经理基础篇：项目管理入门.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-保险产品分类.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-产品体验分析报告如何写？.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2024-12-30-alipay-health-module-experience.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/product-management/2025-04-07-B端需求分析与挖掘.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-03-27-unnamed-document.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理未命名文档: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-03-27-unnamed-document.md
+2025-04-07 11:38:01 -   已重命名: 2025-03-27-unnamed-document.md -> 2025-03-27-unnamed-document.md
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-03-27-unnamed-document.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-04-07-房地产系列.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-04-07-一文详解房地产投资.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-02-09-hkd-us-bonds-study.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-04-07-投资前必知必会.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2024-10-29-房地产系列分析.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-04-07-港币购买美债学习.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-04-07-投资基金的常见费用.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/finance/2025-04-07-《投资第一课》学习笔记.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/2024-03-18-农业保险研究报告.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/2025-04-07-一文读懂保险销售渠道.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/2025-04-07-一文读懂保险核心系统.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/2025-04-03-financing-credit-insurance.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/2025-04-07-「再保险」平台.md
+2025-04-07 11:38:01 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2024-10-31-unnamed-document.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理未命名文档: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2024-10-31-unnamed-document.md
+2025-04-07 11:38:01 -   已重命名: 2024-10-31-unnamed-document.md -> 2024-10-31-unnamed-document.md
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2024-10-31-unnamed-document.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2024-01-10-farmer-insurance-analysis.md
+2025-04-07 11:38:01 -   已修复Front Matter
+2025-04-07 11:38:01 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2025-03-18-unnamed-document.md
+2025-04-07 11:38:02 -   已修复Front Matter
+2025-04-07 11:38:02 - 处理未命名文档: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2025-03-18-unnamed-document.md
+2025-04-07 11:38:02 -   已重命名: 2025-03-18-unnamed-document.md -> 2025-03-18-.md
+2025-04-07 11:38:02 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2025-03-18-.md
+2025-04-07 11:38:02 -   已修复Front Matter
+2025-04-07 11:38:02 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2024-11-01-unnamed-document.md
+2025-04-07 11:38:02 -   已修复Front Matter
+2025-04-07 11:38:02 - 处理未命名文档: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2024-11-01-unnamed-document.md
+2025-04-07 11:38:02 -   已重命名: 2024-11-01-unnamed-document.md -> 2024-11-01-unnamed-document.md
+2025-04-07 11:38:02 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2024-11-01-unnamed-document.md
+2025-04-07 11:38:02 -   已修复Front Matter
+2025-04-07 11:38:02 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/agriculture-insurance/2025-04-07-《“新基建”时代农业保险数智化转型》读书笔记.md
+2025-04-07 11:38:02 -   文件不包含Front Matter, 添加基本Front Matter
+2025-04-07 11:38:02 -   已修复Front Matter
+2025-04-07 11:38:02 - 处理文件: /Users/dada/Documents/dada_blog/docs/posts/insurance/2025-04-07-保险条文是如何开发出来的？.md
+2025-04-07 11:38:02 -   已修复Front Matter
+2025-04-07 11:38:02 - Front Matter修复完成。
+2025-04-07 11:38:02 - 运行文件名格式检查...

@@ -1,17 +1,19 @@
-
 ---
 title: "alipay health module experience"
-date: "2024-12-30
-categories: ""
+date: "2024-12-30"
+categories: 
+  - "product-management"
   - "产品管理
-tags: ""
+tags:
+  - "product-management"
   - "产品管理
   - "用户体验
 ---  - "需求分析
-description: "本文分析支付宝医疗健康模块的产品体验，包括基本信息、产品定位、市场分析、用户场景需求分析等方面
+description: "本文分析支付宝医疗健康模块的产品体验，包括基本信息、产品定位、市场分析、用户场景需求分析等方面"
 image: "/assets/images/posts/product-management/2024-12-30-/image_48.png
-\1: "true"
 ---
+
+
 ---
 
 ## 产品信息
@@ -171,3 +173,4 @@ image: "/assets/images/posts/product-management/2024-12-30-/image_48.png
 4. 家庭情况
 
 医疗健康场景下的健康险，核心就是用户就医场景下信息收集，然后基于用户需求去解决用户问题，合适时机推送健康险。
+

@@ -1,17 +1,19 @@
-
 ---
 title: "farmer insurance analysis"
-date: "2024-01-10
-categories: ""
+date: "2024-01-10"
+categories: 
+  - "agriculture-insurance"
   - "insurance
   - "agriculture
-tags: ""
+tags:
+  - "agriculture-insurance"
   - "农业保险
 ---  - "用户画像
   - "产品推荐
-description: "基于农户画像的保险产品分层分析与推荐策略研究
-\1: "true"
+description: "基于农户画像的保险产品分层分析与推荐策略研究"
 ---
+
+
 ---
 
 ## **农户用户画像分析维度**
@@ -274,3 +276,4 @@ graph TD
 - 实现从**保单分析**到**用户洞察**的闭环  
 - 建立**静态特征**与**动态行为**的双轨决策机制  
 - 提供可落地的**策略-数据-系统**一体化方案
+

@@ -17,11 +17,25 @@ dada_blog/
 │   │   ├── open-source/            # 开源项目相关
 │   │   └── family-life/            # 家庭生活相关
 │   │       └── travel/             # 旅行计划相关
-│   ├── assets/                     # 静态资源
-│   │   ├── images/                 # 图片资源
-│   │   │   └── posts/              # 按文章分类存放图片
-│   │   └── files/                  # 其他文件
-│   └── drafts/                     # 草稿文章
+├── assets/                         # 静态资源
+│   ├── images/                     # 图片资源
+│   │   └── posts/                  # 按文章分类存放图片
+│   └── files/                      # 其他文件
+├── scripts/                        # 脚本文件目录
+│   ├── check_filename_format.sh    # 检查文件名格式
+│   ├── fix_all.sh                  # 一键修复所有问题
+│   ├── cleanup.sh                  # 清理临时文件
+│   └── ...                         # 其他脚本文件
+├── logs/                           # 日志文件目录
+│   ├── filename_check_results.txt  # 文件名检查结果
+│   └── ...                         # 其他日志文件
+├── reports/                        # 报告文件目录
+│   ├── standardization_report.md   # 标准化工作报告
+│   └── project_summary.md          # 项目总结
+├── backups/                        # 备份文件目录
+│   └── *.tar.gz                    # 备份文件
+├── blog_manager.sh                 # 博客管理主脚本
+└── README.md                       # 项目说明文档
 ```
 
 ## 文档规范
@@ -155,24 +169,31 @@ published: true
 
 为了帮助维护文档规范，我们提供了以下辅助脚本：
 
-1. **check_filename_format.sh**：检查文件命名是否符合规范
+1. **blog_manager.sh**：博客文档管理主脚本
    ```bash
-   chmod +x check_filename_format.sh
-   ./check_filename_format.sh
+   # 查看文件名格式
+   ./blog_manager.sh check
+   
+   # 查看帮助信息
+   ./blog_manager.sh help
+   
+   # 修复所有文档问题
+   ./blog_manager.sh fix --all
+   
+   # 查看标准化报告
+   ./blog_manager.sh report
    ```
-   脚本会生成一个报告文件，列出所有不符合命名规范的文件。
 
-2. **fix_all.sh**：一次性执行所有修复脚本
+2. **单独的脚本工具**：
+   所有的脚本工具都已整理到`scripts`目录下，日志文件保存在`logs`目录中，报告文件保存在`reports`目录中。
+
    ```bash
-   chmod +x fix_all.sh
-   ./fix_all.sh
+   # 检查文件命名是否符合规范
+   bash scripts/check_filename_format.sh
+   
+   # 一次性执行所有修复脚本
+   bash scripts/fix_all.sh
    ```
-   综合脚本，按顺序执行所有修复操作，并生成详细的日志文件。该脚本包含以下功能：
-   - 修复Front Matter格式和结构
-   - 修复本地图片路径
-   - 处理远程图片
-   - 修复文件名问题
-   - 修复标题匹配问题
 
 ## 后续维护建议
 

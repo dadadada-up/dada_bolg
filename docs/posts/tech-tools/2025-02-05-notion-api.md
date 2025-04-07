@@ -41,9 +41,7 @@ Notion API文档：[https://developers.notion.com/docs/working-with-databases](h
 bash复制
     
     
-    curl -X GET "https://api.notion.com/v1/databases/{database_id}" \
-      -H "Authorization: Bearer $NOTION_API_KEY" \
-      -H "Notion-Version: 2021-08-16"
+    curl -X GET "https://api.notion.com/v1/databases/{database_id}" \n      -H "Authorization: Bearer $NOTION_API_KEY" \n      -H "Notion-Version: 2021-08-16"
 
 #### 示例响应
 
@@ -78,7 +76,7 @@ bash复制
           }
         },
         "Last ordered": {
-          "id": "]\\R[",
+          "id": "]\R[",
           "type": "date",
           "date": {}
         }
@@ -107,11 +105,7 @@ bash复制
 bash复制
     
     
-    curl -X POST "https://api.notion.com/v1/pages" \
-      -H "Authorization: Bearer $NOTION_API_KEY" \
-      -H "Content-Type: application/json" \
-      -H "Notion-Version: 2021-08-16" \
-      --data '{
+    curl -X POST "https://api.notion.com/v1/pages" \n      -H "Authorization: Bearer $NOTION_API_KEY" \n      -H "Content-Type: application/json" \n      -H "Notion-Version: 2021-08-16" \n      --data '{
         "parent": {
           "database_id": "2f26ee68-df30-4251-aad4-8ddc420cba3d"
         },
@@ -202,11 +196,7 @@ bash复制
 bash复制
     
     
-    curl -X POST "https://api.notion.com/v1/databases/2f26ee68-df30-4251-aad4-8ddc420cba3d/query" \
-      -H "Authorization: Bearer $NOTION_API_KEY" \
-      -H "Content-Type: application/json" \
-      -H "Notion-Version: 2021-08-16" \
-      --data '{
+    curl -X POST "https://api.notion.com/v1/databases/2f26ee68-df30-4251-aad4-8ddc420cba3d/query" \n      -H "Authorization: Bearer $NOTION_API_KEY" \n      -H "Content-Type: application/json" \n      -H "Notion-Version: 2021-08-16" \n      --data '{
         "filter": {
           "property": "Last ordered",
           "date": {
@@ -293,11 +283,7 @@ bash复制
 bash复制
     
     
-    curl -X PATCH "https://api.notion.com/v1/pages/{page_id}" \
-      -H "Authorization: Bearer $NOTION_API_KEY" \
-      -H "Content-Type: application/json" \
-      -H "Notion-Version: 2021-08-16" \
-      --data '{
+    curl -X PATCH "https://api.notion.com/v1/pages/{page_id}" \n      -H "Authorization: Bearer $NOTION_API_KEY" \n      -H "Content-Type: application/json" \n      -H "Notion-Version: 2021-08-16" \n      --data '{
         "properties": {
           "Price": {
             "number": 1.99
@@ -455,3 +441,4 @@ bash复制
   * 某些属性类型（如 `status`）不能通过API更新其 `name` 或 `options` 值，需要在Notion UI中进行更新。
 
 这些信息提供了Notion API中数据库属性的详细概述，包括它们的结构、类型以及如何在Notion中表示。
+

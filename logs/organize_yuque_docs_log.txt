@@ -1,0 +1,425 @@
+开始组织语雀文档 2025年 4月 7日 星期一 11时06分08秒 CST
+2025-04-07 11:06:08 - 创建目录结构...
+2025-04-07 11:06:08 - 目录结构创建完成
+2025-04-07 11:06:08 - 找到       52 个Markdown文件需要处理
+2025-04-07 11:06:08 - 处理文件: /Users/dada/Documents/dada_blog/语雀/一文读懂保险核心系统.md
+2025-04-07 11:06:08 -   分类为: insurance
+2025-04-07 11:06:08 - 处理文件 /Users/dada/Documents/dada_blog/语雀/一文读懂保险核心系统.md 中的图片...
+2025-04-07 11:06:09 -   已下载图片: https://cdn.nlark.com/yuque/0/2024/png/40701240/1728153505029-e9c088c9-b28d-40fd-b6f1-339d4a44c248.png -> assets/images/posts/insurance/一文读懂保险核心系统/image_1.png
+2025-04-07 11:06:09 - 图片处理完成，共处理 1 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/insurance/2025-04-07-一文读懂保险核心系统.md
+2025-04-07 11:06:09 - 已处理 1 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: /Users/dada/Documents/dada_blog/语雀/PMF.md
+2025-04-07 11:06:09 -   分类为: product-management
+2025-04-07 11:06:09 - 处理文件 /Users/dada/Documents/dada_blog/语雀/PMF.md 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/product-management/2025-04-07-PMF.md
+2025-04-07 11:06:09 - 已处理 2 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: /Users/dada/Documents/dada_blog/语雀/在
+2025-04-07 11:06:09 -   分类为: tech-tools
+2025-04-07 11:06:09 - 处理文件 /Users/dada/Documents/dada_blog/语雀/在 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/tech-tools/2025-04-07-在
+2025-04-07 11:06:09 - 已处理 3 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: macOS
+2025-04-07 11:06:09 -   分类为: tech-tools
+2025-04-07 11:06:09 - 处理文件 macOS 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/tech-tools/2025-04-07-macOS
+2025-04-07 11:06:09 - 已处理 4 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: 上轻松部署
+2025-04-07 11:06:09 -   分类为: tech-tools
+2025-04-07 11:06:09 - 处理文件 上轻松部署 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/tech-tools/2025-04-07-上轻松部署
+2025-04-07 11:06:09 - 已处理 5 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: Docker：详细安装与配置步骤.md
+2025-04-07 11:06:09 -   分类为: tech-tools
+2025-04-07 11:06:09 - 处理文件 Docker：详细安装与配置步骤.md 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/tech-tools/2025-04-07-Docker：详细安装与配置步骤.md
+2025-04-07 11:06:09 - 已处理 6 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: /Users/dada/Documents/dada_blog/语雀/港币购买美债学习.md
+2025-04-07 11:06:09 -   分类为: finance
+2025-04-07 11:06:09 - 处理文件 /Users/dada/Documents/dada_blog/语雀/港币购买美债学习.md 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/finance/2025-04-07-港币购买美债学习.md
+2025-04-07 11:06:09 - 已处理 7 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: /Users/dada/Documents/dada_blog/语雀/支付宝医疗健康模块产品体验.md
+2025-04-07 11:06:09 -   分类为: product-management
+2025-04-07 11:06:09 - 处理文件 /Users/dada/Documents/dada_blog/语雀/支付宝医疗健康模块产品体验.md 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/product-management/2025-04-07-支付宝医疗健康模块产品体验.md
+2025-04-07 11:06:09 - 已处理 8 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: /Users/dada/Documents/dada_blog/语雀/产品经理如何做项目管理？.md
+2025-04-07 11:06:09 -   分类为: product-management
+2025-04-07 11:06:09 - 处理文件 /Users/dada/Documents/dada_blog/语雀/产品经理如何做项目管理？.md 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/product-management/2025-04-07-产品经理如何做项目管理？.md
+2025-04-07 11:06:09 - 已处理 9 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: /Users/dada/Documents/dada_blog/语雀/保险产品分类.md
+2025-04-07 11:06:09 -   分类为: product-management
+2025-04-07 11:06:09 - 处理文件 /Users/dada/Documents/dada_blog/语雀/保险产品分类.md 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/product-management/2025-04-07-保险产品分类.md
+2025-04-07 11:06:09 - 已处理 10 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: /Users/dada/Documents/dada_blog/语雀/《“新基建”时代农业保险数智化转型》读书笔记.md
+2025-04-07 11:06:09 -   分类为: insurance/agriculture-insurance
+2025-04-07 11:06:09 - 处理文件 /Users/dada/Documents/dada_blog/语雀/《“新基建”时代农业保险数智化转型》读书笔记.md 中的图片...
+2025-04-07 11:06:09 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:09 -   文件已创建: docs/posts/insurance/agriculture-insurance/2025-04-07-《“新基建”时代农业保险数智化转型》读书笔记.md
+2025-04-07 11:06:09 - 已处理 11 /       52 个文件
+2025-04-07 11:06:09 - 处理文件: /Users/dada/Documents/dada_blog/语雀/一文读懂保险销售渠道.md
+2025-04-07 11:06:09 -   分类为: insurance
+2025-04-07 11:06:10 - 处理文件 /Users/dada/Documents/dada_blog/语雀/一文读懂保险销售渠道.md 中的图片...
+2025-04-07 11:06:11 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/8mwE08TQw.png -> assets/images/posts/insurance/一文读懂保险销售渠道/image_1.png
+2025-04-07 11:06:12 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/jBbYCALax.png -> assets/images/posts/insurance/一文读懂保险销售渠道/image_2.png
+2025-04-07 11:06:12 - 图片处理完成，共处理 2 张图片
+2025-04-07 11:06:12 -   文件已创建: docs/posts/insurance/2025-04-07-一文读懂保险销售渠道.md
+2025-04-07 11:06:12 - 已处理 12 /       52 个文件
+2025-04-07 11:06:12 - 处理文件: /Users/dada/Documents/dada_blog/语雀/一文详解房地产投资.md
+2025-04-07 11:06:12 -   分类为: finance
+2025-04-07 11:06:12 - 处理文件 /Users/dada/Documents/dada_blog/语雀/一文详解房地产投资.md 中的图片...
+2025-04-07 11:06:13 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/MP0jRr-gY.png -> assets/images/posts/finance/一文详解房地产投资/image_1.png
+2025-04-07 11:06:13 - 图片处理完成，共处理 1 张图片
+2025-04-07 11:06:13 -   文件已创建: docs/posts/finance/2025-04-07-一文详解房地产投资.md
+2025-04-07 11:06:13 - 已处理 13 /       52 个文件
+2025-04-07 11:06:13 - 处理文件: /Users/dada/Documents/dada_blog/语雀/知识管理的认知.md
+2025-04-07 11:06:13 -   分类为: product-management
+2025-04-07 11:06:13 - 处理文件 /Users/dada/Documents/dada_blog/语雀/知识管理的认知.md 中的图片...
+2025-04-07 11:06:13 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:13 -   文件已创建: docs/posts/product-management/2025-04-07-知识管理的认知.md
+2025-04-07 11:06:13 - 已处理 14 /       52 个文件
+2025-04-07 11:06:13 - 处理文件: /Users/dada/Documents/dada_blog/语雀/产品经理入门篇：什么是产品经理，相关角色有哪些？.md
+2025-04-07 11:06:13 -   分类为: product-management
+2025-04-07 11:06:13 - 处理文件 /Users/dada/Documents/dada_blog/语雀/产品经理入门篇：什么是产品经理，相关角色有哪些？.md 中的图片...
+2025-04-07 11:06:13 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:13 -   文件已创建: docs/posts/product-management/2025-04-07-产品经理入门篇：什么是产品经理，相关角色有哪些？.md
+2025-04-07 11:06:13 - 已处理 15 /       52 个文件
+2025-04-07 11:06:13 - 处理文件: /Users/dada/Documents/dada_blog/语雀/产品体验分析报告如何写？.md
+2025-04-07 11:06:13 -   分类为: product-management
+2025-04-07 11:06:13 - 处理文件 /Users/dada/Documents/dada_blog/语雀/产品体验分析报告如何写？.md 中的图片...
+2025-04-07 11:06:13 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:13 -   文件已创建: docs/posts/product-management/2025-04-07-产品体验分析报告如何写？.md
+2025-04-07 11:06:13 - 已处理 16 /       52 个文件
+2025-04-07 11:06:13 - 处理文件: /Users/dada/Documents/dada_blog/语雀/语雀文档能力支持整理.md
+2025-04-07 11:06:13 -   分类为: tech-tools
+2025-04-07 11:06:14 - 处理文件 /Users/dada/Documents/dada_blog/语雀/语雀文档能力支持整理.md 中的图片...
+2025-04-07 11:06:14 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:14 -   文件已创建: docs/posts/tech-tools/2025-04-07-语雀文档能力支持整理.md
+2025-04-07 11:06:14 - 已处理 17 /       52 个文件
+2025-04-07 11:06:14 - 处理文件: /Users/dada/Documents/dada_blog/语雀/GitHub
+2025-04-07 11:06:14 -   分类为: tech-tools
+2025-04-07 11:06:14 - 处理文件 /Users/dada/Documents/dada_blog/语雀/GitHub 中的图片...
+2025-04-07 11:06:14 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:14 -   文件已创建: docs/posts/tech-tools/2025-04-07-GitHub
+2025-04-07 11:06:14 - 已处理 18 /       52 个文件
+2025-04-07 11:06:14 - 处理文件: Desktop安装与汉化.md
+2025-04-07 11:06:14 -   分类为: tech-tools
+2025-04-07 11:06:14 - 处理文件 Desktop安装与汉化.md 中的图片...
+2025-04-07 11:06:14 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:14 -   文件已创建: docs/posts/tech-tools/2025-04-07-Desktop安装与汉化.md
+2025-04-07 11:06:14 - 已处理 19 /       52 个文件
+2025-04-07 11:06:14 - 处理文件: /Users/dada/Documents/dada_blog/语雀/GitHub仓库三种克隆方式.md
+2025-04-07 11:06:14 -   分类为: tech-tools
+2025-04-07 11:06:14 - 处理文件 /Users/dada/Documents/dada_blog/语雀/GitHub仓库三种克隆方式.md 中的图片...
+2025-04-07 11:06:14 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:14 -   文件已创建: docs/posts/tech-tools/2025-04-07-GitHub仓库三种克隆方式.md
+2025-04-07 11:06:14 - 已处理 20 /       52 个文件
+2025-04-07 11:06:14 - 处理文件: /Users/dada/Documents/dada_blog/语雀/《供给侧改革背景下中国多层次农业保险产品结构研究》读书笔记.md
+2025-04-07 11:06:14 -   分类为: product-management
+2025-04-07 11:06:14 - 处理文件 /Users/dada/Documents/dada_blog/语雀/《供给侧改革背景下中国多层次农业保险产品结构研究》读书笔记.md 中的图片...
+2025-04-07 11:06:14 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:14 -   文件已创建: docs/posts/product-management/2025-04-07-《供给侧改革背景下中国多层次农业保险产品结构研究》读书笔记.md
+2025-04-07 11:06:14 - 已处理 21 /       52 个文件
+2025-04-07 11:06:14 - 处理文件: /Users/dada/Documents/dada_blog/语雀/PM12条.md
+2025-04-07 11:06:14 -   分类为: product-management
+2025-04-07 11:06:14 - 处理文件 /Users/dada/Documents/dada_blog/语雀/PM12条.md 中的图片...
+2025-04-07 11:06:14 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:14 -   文件已创建: docs/posts/product-management/2025-04-07-PM12条.md
+2025-04-07 11:06:14 - 已处理 22 /       52 个文件
+2025-04-07 11:06:14 - 处理文件: /Users/dada/Documents/dada_blog/语雀/投资基金的常见费用.md
+2025-04-07 11:06:14 -   分类为: finance
+2025-04-07 11:06:14 - 处理文件 /Users/dada/Documents/dada_blog/语雀/投资基金的常见费用.md 中的图片...
+2025-04-07 11:06:16 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/RoCZBfDA4.png -> assets/images/posts/finance/投资基金的常见费用/image_1.png
+2025-04-07 11:06:16 -   已下载图片: https://asset.youzhiyouxing.cn/image/2022/10/19/01GFQV9V92FA6DS8NBWBAHB1VR.png?x-oss-process=image/resize,w_1280,limit_1 -> assets/images/posts/finance/投资基金的常见费用/image_2.jpg
+2025-04-07 11:06:18 -   已下载图片: https://asset.youzhiyouxing.cn/image/2022/10/19/01GFQXFVJVSEGEEX5SSMWJM7GS.png?x-oss-process=image/resize,w_1280,limit_1 -> assets/images/posts/finance/投资基金的常见费用/image_3.jpg
+2025-04-07 11:06:18 - 图片处理完成，共处理 3 张图片
+2025-04-07 11:06:18 -   文件已创建: docs/posts/finance/2025-04-07-投资基金的常见费用.md
+2025-04-07 11:06:18 - 已处理 23 /       52 个文件
+2025-04-07 11:06:18 - 处理文件: /Users/dada/Documents/dada_blog/语雀/如何理解中台？.md
+2025-04-07 11:06:18 -   分类为: product-management
+2025-04-07 11:06:18 - 处理文件 /Users/dada/Documents/dada_blog/语雀/如何理解中台？.md 中的图片...
+2025-04-07 11:06:18 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=ZTc0MDE2YWY0MGRhZjdkMWFlMGUzNTRmZmRiOTNmODVfM3cwMkhlU05JQUZCUkxud2xZczNWd1RaMDJvYUh6a3BfVG9rZW46VUN4aGJjTmR0b1NiRWV4cUR4eGNOQUEyblZkXzE3MTcxNDM3NzQ6MTcxNzE0NzM3NF9WNA
+2025-04-07 11:06:19 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=MTUxYjMzMGI0ZGUwNGViNjc3MjllZTkwYWEwMjg2ZmVfVWVDbXRlREpaQ2FJdVdsU0tNS2p4Njk0OVhJOUhhYmlfVG9rZW46Q3JzT2J0N0s2b0NPTWl4SVN1YWNCYVFkbmZoXzE3MTcxNDM3NzQ6MTcxNzE0NzM3NF9WNA
+2025-04-07 11:06:19 - 图片处理完成，共处理 2 张图片
+2025-04-07 11:06:19 -   文件已创建: docs/posts/product-management/2025-04-07-如何理解中台？.md
+2025-04-07 11:06:19 - 已处理 24 /       52 个文件
+2025-04-07 11:06:19 - 处理文件: /Users/dada/Documents/dada_blog/语雀/B端需求分析与挖掘.md
+2025-04-07 11:06:19 -   分类为: product-management
+2025-04-07 11:06:19 - 处理文件 /Users/dada/Documents/dada_blog/语雀/B端需求分析与挖掘.md 中的图片...
+2025-04-07 11:06:19 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:19 -   文件已创建: docs/posts/product-management/2025-04-07-B端需求分析与挖掘.md
+2025-04-07 11:06:19 - 已处理 25 /       52 个文件
+2025-04-07 11:06:19 - 处理文件: /Users/dada/Documents/dada_blog/语雀/Cursor
+2025-04-07 11:06:19 -   分类为: tech-tools
+2025-04-07 11:06:19 - 处理文件 /Users/dada/Documents/dada_blog/语雀/Cursor 中的图片...
+2025-04-07 11:06:19 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:19 -   文件已创建: docs/posts/tech-tools/2025-04-07-Cursor
+2025-04-07 11:06:19 - 已处理 26 /       52 个文件
+2025-04-07 11:06:19 - 处理文件: 满血使用.md
+2025-04-07 11:06:19 -   分类为: tech-tools
+2025-04-07 11:06:19 - 处理文件 满血使用.md 中的图片...
+2025-04-07 11:06:19 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:19 -   文件已创建: docs/posts/tech-tools/2025-04-07-满血使用.md
+2025-04-07 11:06:19 - 已处理 27 /       52 个文件
+2025-04-07 11:06:19 - 处理文件: /Users/dada/Documents/dada_blog/语雀/《精力管理》读后感.md
+2025-04-07 11:06:19 -   分类为: reading
+2025-04-07 11:06:19 - 处理文件 /Users/dada/Documents/dada_blog/语雀/《精力管理》读后感.md 中的图片...
+2025-04-07 11:06:21 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/BKtIDN7JC.png -> assets/images/posts/reading/《精力管理》读后感/image_1.png
+2025-04-07 11:06:21 - 图片处理完成，共处理 1 张图片
+2025-04-07 11:06:21 -   文件已创建: docs/posts/reading/2025-04-07-《精力管理》读后感.md
+2025-04-07 11:06:21 - 已处理 28 /       52 个文件
+2025-04-07 11:06:21 - 处理文件: /Users/dada/Documents/dada_blog/语雀/产品经理基础篇：项目管理入门.md
+2025-04-07 11:06:21 -   分类为: product-management
+2025-04-07 11:06:22 - 处理文件 /Users/dada/Documents/dada_blog/语雀/产品经理基础篇：项目管理入门.md 中的图片...
+2025-04-07 11:06:22 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:22 -   文件已创建: docs/posts/product-management/2025-04-07-产品经理基础篇：项目管理入门.md
+2025-04-07 11:06:22 - 已处理 29 /       52 个文件
+2025-04-07 11:06:22 - 处理文件: /Users/dada/Documents/dada_blog/语雀/保全系统建设.md
+2025-04-07 11:06:22 -   分类为: product-management
+2025-04-07 11:06:22 - 处理文件 /Users/dada/Documents/dada_blog/语雀/保全系统建设.md 中的图片...
+2025-04-07 11:06:22 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=MGM0OTNhMTEwOWMyNmY2YzA1MDI4OWMyNjc1MjFlZDNfSTMybVVadVRtd0hmT05xMTZZMEo4ZFlXUkpHNGNwMHdfVG9rZW46U0E0WmJtbk1Ib2V1dFd4Q2huaWNjOFZYbm5nXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:22 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=NjEzNDY2YjU3ODAzNDVjN2M3Y2I3ZWNiYjM2MjZlNTBfeFRWeVRLdXVMREt2OVh0QVB1WFBxRHpuaVI5R3Zxd0FfVG9rZW46SUdCMGJPSWN0b0I5WVR4MFBTZGNXYUN0bmhkXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:22 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=Njg1NjRjYmYwNDZjMjVhODU5MDNjNDI4YTMyYjQyYzdfUVFpQjhCbFJkZWJnUlNRbWJRQ2pQcHpvQWRLdHJpQ2FfVG9rZW46Q1hvTWJNQUJ2bzUzSm14RG9XWWM5WU5UbnZiXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:23 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=ZGI4YmFlYjZmY2Y4OWVlMzMxOWU4MjFkZmZjZWMzNThfQUtZUkZsekZtNTJqcE9CeUpRREFGMDhpcWJmaXdiNDFfVG9rZW46Q2YxUGJXY3Zyb1dhNUt4eVE0eGMzcFEwbnNiXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:23 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=YjI4MTI2ZGQ5ZThlZjI0Y2VmMDNjZTYxZGZlNThkZmJfY3E5c1Z3T3JkQ0JYZVhiSU9VU2lxTGdab0pwbzR3UTNfVG9rZW46TlAzR2JYTHdwbzQxbXF4OWFGemNlV3JqbnJnXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:23 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=ZmMyMWVhYTZjNWEzMWUwNWIyYzZmNTYxMjc2MjgwYjVfajJveUt1Y1hvN0EyajFSazlOZTU3dHNGZ1ZOWlY3ZjVfVG9rZW46QThTQWJSRXJyb1h6cjJ4SjNXaWNnOGNqbkRoXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:24 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=ZjU5ZjI2OGMxMDM5YmQ4NTBlMjAwNzg4YjcxNTg2YTBfRk9OYlg3QXRPVTFCV2NxYmN4UkdwUU4xbmJEbkZSR0RfVG9rZW46WFp0OWJGSmlBb1EwOGR4amtXbWNLSG5CbnlkXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:24 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=ZmU1MDkxM2M3NjQzZDc2MWZlOWJjMDFiZjU4OGFmZTdfZE1aVUdKeEl5NHJxNFhTVmdLdUFWODJwOGVyb2tqampfVG9rZW46QkkzQmJFVUwzb2VyT094b0oyb2NIdnhPbjFjXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:24 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=NTU1NTRhZWE1NjFhMWQ4ZjIyNTVmYWFhMzJiYzNmNjNfekN6ZUtMb0dteERncGJFOE1EN2s0OUdZNkNiU3NMTllfVG9rZW46QTZGQmI2RUJLb3RkS2N4QzBhRmNTbldRbmdoXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:24 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=NWZmOTBiZjk5MzQ2NTRlMTMyZDdjN2ZkOWJjZmNkODhfbjdFQ1dPeWFhSGlqMllqOWg2d3B4UTJYZUJCeWdvZFBfVG9rZW46S3h3QmJaNldlb3R1elJ4OFNGU2NFRlhZblFlXzE3MTcxNDQyMjk6MTcxNzE0NzgyOV9WNA
+2025-04-07 11:06:24 - 图片处理完成，共处理 10 张图片
+2025-04-07 11:06:24 -   文件已创建: docs/posts/product-management/2025-04-07-保全系统建设.md
+2025-04-07 11:06:24 - 已处理 30 /       52 个文件
+2025-04-07 11:06:24 - 处理文件: /Users/dada/Documents/dada_blog/语雀/Sublime
+2025-04-07 11:06:24 -   分类为: tech-tools
+2025-04-07 11:06:24 - 处理文件 /Users/dada/Documents/dada_blog/语雀/Sublime 中的图片...
+2025-04-07 11:06:24 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:24 -   文件已创建: docs/posts/tech-tools/2025-04-07-Sublime
+2025-04-07 11:06:24 - 已处理 31 /       52 个文件
+2025-04-07 11:06:24 - 处理文件: Text.md
+2025-04-07 11:06:24 -   分类为: tech-tools
+2025-04-07 11:06:25 - 处理文件 Text.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/tech-tools/2025-04-07-Text.md
+2025-04-07 11:06:25 - 已处理 32 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/产品经理的核心竞争力思考.md
+2025-04-07 11:06:25 -   分类为: product-management
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/产品经理的核心竞争力思考.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/product-management/2025-04-07-产品经理的核心竞争力思考.md
+2025-04-07 11:06:25 - 已处理 33 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/后台产品经理感悟.md
+2025-04-07 11:06:25 -   分类为: product-management
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/后台产品经理感悟.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/product-management/2025-04-07-后台产品经理感悟.md
+2025-04-07 11:06:25 - 已处理 34 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/产品经理必备技能：功能和流程.md
+2025-04-07 11:06:25 -   分类为: product-management
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/产品经理必备技能：功能和流程.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/product-management/2025-04-07-产品经理必备技能：功能和流程.md
+2025-04-07 11:06:25 - 已处理 35 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/BRD
+2025-04-07 11:06:25 -   分类为: product-management
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/BRD 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/product-management/2025-04-07-BRD
+2025-04-07 11:06:25 - 已处理 36 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: 业务需求文档模板.md
+2025-04-07 11:06:25 -   分类为: product-management
+2025-04-07 11:06:25 - 处理文件 业务需求文档模板.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/product-management/2025-04-07-业务需求文档模板.md
+2025-04-07 11:06:25 - 已处理 37 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/产品经理基础篇：如何做用户需求分析？.md
+2025-04-07 11:06:25 -   分类为: product-management
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/产品经理基础篇：如何做用户需求分析？.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/product-management/2025-04-07-产品经理基础篇：如何做用户需求分析？.md
+2025-04-07 11:06:25 - 已处理 38 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/产品生命周期理论.md
+2025-04-07 11:06:25 -   分类为: product-management
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/产品生命周期理论.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/product-management/2025-04-07-产品生命周期理论.md
+2025-04-07 11:06:25 - 已处理 39 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/房地产系列.md
+2025-04-07 11:06:25 -   分类为: finance
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/房地产系列.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/finance/2025-04-07-房地产系列.md
+2025-04-07 11:06:25 - 已处理 40 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/电商场景险有哪些？.md
+2025-04-07 11:06:25 -   分类为: product-management
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/电商场景险有哪些？.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/product-management/2025-04-07-电商场景险有哪些？.md
+2025-04-07 11:06:25 - 已处理 41 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/Cursor
+2025-04-07 11:06:25 -   分类为: tech-tools
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/Cursor 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/tech-tools/2025-04-07-Cursor
+2025-04-07 11:06:25 - 已处理 42 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: 介绍.md
+2025-04-07 11:06:25 -   分类为: tech-tools
+2025-04-07 11:06:25 - 处理文件 介绍.md 中的图片...
+2025-04-07 11:06:25 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:25 -   文件已创建: docs/posts/tech-tools/2025-04-07-介绍.md
+2025-04-07 11:06:25 - 已处理 43 /       52 个文件
+2025-04-07 11:06:25 - 处理文件: /Users/dada/Documents/dada_blog/语雀/《认知觉醒》读后感.md
+2025-04-07 11:06:25 -   分类为: reading
+2025-04-07 11:06:25 - 处理文件 /Users/dada/Documents/dada_blog/语雀/《认知觉醒》读后感.md 中的图片...
+2025-04-07 11:06:26 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/H--Y45GmS.png -> assets/images/posts/reading/《认知觉醒》读后感/image_1.png
+2025-04-07 11:06:26 - 图片处理完成，共处理 1 张图片
+2025-04-07 11:06:26 -   文件已创建: docs/posts/reading/2025-04-07-《认知觉醒》读后感.md
+2025-04-07 11:06:26 - 已处理 44 /       52 个文件
+2025-04-07 11:06:26 - 处理文件: /Users/dada/Documents/dada_blog/语雀/Cursor
+2025-04-07 11:06:26 -   分类为: tech-tools
+2025-04-07 11:06:26 - 处理文件 /Users/dada/Documents/dada_blog/语雀/Cursor 中的图片...
+2025-04-07 11:06:26 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:26 -   文件已创建: docs/posts/tech-tools/2025-04-07-Cursor
+2025-04-07 11:06:26 - 已处理 45 /       52 个文件
+2025-04-07 11:06:26 - 处理文件: rules.md
+2025-04-07 11:06:26 -   分类为: tech-tools
+2025-04-07 11:06:26 - 处理文件 rules.md 中的图片...
+2025-04-07 11:06:26 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:26 -   文件已创建: docs/posts/tech-tools/2025-04-07-rules.md
+2025-04-07 11:06:26 - 已处理 46 /       52 个文件
+2025-04-07 11:06:26 - 处理文件: /Users/dada/Documents/dada_blog/语雀/规则引擎——产品设计高阶思维.md
+2025-04-07 11:06:26 -   分类为: product-management
+2025-04-07 11:06:27 - 处理文件 /Users/dada/Documents/dada_blog/语雀/规则引擎——产品设计高阶思维.md 中的图片...
+2025-04-07 11:06:27 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=YzIzNGI5MGJiNWVkMjY4OTJmYTc4MjAzZGZmYzJiNzdfQ203OGFsQjQ4ckFYTXdhdHVqWkZoOTZGNDdlbTRjcnpfVG9rZW46VWNPN2JHNU0zb3Fqdkl4UTZ4emNkRW1TbnplXzE3MTcxNDQxMzM6MTcxNzE0NzczM19WNA
+2025-04-07 11:06:27 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWQ0ZTRkN2JiYjdiOWE4M2Y4MGU5YjM1OTdjYzEyMDBfU20zWmszZDJBOUhGcUFzeHhnOUhOenZsVkJrNmtwTldfVG9rZW46QlE5NmJpVjVSb3ozaVl4TDlkcmNkWEdBbnloXzE3MTcxNDQxMzM6MTcxNzE0NzczM19WNA
+2025-04-07 11:06:27 - 图片处理完成，共处理 2 张图片
+2025-04-07 11:06:27 -   文件已创建: docs/posts/product-management/2025-04-07-规则引擎——产品设计高阶思维.md
+2025-04-07 11:06:27 - 已处理 47 /       52 个文件
+2025-04-07 11:06:27 - 处理文件: /Users/dada/Documents/dada_blog/语雀/保险条文是如何开发出来的？.md
+2025-04-07 11:06:27 -   分类为: insurance
+2025-04-07 11:06:27 - 处理文件 /Users/dada/Documents/dada_blog/语雀/保险条文是如何开发出来的？.md 中的图片...
+2025-04-07 11:06:29 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/tf2uM-_A3.jpeg -> assets/images/posts/insurance/保险条文是如何开发出来的？/image_1.jpeg
+2025-04-07 11:06:29 - 图片处理完成，共处理 1 张图片
+2025-04-07 11:06:29 -   文件已创建: docs/posts/insurance/2025-04-07-保险条文是如何开发出来的？.md
+2025-04-07 11:06:29 - 已处理 48 /       52 个文件
+2025-04-07 11:06:29 - 处理文件: /Users/dada/Documents/dada_blog/语雀/竞品分析如何写？.md
+2025-04-07 11:06:29 -   分类为: product-management
+2025-04-07 11:06:29 - 处理文件 /Users/dada/Documents/dada_blog/语雀/竞品分析如何写？.md 中的图片...
+2025-04-07 11:06:29 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:29 -   文件已创建: docs/posts/product-management/2025-04-07-竞品分析如何写？.md
+2025-04-07 11:06:29 - 已处理 49 /       52 个文件
+2025-04-07 11:06:29 - 处理文件: /Users/dada/Documents/dada_blog/语雀/支付宝基金产品分析.md
+2025-04-07 11:06:29 -   分类为: product-management
+2025-04-07 11:06:29 - 处理文件 /Users/dada/Documents/dada_blog/语雀/支付宝基金产品分析.md 中的图片...
+2025-04-07 11:06:29 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=Y2M1ZDdmMjhkMTJiNjc4ZWIzN2EzOTNhYmEwMGYyYWFfc29zY2F3UTN6Y05CQ3lJMVMweWdxNjZzcVpvN3ZkMzdfVG9rZW46T0dDS2JQY3A4b0lNSEx4MjJnTGNUZUR1blhjXzE3MTY4Njk0MDY6MTcxNjg3MzAwNl9WNA
+2025-04-07 11:06:30 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/ryaPgr5sB.png -> assets/images/posts/product-management/支付宝基金产品分析/image_2.png
+2025-04-07 11:06:32 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/u1jl6tGT9.png -> assets/images/posts/product-management/支付宝基金产品分析/image_3.png
+2025-04-07 11:06:33 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=YzA4NDc4ZTdiMDZmYjFjODA1YzM4YTZlMjExYjdjZTlfVjZVcHN1aDFEMHJVUlJuN0tQanYxVGl1OFZ5TVRqdWlfVG9rZW46UmZoRGJHOEFCb2QzSGl4NWw4dWNqVzJxbm9iXzE3MTY4Njk0MDY6MTcxNjg3MzAwNl9WNA
+2025-04-07 11:06:33 - 图片处理完成，共处理 4 张图片
+2025-04-07 11:06:33 -   文件已创建: docs/posts/product-management/2025-04-07-支付宝基金产品分析.md
+2025-04-07 11:06:33 - 已处理 50 /       52 个文件
+2025-04-07 11:06:33 - 处理文件: /Users/dada/Documents/dada_blog/语雀/黄金.md
+2025-04-07 11:06:33 -   分类为: product-management
+2025-04-07 11:06:33 - 处理文件 /Users/dada/Documents/dada_blog/语雀/黄金.md 中的图片...
+2025-04-07 11:06:33 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:33 -   文件已创建: docs/posts/product-management/2025-04-07-黄金.md
+2025-04-07 11:06:33 - 已处理 51 /       52 个文件
+2025-04-07 11:06:33 - 处理文件: /Users/dada/Documents/dada_blog/语雀/「再保险」平台.md
+2025-04-07 11:06:33 -   分类为: insurance
+2025-04-07 11:06:33 - 处理文件 /Users/dada/Documents/dada_blog/语雀/「再保险」平台.md 中的图片...
+2025-04-07 11:06:33 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:33 -   文件已创建: docs/posts/insurance/2025-04-07-「再保险」平台.md
+2025-04-07 11:06:33 - 已处理 52 /       52 个文件
+2025-04-07 11:06:33 - 处理文件: /Users/dada/Documents/dada_blog/语雀/《投资第一课》学习笔记.md
+2025-04-07 11:06:33 -   分类为: finance
+2025-04-07 11:06:33 - 处理文件 /Users/dada/Documents/dada_blog/语雀/《投资第一课》学习笔记.md 中的图片...
+2025-04-07 11:06:33 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:33 -   文件已创建: docs/posts/finance/2025-04-07-《投资第一课》学习笔记.md
+2025-04-07 11:06:33 - 已处理 53 /       52 个文件
+2025-04-07 11:06:33 - 处理文件: /Users/dada/Documents/dada_blog/语雀/《大国经济学》读书感.md
+2025-04-07 11:06:33 -   分类为: reading
+2025-04-07 11:06:33 - 处理文件 /Users/dada/Documents/dada_blog/语雀/《大国经济学》读书感.md 中的图片...
+2025-04-07 11:06:35 -   已下载图片: https://book.douban.com/subject/36207176/ -> assets/images/posts/reading/《大国经济学》读书感/image_1.jpg
+2025-04-07 11:06:35 - 图片处理完成，共处理 1 张图片
+2025-04-07 11:06:35 -   文件已创建: docs/posts/reading/2025-04-07-《大国经济学》读书感.md
+2025-04-07 11:06:35 - 已处理 54 /       52 个文件
+2025-04-07 11:06:35 - 处理文件: /Users/dada/Documents/dada_blog/语雀/从小青龙3号解析保险产品模型.md
+2025-04-07 11:06:35 -   分类为: product-management
+2025-04-07 11:06:35 - 处理文件 /Users/dada/Documents/dada_blog/语雀/从小青龙3号解析保险产品模型.md 中的图片...
+2025-04-07 11:06:35 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=MjE3Nzc5ZmMzOGY1ZjRjMmU5NjNkYjMxOTI4MDk2ZDhfdjBnMTBrV2E3ZHhrYjh0cnlJTTlVamxxMTM1bUxwU2FfVG9rZW46TGRVd2JWYVR1b1IzOGF4dHVYTmN5Q3pDbkRlXzE3MTUzOTgwNzM6MTcxNTQwMTY3M19WNA
+2025-04-07 11:06:35 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=MzRjZmNhOTViMmRhOTI5NDk0NzI4NTU5ZTZkOTAzOWZfd3dNdEQyem9xa0hLS2tYc0VRcThHbWNVMHNPcFhSbTZfVG9rZW46RFprYWI2ZjlPb1ZHdGp4MnFZQ2NUR2o2bmREXzE3MTUzOTgwNzM6MTcxNTQwMTY3M19WNA
+2025-04-07 11:06:36 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=Y2U2YjBhMjE1ODY3NDI4NzRhNTRkN2QyZDM3ZjgzODhfNnNxSWRJWk8zYmdCRkpYeWlpMHdCRWJEYUlHT1NZcE9fVG9rZW46WjZ1MGJBaVZYb1dmd3d4aEJpN2NMN25FbjhnXzE3MTUzOTgwNzM6MTcxNTQwMTY3M19WNA
+2025-04-07 11:06:37 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=MWMzODlmNDVhNWI5YTg2ZWU3NTY3YmNkOTk4MDUzYjJfNk11QTVSVE1OTWliZEl1cmVSV2U5dHNtUjVua09GUGRfVG9rZW46UGtIMGJvbzZvb1F5d0d4VWJxa2NRZGw2bk5lXzE3MTUzOTgwNzM6MTcxNTQwMTY3M19WNA
+2025-04-07 11:06:39 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/7XPolPwdj.png -> assets/images/posts/product-management/从小青龙3号解析保险产品模型/image_5.png
+2025-04-07 11:06:41 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/oUFJ_HORP.png -> assets/images/posts/product-management/从小青龙3号解析保险产品模型/image_6.png
+2025-04-07 11:06:41 -   下载图片失败: https://k0e3zvw6gix.feishu.cn/space/api/box/stream/download/asynccode/?code=NTEzN2E1MDZjNjBjMWZlNjIzZDRmZmNmNDg0YmI3MGZfTHp4dkk0OWM2S2o2Mm4yM0tiVGt5STdjOXk5WTNZZVFfVG9rZW46TDhHdmJ4ekJ5b05mOWR4ZGxOWWMwNk1ObnpiXzE3MTUzOTgwNzM6MTcxNTQwMTY3M19WNA
+2025-04-07 11:06:43 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/F7MYKnTPB.png -> assets/images/posts/product-management/从小青龙3号解析保险产品模型/image_8.png
+2025-04-07 11:06:45 -   已下载图片: https://static.gridea.dev/427a08c7-e8e9-45f6-8f15-7c7756586a38/20yd-JVv3.png -> assets/images/posts/product-management/从小青龙3号解析保险产品模型/image_9.png
+2025-04-07 11:06:45 - 图片处理完成，共处理 9 张图片
+2025-04-07 11:06:45 -   文件已创建: docs/posts/product-management/2025-04-07-从小青龙3号解析保险产品模型.md
+2025-04-07 11:06:45 - 已处理 55 /       52 个文件
+2025-04-07 11:06:45 - 处理文件: /Users/dada/Documents/dada_blog/语雀/PRD模版.md
+2025-04-07 11:06:45 -   分类为: product-management
+2025-04-07 11:06:45 - 处理文件 /Users/dada/Documents/dada_blog/语雀/PRD模版.md 中的图片...
+2025-04-07 11:06:45 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:45 -   文件已创建: docs/posts/product-management/2025-04-07-PRD模版.md
+2025-04-07 11:06:45 - 已处理 56 /       52 个文件
+2025-04-07 11:06:45 - 处理文件: /Users/dada/Documents/dada_blog/语雀/投资前必知必会.md
+2025-04-07 11:06:45 -   分类为: finance
+2025-04-07 11:06:45 - 处理文件 /Users/dada/Documents/dada_blog/语雀/投资前必知必会.md 中的图片...
+2025-04-07 11:06:45 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:45 -   文件已创建: docs/posts/finance/2025-04-07-投资前必知必会.md
+2025-04-07 11:06:45 - 已处理 57 /       52 个文件
+2025-04-07 11:06:45 - 处理文件: /Users/dada/Documents/dada_blog/语雀/产品架构设计之产品实体设计一，二.md
+2025-04-07 11:06:45 -   分类为: product-management
+2025-04-07 11:06:45 - 处理文件 /Users/dada/Documents/dada_blog/语雀/产品架构设计之产品实体设计一，二.md 中的图片...
+2025-04-07 11:06:45 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:45 -   文件已创建: docs/posts/product-management/2025-04-07-产品架构设计之产品实体设计一，二.md
+2025-04-07 11:06:45 - 已处理 58 /       52 个文件
+2025-04-07 11:06:45 - 处理文件: /Users/dada/Documents/dada_blog/语雀/《小狗钱钱》读后感.md
+2025-04-07 11:06:45 -   分类为: reading
+2025-04-07 11:06:45 - 处理文件 /Users/dada/Documents/dada_blog/语雀/《小狗钱钱》读后感.md 中的图片...
+2025-04-07 11:06:45 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:45 -   文件已创建: docs/posts/reading/2025-04-07-《小狗钱钱》读后感.md
+2025-04-07 11:06:45 - 已处理 59 /       52 个文件
+2025-04-07 11:06:45 - 处理文件: /Users/dada/Documents/dada_blog/语雀/超级用户方法论.md
+2025-04-07 11:06:45 -   分类为: product-management
+2025-04-07 11:06:45 - 处理文件 /Users/dada/Documents/dada_blog/语雀/超级用户方法论.md 中的图片...
+2025-04-07 11:06:45 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:45 -   文件已创建: docs/posts/product-management/2025-04-07-超级用户方法论.md
+2025-04-07 11:06:45 - 已处理 60 /       52 个文件
+2025-04-07 11:06:45 - 处理文件: /Users/dada/Documents/dada_blog/语雀/需求分析
+2025-04-07 11:06:45 -   分类为: product-management
+2025-04-07 11:06:45 - 处理文件 /Users/dada/Documents/dada_blog/语雀/需求分析 中的图片...
+2025-04-07 11:06:45 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:45 -   文件已创建: docs/posts/product-management/2025-04-07-需求分析
+2025-04-07 11:06:45 - 已处理 61 /       52 个文件
+2025-04-07 11:06:45 - 处理文件: _
+2025-04-07 11:06:45 -   分类为: tech-tools
+2025-04-07 11:06:45 - 处理文件 _ 中的图片...
+2025-04-07 11:06:45 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:45 -   文件已创建: docs/posts/tech-tools/2025-04-07-_
+2025-04-07 11:06:45 - 已处理 62 /       52 个文件
+2025-04-07 11:06:45 - 处理文件: HMW分析法.md
+2025-04-07 11:06:45 -   分类为: tech-tools
+2025-04-07 11:06:45 - 处理文件 HMW分析法.md 中的图片...
+2025-04-07 11:06:45 - 图片处理完成，共处理 0 张图片
+2025-04-07 11:06:45 -   文件已创建: docs/posts/tech-tools/2025-04-07-HMW分析法.md
+2025-04-07 11:06:45 - 已处理 63 /       52 个文件
+2025-04-07 11:06:45 - 所有文件处理完成
+2025-04-07 11:06:45 - 转换后的文件位于 docs/posts/ 目录
+2025-04-07 11:06:45 - 图片资源位于 assets/images/posts/ 目录
+2025-04-07 11:06:45 - 运行文件名格式检查...
+2025-04-07 11:06:46 - 检查完成

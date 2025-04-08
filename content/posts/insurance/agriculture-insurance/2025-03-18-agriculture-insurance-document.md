@@ -1,17 +1,18 @@
+---
+title: "农业保险产品文档"
+date: "2025-03-18"
+categories:
+  - "保险"
+  - "农业保险"
+tags:
+  - "农业保险"
+  - "保险产品"
+  - "文档规范"
+description: "农业保险产品设计和开发的完整文档说明"
+image: "/assets/images/posts/insurance/agriculture-insurance/2025-03-18/cover.png"
+published: true
+---
 
----"
-categories: "
-  - "保险 农业保险"
-date: "2025-03-18'"
-description: "1、农业保险的基础知识1.1 定义融资性信用保证保险是指保险公司为借贷、融资租赁等融资合同的履约信用风险提供保险保障的业务。1.2 涉及的法律主体涉及的主要法律主体包括保险人、投保人、被保险人、权利人、义务人。保险人即承保的保险公司；投保人即与保险人订立保险合同并按照保险合同负有支付保险费义务..."
-image: "/assets/images/posts/insurance/2025-03-18-/image_11.png""
-original_title: "agriculture-insurance-document"未命名文档""
-published: true"
----tags: "
-  - "保险 农业保险"
-title: "agriculture-insurance-document"
-yuque_url: ''"
----"
 ## 1、农业保险的基础知识
 
 ## 1.1 定义
@@ -45,7 +46,7 @@ yuque_url: ''"
 
 ## 2.2 融资信保主要参与主体及服务内容
 
-融资性信用保证保险业务主要参与主体为融资方、资金方、保险人三方，在融资性信用保险模式下，资金方既是投保人也是被保险人，而在融资性保证保险模式下， 融资方为投保人，资金方为被保险人。
+融资性信用保证保险业务主要参与主体为融资方、资金方、保险人三方，在融资性信用保险模式下，资金方既是投保人也是被保险人，而在融资性保证保险模式下， 融资方为投保人，资金方为被保险人.
 
 ![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
 

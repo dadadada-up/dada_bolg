@@ -1,9 +1,13 @@
 ---
-title: "文档统计"
-date: "2025-04-07"
-categories: ["站点信息"]
-tags: ["统计", "文档管理"]
-description: "博客文档的分类统计和最新更新情况"
+title: "博客文章统计"
+date: "2024-03-20"
+categories:
+  - "系统"
+tags:
+  - "统计"
+  - "文档"
+description: "博客文章的分类统计和总览信息"
+published: true
 ---
 
 # 文档统计

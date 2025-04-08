@@ -198,7 +198,7 @@ image: "/assets/images/posts/分类/YYYY-MM-DD-标题/cover.jpg"
 
 1. 克隆博客平台仓库
 2. 安装依赖：`npm install`
-3. 启动开发服务器：`npm run dev`
+3. 启动开发服务器：`cd blog-app && npm run dev`
 4. 浏览器访问：`http://localhost:3000`
 
 ## 常见问题

@@ -8,4 +8,11 @@ node_modules/
 .DS_Store
 
 # Other large files
-*.pack 
+*.pack
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local 

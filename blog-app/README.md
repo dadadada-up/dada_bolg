@@ -161,4 +161,28 @@ featured: false
 - [ ] robots.txt文件配置
 - [ ] RSS feed支持
 - [ ] 图片优化和LazyLoading
-- [ ] 页面性能优化 
+- [ ] 页面性能优化
+
+# 环境变量设置
+
+## 1. 复制示例文件
+```bash
+cp .env.example .env.local
+```
+
+## 2. 设置 GitHub Token
+1. 访问 [GitHub Token 设置页面](https://github.com/settings/tokens)
+2. 点击 "Generate new token" > "Generate new token (classic)"
+3. 填写描述，如 "Dada Blog"
+4. 选择权限范围:
+   - `repo` (完全控制私有仓库)
+   - `workflow` (可选，如果需要 GitHub Actions)
+5. 点击 "Generate token"
+6. 复制生成的 token
+7. 编辑 `.env.local` 文件，将 `your_token_here` 替换为复制的 token
+
+## 安全提示
+- 永远不要提交 `.env.local` 文件
+- 定期轮换 token
+- 使用最小必要权限
+- 考虑使用 Fine-grained tokens 替代 Personal access tokens 

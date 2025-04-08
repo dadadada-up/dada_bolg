@@ -1,0 +1,68 @@
+
+---"
+categories: "
+  - "保险 农业保险"
+date: "2025-03-18'"
+description: "1、农业保险的基础知识1.1 定义融资性信用保证保险是指保险公司为借贷、融资租赁等融资合同的履约信用风险提供保险保障的业务。1.2 涉及的法律主体涉及的主要法律主体包括保险人、投保人、被保险人、权利人、义务人。保险人即承保的保险公司；投保人即与保险人订立保险合同并按照保险合同负有支付保险费义务..."
+image: "/assets/images/posts/insurance/2025-03-18-/image_11.png""
+original_title: "agriculture-insurance-document"未命名文档""
+published: true"
+---tags: "
+  - "保险 农业保险"
+title: "agriculture-insurance-document"
+yuque_url: ''"
+---"
+## 1、农业保险的基础知识
+
+## 1.1 定义
+
+融资性信用保证保险是指保险公司为借贷、融资租赁等融资合同的履约信用风险提供保险保障的业务。
+
+## 1.2 涉及的法律主体
+
+涉及的主要法律主体包括保险人、投保人、被保险人、权利人、义务人。
+
+  * 保险人即承保的保险公司；
+  * 投保人即与保险人订立保险合同并按照保险合同负有支付保险费义务的主体；
+  * 被保险人或称受益人即其财产受保险合同保障，享有保险金请求权的主体；
+  * 权利人：借贷关系中的债权人
+  * 义务人：借贷关系中的债务人，在不同的保险类型下为投保人或者被保险人
+
+## 1.3 融资性信用保证保险分类
+
+根据法律关系主体的不同，融资性信用保证保险可被划分为融资性信用保险和融资性保证保险，融资性信用保证保  
+险主要集中在消费金融、小微金融、供应链金融三大领域。
+
+融资性信用保险是指权利人（即借贷关系中的债权人，如商业银行）作为投保人向保险人投保，如果权利人因为融资方不能按时履行约定还款义务而遭受经济损失，保险人应当按照保险合同规定赔偿权利人，在信用保险中，权利人既是投保人又是被保险人；
+
+融资性保证保险是指义务人（即借贷关系中的债务人，如信用卡持卡人）作为投保人向保险人投保，如果由于义务人不能按时履行约定还款义务导致权利人遭受经济损失，由保险人替代义务人补偿权利人的经济损失，在保证保险中，义务人是投保人，权利人为被保险人。
+
+## 2、融资性信用保险介绍
+
+## 2.1 融资信保保险分类
+
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+
+## 2.2 融资信保主要参与主体及服务内容
+
+融资性信用保证保险业务主要参与主体为融资方、资金方、保险人三方，在融资性信用保险模式下，资金方既是投保人也是被保险人，而在融资性保证保险模式下， 融资方为投保人，资金方为被保险人。
+
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+
+## 3、行业发展现状
+
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+
+2019年，原本仅次于平安产险的人保财险在信用保证保险业务上出现亏损，承保利润为-28.84亿元，综合成本率达到121.7%；中华联合财险由于不规范开展信用贷款保证保险业务，导致投诉集中爆发。
+
+## 4、信用保证保险业务流程
+
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+
+![占位图](/content/assets/images/agriculture-insurance/2025-03-18-agriculture-insurance-document/placeholder.png)
+
+

@@ -15,11 +15,14 @@ const rawBaseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main`;
 const apiBaseUrl = `https://api.github.com/repos/${owner}/${repo}`;
 
 // 缓存系统
-const CACHE_TTL = 1000 * 60 * 10; // 10分钟缓存
+const CACHE_TTL = 1000 * 60 * 5; // 5分钟缓存
 const cache = {
   posts: null as Post[] | null,
   lastFetched: 0,
 };
+
+// 添加缓存
+const contentCache = new Map<string, { content: string; timestamp: number }>();
 
 interface GitHubFileContent {
   type: string;
@@ -65,12 +68,19 @@ async function getRepositoryTree(): Promise<GithubTreeResponse | null> {
     const response = await fetch(`${apiBaseUrl}/git/trees/main?recursive=1`, {
       headers: {
         'Accept': 'application/vnd.github.v3+json',
-        'Authorization': process.env.GITHUB_TOKEN ? `token ${process.env.GITHUB_TOKEN}` : '',
+        'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+        'User-Agent': 'Dada Blog'
       }
     });
     
     if (!response.ok) {
       console.error(`[GitHub API] 获取仓库目录树失败: ${response.status} ${response.statusText}`);
+      if (response.status === 401) {
+        console.error('[GitHub API] Token 认证失败，请确保:');
+        console.error('1. Token 格式正确且未过期');
+        console.error('2. Token 具有 repo 权限');
+        console.error('3. Token 已正确配置在 .env.local 文件中');
+      }
       return null;
     }
     
@@ -166,21 +176,62 @@ export async function getPosts(): Promise<Post[]> {
 /**
  * 直接从raw.githubusercontent.com获取文件内容
  */
-async function fetchRawContent(path: string): Promise<string | null> {
+async function fetchRawContent(path: string, retries = 3): Promise<string | null> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
+
   try {
     const url = `${rawBaseUrl}/${path}`;
     console.log(`[GitHub API] 尝试获取内容: ${url}`);
     
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3.raw',
+        'User-Agent': 'Dada Blog'
+      },
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
+      if (response.status === 404) {
+        console.error(`[GitHub API] 文件不存在: ${path}`);
+        return null;
+      }
+      if (response.status === 401) {
+        console.error(`[GitHub API] Token 认证失败，请确保:`);
+        console.error('1. Token 格式正确且未过期');
+        console.error('2. Token 具有 repo 权限');
+        console.error('3. Token 已正确配置在 .env.local 文件中');
+        return null;
+      }
+      if (retries > 0) {
+        console.log(`[GitHub API] 重试获取内容 (${retries} 次剩余): ${path}`);
+        await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries))); // 指数退避
+        return fetchRawContent(path, retries - 1);
+      }
       console.error(`[GitHub API] 获取内容失败: ${response.status} ${response.statusText}`);
       return null;
     }
     
     const content = await response.text();
     return content;
-  } catch (error) {
-    console.error(`[GitHub API] 获取内容失败:`, error);
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    
+    if (error.name === 'AbortError') {
+      console.error(`[GitHub API] 请求超时: ${path}`);
+    } else {
+      console.error(`[GitHub API] 获取内容失败:`, error);
+    }
+
+    if (retries > 0) {
+      console.log(`[GitHub API] 重试获取内容 (${retries} 次剩余): ${path}`);
+      await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries))); // 指数退避
+      return fetchRawContent(path, retries - 1);
+    }
     return null;
   }
 }
@@ -198,15 +249,17 @@ function processMarkdownContent(content: string, path: string, category: string)
       const parsed = matter(processedContent);
       data = parsed.data;
       markdownContent = parsed.content;
-    } catch (yamlError) {
-      console.error(`[GitHub API] YAML解析错误(${path}):`, yamlError);
-      // 尝试移除整个YAML部分，直接处理内容
-      console.log(`[GitHub API] 尝试移除YAML部分并继续处理文件: ${path}`);
-      const noYamlContent = processedContent.replace(/^---\n[\s\S]*?\n---\n/, '');
-      markdownContent = noYamlContent;
-      
-      // 创建一个基本的data对象
-      data = {};
+    } catch (error) {
+      console.error(`[GitHub API] 解析YAML失败: ${path}`, error);
+      // 尝试移除YAML部分并继续处理
+      const contentWithoutYaml = processedContent.replace(/^---[\s\S]*?---/, '');
+      markdownContent = contentWithoutYaml.trim();
+      data = {
+        title: path.split('/').pop()?.replace('.md', '') || 'Untitled',
+        date: new Date().toISOString(),
+        categories: [category],
+        tags: [],
+      };
     }
     
     // 如果设置了不发布，则跳过
@@ -486,4 +539,10 @@ export async function getPostsFromKnownFiles(): Promise<Post[]> {
     console.error('[GitHub API] 获取文章列表失败:', error);
     return [];
   }
+}
+
+// 添加清理缓存的函数
+export function clearContentCache() {
+  contentCache.clear();
+  console.log('[GitHub API] 内容缓存已清除');
 } 

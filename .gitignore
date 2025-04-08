@@ -1,0 +1,11 @@
+# Node.js dependencies
+node_modules/
+
+# Next.js build output
+.next/
+
+# macOS system files
+.DS_Store
+
+# Other large files
+*.pack 

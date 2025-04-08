@@ -1,17 +1,16 @@
-
----"
-categories: "
+---
+title: "技术工具文档"
+date: "2025-01-01"
+categories: 
   - "技术工具"
-date: "2025-01-01'"
+tags:
+  - "AI技术"
+  - "数据库"
 description: "1、 数据库表结构设计1.1 数据关系用户与账本：每个用户至少有一个账本。账本与账目分类：每个账本有一个且仅有一个账目分类。账本与交易记录：每个账本可以有多个交易记录。交易记录与账目分类：每个交易记录属于一个账目分类。账本与成员：一个账本可以有多个成员。账本与管理员：一个账本可以有多个管理员。..."
-image: "/assets/images/posts/tech-tools/2025-01-01-/image_42.svg""
-original_title: "tech-tools-document"未命名文档""
-published: true"
----tags: "
-  - "AI 技术"
-title: "tech-tools-document"
-yuque_url: ''"
----"
+image: "/assets/images/posts/tech-tools/2025-01-01-/image_42.svg"
+original_title: "tech-tools-document未命名文档"
+published: true
+---
 ## 1、 数据库表结构设计
 
 ## 1.1 数据关系

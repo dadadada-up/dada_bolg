@@ -60,7 +60,7 @@
 
 3. 创建 `.env.local` 文件并配置环境变量
    ```
-   GITHUB_TOKEN=your_token_here =your_github_token_here
+   GITHUB_TOKEN=your_github_token_here
    GITHUB_REPO_OWNER=your_github_username
    GITHUB_REPO_NAME=your_content_repository
    ```

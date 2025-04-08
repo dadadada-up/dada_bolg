@@ -65,7 +65,7 @@ async function getRepositoryTree(): Promise<GithubTreeResponse | null> {
     const response = await fetch(`${apiBaseUrl}/git/trees/main?recursive=1`, {
       headers: {
         'Accept': 'application/vnd.github.v3+json',
-        'Authorization': process.env.GITHUB_TOKEN=your_token_here  ? `token ${process.env.GITHUB_TOKEN=your_token_here }` : '',
+        'Authorization': process.env.GITHUB_TOKEN ? `token ${process.env.GITHUB_TOKEN}` : '',
       }
     });
     

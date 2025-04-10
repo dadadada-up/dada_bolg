@@ -1,11 +1,11 @@
 ---
-title: "单证工厂方案设计——农险为例"
-date: "2025-04-10T06:41:14.743Z"
+title: "单证工厂"
+date: "2025-04-10"
 categories: 
   - "未分类"
 tags:
 
-description: "从语雀导入的文档: 单证工厂方案设计——农险为例"
+
 ---
 
 ---
@@ -56,7 +56,7 @@ description: "从语雀导入的文档: 单证工厂方案设计——农险为�
 
 ## 1.3 单证工厂项目设计
 ### 1.3.1 单证工厂整体架构
-![Mermaid图表](https://cdn.nlark.com/yuque/__mermaid_v3/c47ffff31ca13bdc9c7eaee670c91a7b.svg)
+![Mermaid图表](https: "//cdn.nlark.com/yuque/__mermaid_v3/c47ffff31ca13bdc9c7eaee670c91a7b.svg)"
 
 <!-- 这是语雀的Mermaid图表，推荐替换为Mermaid代码块 -->
 
@@ -197,7 +197,7 @@ description: "从语雀导入的文档: 单证工厂方案设计——农险为�
 #### 1.4.3.1 拖拽式设计器
 1. **前端界面设计**
 
-![Mermaid图表](https://cdn.nlark.com/yuque/__mermaid_v3/e71acb425fe5c3bac1459a11eb493afc.svg)
+![Mermaid图表](https: "//cdn.nlark.com/yuque/__mermaid_v3/e71acb425fe5c3bac1459a11eb493afc.svg)"
 
 <!-- 这是语雀的Mermaid图表，推荐替换为Mermaid代码块 -->
 
@@ -207,24 +207,24 @@ description: "从语雀导入的文档: 单证工厂方案设计——农险为�
 
 ```typescript
 interface BaseComponent {
-  id: string;
-  type: ComponentType;
-  position: Position;
-  style: Style;
+  id: "string;"
+  type: "ComponentType;"
+  position: "Position;"
+  style: "Style;"
   dataBinding?: DataBinding;
   validators?: Validator[];
 }
 
 interface AgricultureComponent extends BaseComponent {
-  bizType: 'farmer' | 'land' | 'crop';
-  template: string;
-  rules: BusinessRule[];
+  bizType: "'farmer' | 'land' | 'crop';"
+  template: "string;"
+  rules: "BusinessRule[];"
 }
 
 interface ComponentTree {
-  root: BaseComponent;
-  children: ComponentTree[];
-  layout: 'flow' | 'grid' | 'absolute';
+  root: "BaseComponent;"
+  children: "ComponentTree[];"
+  layout: "'flow' | 'grid' | 'absolute';"
 }
 ```
 
@@ -270,7 +270,3 @@ interface ComponentTree {
 | 人工成本 | 60%+ | <20% |
 | 单证丢失率 | 5% | <0.1% |
 | 追溯时间 | 数小时 | 秒级 |
-
-
-
-

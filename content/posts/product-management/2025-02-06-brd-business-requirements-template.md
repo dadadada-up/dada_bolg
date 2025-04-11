@@ -1,17 +1,18 @@
+---
+title: "brd business requirements template"
+date: "2025-02-06"
+categories: 
+  - "产品经理"
+tags:
 
----"
-categories: "
-  - "产品管理"
-date: "2025-02-06'"
-description: "0 写在前面需求提出人：需求对接人：期望上线时间：业务需求编号（若有）：需求关联方：1. 需求背景1.1 业务背景对本次需求的背景以及目标进行描述，需要还原当前业务流程以及明确产品/数据现状，重点在于找到问题的本质、核心需求痛点、需求价值。5W1H"
-  需求分析方法六个基本问题：Who（谁）、Wh..."
-image: "/assets/images/posts/product-management/2025-02-06-brd/''""
-original_title: "BRD 业务需求文档模板""
----published: true"
+
+---
+
+published: "true""
 tags: "
   - "产品管理 用户体验 需求分析"
 title: "brd business requirements template"
-yuque_url: ''"
+yuque_url: "''""
 ---"
 ## 0 写在前面
 
@@ -85,4 +86,3 @@ yuque_url: ''"
 列出撰写该文档时参考的资料，例如市场调研报告、竞品分析报告等。****## 5.2. 附件
 
 添加相关的附件，例如页面截图、数据报表等。******备注:**以上模板仅供参考，可根据实际需求进行调整。
-

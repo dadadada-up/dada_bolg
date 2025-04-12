@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            padding: 8px 15px;
+            border: none;
+            background-color: #4a4a9c;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #3a3a7c;
+        }
+        .status {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>文章加载调试工具</h1>
+    
+    <div>
+        <button id="testApiBtn">测试API</button>
+        <button id="clearCacheBtn">清除缓存</button>
+    </div>
+    
+    <div class="status" id="statusText">准备就绪</div>
+    
+    <h3>响应结果：</h3>
+    <pre id="responseData">// 等待API响应...</pre>
+    
+    <script>
+        document.getElementById('testApiBtn').addEventListener('click', async () => {
+            try {
+                document.getElementById('statusText').innerText = '正在加载文章数据...';
+                
+                const slug = 'yi-wen-xiang-jie-fang-di-chan-tou-zi-78799b49';
+                const response = await fetch(`http://localhost:3001/api/posts/${slug}`);
+                
+                // 显示HTTP状态
+                document.getElementById('statusText').innerText = `状态码: ${response.status} ${response.statusText}`;
+                
+                // 解析JSON
+                const data = await response.json();
+                
+                // 显示数据
+                document.getElementById('responseData').innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('statusText').innerText = `错误: ${error.message}`;
+                document.getElementById('responseData').innerText = error.stack || '无详细错误堆栈';
+            }
+        });
+        
+        document.getElementById('clearCacheBtn').addEventListener('click', async () => {
+            try {
+                document.getElementById('statusText').innerText = '正在清除缓存...';
+                
+                const response = await fetch('http://localhost:3001/api/cache/clear');
+                const data = await response.json();
+                
+                document.getElementById('statusText').innerText = `缓存清除${data.success ? '成功' : '失败'}`;
+                document.getElementById('responseData').innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('statusText').innerText = `错误: ${error.message}`;
+                document.getElementById('responseData').innerText = error.stack || '无详细错误堆栈';
+            }
+        });
+    </script>
+</body>
+</html> 

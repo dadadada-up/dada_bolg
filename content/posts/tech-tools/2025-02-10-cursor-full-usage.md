@@ -1,17 +1,18 @@
+---
+title: "Cursor 满血使用"
+date: "2025-02-10"
+categories: 
+  - "tech-tools"
+tags:
+  - "cursor"
 
----"
-categories: "
-  - "技术工具"
-date: "2025-02-10'"
-description: "Cursor Free Trial 的教程1. 为什么使用 Cursor Free Trial？Cursor 是一款强大的 AI 编程助手，能够帮助开发者提高编程效率。然而，在使用免费试用版本时，可能会遇到以下限制：问题"
-  1：试用账户限制Too many free trial accounts..."
-image: "/assets/images/posts/tech-tools/2025-02-10-cursor/''""
-original_title: "Cursor 满血使用""
----published: true"
+---
+
+published: "true""
 tags: "
   - "AI Cursor GitHub 技术"
 title: "cursor full usage"
-yuque_url: ''"
+yuque_url: "''""
 ---"
 ### Cursor Free Trial 的教程
 
@@ -22,7 +23,7 @@ Cursor 是一款强大的 AI 编程助手，能够帮助开发者提高编程效
     
     Composer relies on custom models that cannot be billed to an API key.
     Please disable API keys and use a Pro or Business subscription.
-    Request ID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx**问题 3：试用请求限制**` You've reached your trial request limit.`
+    Request ID: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx**问题 3：试用请求限制**` You've reached your trial request limit.`"
 
 这些限制可能会阻碍你继续使用 Cursor 的免费试用版本。幸运的是，有一些方法可以帮助你重置试用版，继续享受 Cursor 的强大功能。
 
@@ -34,18 +35,18 @@ Cursor 是一款强大的 AI 编程助手，能够帮助开发者提高编程效
 
   ***支持的 Cursor 版本**：
 
-    * ✅**Cursor v0.44.11 及以下版本*** ✅**Windows: 最新的 0.45.x 版本（已支持）*** ✅**Mac/Linux: 最新的 0.45.x 版本（已支持，欢迎测试并反馈问题）**#####  2.2 下载 Cursor v0.44.11
+    * ✅**Cursor v0.44.11 及以下版本*** ✅**Windows: "最新的 0.45.x 版本（已支持）*** ✅**Mac/Linux: 最新的 0.45.x 版本（已支持，欢迎测试并反馈问题）**#####  2.2 下载 Cursor v0.44.11"
 
 根据你的操作系统，下载合适的 Cursor 版本：
 
   ***Windows**：
 
-    * 从 [Cursor 官方下载](https://cursor.so/)
-    * 或从 [ToDesktop 下载](https://todesktop.com/)
+    * 从 [Cursor 官方下载](https: "//cursor.so/)"
+    * 或从 [ToDesktop 下载](https: "//todesktop.com/)"
 
   ***Mac**：
 
-    * 下载 [Mac 版本 (Apple Silicon)](https://cursor.so/download/mac)
+    * 下载 [Mac 版本 (Apple Silicon)](https: "//cursor.so/download/mac)"
 
 ##### 2.3 禁用自动更新功能
 
@@ -72,7 +73,7 @@ Cursor 是一款强大的 AI 编程助手，能够帮助开发者提高编程效
 
     
     
-    curl -fsSL https://aizaozao.com/accelerate.php/https://raw.githubusercontent.com/yuaotian/go-cursor-help/refs/heads/master/scripts/run/cursor_mac_id_modifier.sh | sudo bash
+    curl -fsSL https: "//aizaozao.com/accelerate.php/https://raw.githubusercontent.com/yuaotian/go-cursor-help/refs/heads/master/scripts/run/cursor_mac_id_modifier.sh | sudo bash"
 
 该脚本将执行以下操作：
 
@@ -83,7 +84,7 @@ Cursor 是一款强大的 AI 编程助手，能够帮助开发者提高编程效
 
   ***备份重要数据**：在执行任何操作之前，建议备份重要数据。
   ***谨慎操作**：确保你清楚每个命令的作用，并谨慎操作。
-  ***技术支持**：如果遇到问题，可以访问 [GitHub 项目页面](https://github.com/yuaotian/go-cursor-help) 获取更多帮助。
+  ***技术支持**：如果遇到问题，可以访问 [GitHub 项目页面](https: "//github.com/yuaotian/go-cursor-help) 获取更多帮助。"
 
 #### 4\. 结论
 
@@ -91,5 +92,4 @@ Cursor 是一款强大的 AI 编程助手，能够帮助开发者提高编程效
 
 希望这个教程对你有帮助！
 
-此处为语雀打卡卡片，点击链接查看：<https://www.yuque.com/dadadada_up/pm/kqn4hofl0h9ge140#ydMK4>
-
+此处为语雀打卡卡片，点击链接查看：<https: "//www.yuque.com/dadadada_up/pm/kqn4hofl0h9ge140#ydMK4>"

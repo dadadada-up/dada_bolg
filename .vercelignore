@@ -1,0 +1,5 @@
+# 忽略备份目录
+backups/
+.git/
+node_modules/
+.next/cache/ 

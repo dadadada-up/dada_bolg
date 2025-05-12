@@ -3,7 +3,7 @@ import { getPosts, updatePost, getContents } from '@/lib/github';
 import { slugify } from '@/lib/utils';
 import { Category } from '@/types/post';
 import { getDb } from '@/lib/db';
-import { clearCategoriesCache } from '../route';
+import { revalidatePath } from 'next/cache';
 import { getChineseCategoryName, getCategoryBySlug } from '@/lib/category-service';
 
 // 定义数据库分类记录的接口
@@ -173,7 +173,9 @@ export async function PUT(
       db.prepare('COMMIT').run();
       
       // 清除分类缓存
-      clearCategoriesCache();
+      revalidatePath('/api/categories/db-categories');
+      revalidatePath('/api/categories-new/db-categories');
+      revalidatePath('/admin/categories');
       
       console.log(`[API] 成功更新分类 ${oldSlug} -> ${newSlug}`);
     } catch (error) {
@@ -250,7 +252,9 @@ export async function DELETE(
         db.prepare(`DELETE FROM categories WHERE id = ?`).run(category.id);
         
         // 清除分类缓存
-        clearCategoriesCache();
+        revalidatePath('/api/categories/db-categories');
+        revalidatePath('/api/categories-new/db-categories');
+        revalidatePath('/admin/categories');
         
         console.log(`[API] 成功删除分类 ${categorySlug}`);
       }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import { clearCategoriesCache } from '../categories/route';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(request: Request) {
   try {
@@ -97,7 +97,9 @@ export async function POST(request: Request) {
     }
     
     // 清除分类缓存
-    clearCategoriesCache();
+    revalidatePath('/api/categories/db-categories');
+    revalidatePath('/api/categories-new/db-categories');
+    revalidatePath('/admin/categories');
     
     console.log(`[数据库清理] 完成清理分类表, 共清理 ${cleanedCount} 条记录`);
     

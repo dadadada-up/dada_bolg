@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { clearContentCache, forceRefreshAllData } from "@/lib/github";
-import { clearCategoriesCache } from "../categories/route";
+import { revalidatePath } from "next/cache";
 
 export async function POST() {
   try {
@@ -8,7 +8,9 @@ export async function POST() {
     clearContentCache();
     
     // 清除分类缓存
-    clearCategoriesCache();
+    revalidatePath('/api/categories/db-categories');
+    revalidatePath('/api/categories-new/db-categories');
+    revalidatePath('/admin/categories');
     
     // 强制刷新所有数据
     const refreshed = await forceRefreshAllData();

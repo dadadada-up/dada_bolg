@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import { clearCategoriesCache } from '../db-categories/route';
 import { revalidatePath } from 'next/cache';
 
 // 定义分类记录的接口
@@ -66,10 +65,9 @@ export async function POST() {
       // 提交事务
       db.prepare('COMMIT').run();
       
-      // 清除缓存
-      clearCategoriesCache();
-      
-      // 重新验证分类页面
+      // 使用重新验证路径替代清除缓存函数
+      revalidatePath('/api/categories/db-categories');
+      revalidatePath('/api/categories-new/db-categories');
       revalidatePath('/admin/categories');
       
       return Response.json({

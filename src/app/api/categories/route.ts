@@ -42,8 +42,8 @@ export async function GET() {
   }
 }
 
-// 清除分类缓存
-export async function clearCategoriesCache() {
+// 清除分类缓存 - 改为内部函数，非导出
+function clearCategoriesCache() {
   categoriesCache = null;
   categoriesCacheTimestamp = 0;
 } 

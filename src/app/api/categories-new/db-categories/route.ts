@@ -49,7 +49,7 @@ export async function GET() {
 /**
  * 清除分类缓存
  */
-export function clearCategoriesCache() {
+function clearCategoriesCache() {
   categoriesCache = null;
   categoriesCacheTimestamp = 0;
 }

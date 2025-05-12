@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
-import { initDb, getDbStatus } from '@/lib/db';
+import { initializeDatabase, getDbStatus } from '@/lib/db';
 import { withDeprecationWarning } from '@/lib/deprecation-middleware';
 
 // 数据库初始化处理函数
 async function handleGET(request: Request) {
   try {
     // 初始化数据库
-    const db = initDb();
+    await initializeDatabase();
     
     // 获取数据库状态
-    const status = getDbStatus();
+    const status = await getDbStatus();
     
     return new Response(
       JSON.stringify({

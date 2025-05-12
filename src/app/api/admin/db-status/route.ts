@@ -76,7 +76,7 @@ export async function GET() {
       const categoryRepo = new CategoryRepository();
       const tagRepo = new TagRepository();
       
-      // 获取文章统计
+      // 获取文章统计 - 使用正确的参数名称
       stats.posts.total = await postRepo.getTotalPosts();
       stats.posts.published = await postRepo.getTotalPosts({ is_published: true });
       

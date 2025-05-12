@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { clearCategoriesCache } from '../db-categories/route';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -10,10 +9,8 @@ export async function GET() {
   try {
     console.log('[API] 清除分类缓存');
     
-    // 调用清除缓存函数
-    clearCategoriesCache();
-    
-    // 重新验证分类页面
+    // 通过重新验证路径来强制刷新缓存
+    revalidatePath('/api/categories-new/db-categories');
     revalidatePath('/admin/categories');
     
     return Response.json({

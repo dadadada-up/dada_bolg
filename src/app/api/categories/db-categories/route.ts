@@ -278,8 +278,7 @@ function getChineseNameForSlug(slug: string): string {
 /**
  * 清除分类缓存
  */
-export function clearCategoriesCache() {
+function clearCategoriesCache() {
   categoriesCache = null;
   categoriesCacheTimestamp = 0;
-  console.log('[API] 分类缓存已清除');
 } 

@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { clearCategoriesCache } from '../db-categories/route';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -10,21 +9,9 @@ export async function GET() {
   try {
     console.log('[API] 清除分类缓存');
     
-    // 调用清除缓存函数
-    clearCategoriesCache();
-    
-    // 同时也清除db-categories缓存（如果已导入）
-    try {
-      const dbCategoriesModule = await import('../db-categories/route');
-      if (typeof dbCategoriesModule.clearCategoriesCache === 'function') {
-        dbCategoriesModule.clearCategoriesCache();
-      }
-    } catch (e) {
-      // 忽略导入错误
-      console.log('[API] db-categories模块未加载，跳过清除');
-    }
-    
-    // 重新验证分类页面
+    // 使用路径重新验证方式清除缓存
+    revalidatePath('/api/categories/db-categories');
+    revalidatePath('/api/categories-new/db-categories');
     revalidatePath('/admin/categories');
     
     return Response.json({

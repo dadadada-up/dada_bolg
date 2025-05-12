@@ -1,0 +1,23 @@
+{
+  "id": 123,
+  "slug": "deepseek-ben-di-hua-bu-shu",
+  "title": "deepseek本地化部署",
+  "content_html": null,
+  "excerpt": "",
+  "description": null,
+  "is_published": 1,
+  "is_featured": 0,
+  "is_yaml_valid": 0,
+  "is_manually_edited": 0,
+  "reading_time": 10,
+  "source_path": "tech-tools/deepseek本地化部署.md",
+  "image_url": null,
+  "yuque_url": null,
+  "created_at": "2025-05-07T00:00:00.000Z",
+  "updated_at": "2025-05-07T15:19:47.003Z",
+  "published_at": null,
+  "categories": [
+    "tech-tools"
+  ],
+  "tags": []
+}

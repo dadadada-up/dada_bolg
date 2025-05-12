@@ -78,7 +78,7 @@ export async function GET() {
       
       // 获取文章统计
       stats.posts.total = await postRepo.getTotalPosts();
-      stats.posts.published = await postRepo.getTotalPosts({ published: true });
+      stats.posts.published = await postRepo.getTotalPosts({ is_published: true });
       
       // 获取分类统计
       const categories = await categoryRepo.getAllCategories();

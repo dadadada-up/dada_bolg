@@ -1,3 +1,4 @@
+// 强制更新：使用标准sqlite API，修复Vercel构建错误
 import { NextResponse } from 'next/server';
 import { getPosts, updatePost, getContents } from '@/lib/github';
 import { slugify } from '@/lib/utils';
@@ -289,4 +290,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}

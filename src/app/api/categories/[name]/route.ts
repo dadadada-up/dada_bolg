@@ -106,7 +106,7 @@ export async function PUT(
     const db = await getDb();
     
     try {
-      // 开始事务
+      // 开始事务 - 使用exec方法而非prepare
       await db.exec('BEGIN TRANSACTION');
       
       // 查找现有分类
@@ -178,7 +178,7 @@ export async function PUT(
         );
       }
       
-      // 提交事务
+      // 提交事务 - 使用exec方法
       await db.exec('COMMIT');
       
       // 清除分类缓存
@@ -188,7 +188,7 @@ export async function PUT(
       
       console.log(`[API] 成功更新分类 ${oldSlug} -> ${newSlug}`);
     } catch (error) {
-      // 回滚事务
+      // 回滚事务 - 使用exec方法
       await db.exec('ROLLBACK');
       throw error;
     }

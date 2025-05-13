@@ -53,11 +53,9 @@ const fallbackCategories: Category[] = [
 
 export default async function HomePage() {
   // 通过API获取文章
-  const apiUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/posts-new?limit=6`;
+  const apiUrl = `/api/posts-new?limit=6`;
   
-  const response = await fetch(apiUrl, { 
-    next: { revalidate: 3600 } // 每小时重新验证一次
-  });
+  const response = await fetch(apiUrl);
   
   if (!response.ok) {
     throw new Error('获取文章失败');
@@ -67,13 +65,11 @@ export default async function HomePage() {
   const posts: Post[] = data.data || [];
 
   // 获取所有分类
-  const categoriesApiUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/categories-new`;
+  const categoriesApiUrl = `/api/categories-new`;
   
   let categories: Category[] = [];
   try {
-    const categoriesResponse = await fetch(categoriesApiUrl, { 
-      next: { revalidate: 3600 }
-    });
+    const categoriesResponse = await fetch(categoriesApiUrl);
     
     if (categoriesResponse.ok) {
       const categoriesData = await categoriesResponse.json();

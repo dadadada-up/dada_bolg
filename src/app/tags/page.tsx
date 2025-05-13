@@ -17,10 +17,8 @@ export const metadata: Metadata = {
 
 export default async function TagsPage() {
   // 通过API获取所有标签
-  const apiUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/tags`;
-  const response = await fetch(apiUrl, { 
-    next: { revalidate: 3600 } // 每小时重新验证一次
-  });
+  const apiUrl = `/api/tags`;
+  const response = await fetch(apiUrl);
   
   if (!response.ok) {
     console.error('获取标签失败');

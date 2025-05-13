@@ -32,12 +32,10 @@ function encodeSlug(slug: string): string {
 export async function generateStaticParams() {
   // 通过API获取所有文章的slug，用于静态生成页面
   try {
-    const apiUrl = new URL('/api/posts-new', 'http://localhost:3001');
-    apiUrl.searchParams.set('limit', '1000');
+    // 使用相对路径而不是硬编码的localhost
+    const apiUrl = `/api/posts-new?limit=1000`;
     
-    const response = await fetch(apiUrl, { 
-      next: { revalidate: 3600 } // 每小时重新验证一次
-    });
+    const response = await fetch(apiUrl);
     
     if (!response.ok) {
       console.error('生成静态参数时获取文章失败');
@@ -64,11 +62,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const encodedSlug = encodeSlug(slug);
   
   try {
-    const apiUrl = new URL(`/api/posts-new/${encodedSlug}`, 'http://localhost:3001');
+    // 使用相对路径而不是硬编码的localhost
+    const apiUrl = `/api/posts-new/${encodedSlug}`;
     
-    const response = await fetch(apiUrl, { 
-      next: { revalidate: 3600 } // 每小时重新验证一次
-    });
+    const response = await fetch(apiUrl);
     
     if (!response.ok) {
       return {
@@ -127,15 +124,13 @@ export default async function PostPage({ params }: PostPageProps) {
   const encodedSlug = encodeSlug(slug);
   
   try {
-    // 使用完整URL，避免服务器端渲染问题
-    const apiUrl = new URL(`/api/posts-new/${encodedSlug}`, 'http://localhost:3001');
+    // 使用相对路径而不是硬编码的localhost
+    const apiUrl = `/api/posts-new/${encodedSlug}`;
     
     // 添加错误处理
     let response;
     try {
-      response = await fetch(apiUrl, { 
-        next: { revalidate: 3600 } // 每小时重新验证一次
-      });
+      response = await fetch(apiUrl);
     } catch (fetchError: any) {
       console.error('获取文章内容时网络错误:', fetchError);
       throw new Error(`获取文章内容失败: ${fetchError.message}`);

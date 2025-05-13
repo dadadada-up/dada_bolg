@@ -7,10 +7,8 @@ import { Post } from "@/types/post";
 
 export async function generateStaticParams() {
   // 通过API获取所有分类
-  const apiUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/categories-new`;
-  const response = await fetch(apiUrl, { 
-    next: { revalidate: 3600 } // 每小时重新验证一次
-  });
+  const apiUrl = `/api/categories-new`;
+  const response = await fetch(apiUrl);
   
   if (!response.ok) {
     console.error('生成静态参数时获取分类失败');
@@ -28,10 +26,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const { slug } = params;
   
   // 获取分类信息
-  const apiUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/categories-new`;
-  const response = await fetch(apiUrl, { 
-    next: { revalidate: 3600 }
-  });
+  const apiUrl = `/api/categories-new`;
+  const response = await fetch(apiUrl);
   
   if (!response.ok) {
     return {
@@ -60,10 +56,8 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   const categorySlug = params.slug;
   
   // 获取分类信息
-  const categoriesApiUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/categories-new`;
-  const categoriesResponse = await fetch(categoriesApiUrl, { 
-    next: { revalidate: 3600 }
-  });
+  const categoriesApiUrl = `/api/categories-new`;
+  const categoriesResponse = await fetch(categoriesApiUrl);
   
   let categoryName = categorySlug;
   if (categoriesResponse.ok) {
@@ -75,7 +69,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   }
   
   // 通过API获取该分类下的文章
-  const apiUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/posts-new?category=${categorySlug}&limit=1000`;
+  const apiUrl = `/api/posts-new?category=${categorySlug}&limit=1000`;
   
   const response = await fetch(apiUrl, { 
     cache: 'no-store',

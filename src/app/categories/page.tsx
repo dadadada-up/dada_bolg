@@ -18,11 +18,8 @@ type CategoryWithDisplay = {
 
 async function getCategories(): Promise<CategoryWithDisplay[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001';
-    // 获取分类数据，统一使用/api/categories-new接口
-    const res = await fetch(`${baseUrl}/api/categories-new`, { 
-      next: { revalidate: 3600 } // 缓存1小时
-    });
+    // 使用相对路径API URL
+    const res = await fetch(`/api/categories-new`);
     
     if (!res.ok) {
       throw new Error(`获取分类失败: ${res.status}`);

@@ -7,10 +7,8 @@ import { Post } from "@/types/post";
 
 export async function generateStaticParams() {
   // 通过API获取所有标签
-  const apiUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/tags`;
-  const response = await fetch(apiUrl, { 
-    next: { revalidate: 3600 } // 每小时重新验证一次
-  });
+  const apiUrl = `/api/tags`;
+  const response = await fetch(apiUrl);
   
   if (!response.ok) {
     console.error('生成静态参数时获取标签失败');
@@ -37,7 +35,7 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
   const tagName = params.slug;
   
   // 通过API获取该标签下的文章
-  const apiUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/posts-new?tag=${tagName}&limit=100`;
+  const apiUrl = `/api/posts-new?tag=${tagName}&limit=100`;
   
   const response = await fetch(apiUrl, { 
     cache: 'no-store',

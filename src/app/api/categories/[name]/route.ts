@@ -106,25 +106,27 @@ export async function PUT(
     
     try {
       // 开始事务
-      db.prepare('BEGIN TRANSACTION').run();
+      await db.exec('BEGIN TRANSACTION');
       
       // 查找现有分类
-      const existingCategory = db.prepare(`
-        SELECT id, name, slug, description, post_count 
+      const existingCategory = await db.get(
+        `SELECT id, name, slug, description, post_count 
         FROM categories 
-        WHERE slug = ?
-      `).get(oldSlug) as DbCategory | undefined;
+        WHERE slug = ?`,
+        [oldSlug]
+      ) as DbCategory | undefined;
       
       if (existingCategory) {
         // 如果 slug 改变了，创建新记录并保留原有关联
         if (newSlug !== oldSlug) {
           // 检查新 slug 是否已存在于数据库
-          const newSlugExists = db.prepare(`
-            SELECT id FROM categories WHERE slug = ?
-          `).get(newSlug);
+          const newSlugExists = await db.get(
+            `SELECT id FROM categories WHERE slug = ?`,
+            [newSlug]
+          );
           
           if (newSlugExists) {
-            db.prepare('ROLLBACK').run();
+            await db.exec('ROLLBACK');
             return Response.json(
               { error: `分类标识 '${newSlug}' 已存在于数据库中` },
               { status: 400 }
@@ -132,45 +134,51 @@ export async function PUT(
           }
           
           // 插入新分类记录
-          db.prepare(`
-            INSERT INTO categories (slug, name, description, post_count, created_at, updated_at)
-            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-          `).run(newSlug, data.name, data.description || '', existingCategory.post_count);
+          await db.run(
+            `INSERT INTO categories (slug, name, description, post_count, created_at, updated_at)
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+            [newSlug, data.name, data.description || '', existingCategory.post_count]
+          );
           
           // 获取新记录的 ID
-          const newCategory = db.prepare(`
-            SELECT id FROM categories WHERE slug = ?
-          `).get(newSlug) as { id: string };
+          const newCategory = await db.get(
+            `SELECT id FROM categories WHERE slug = ?`,
+            [newSlug]
+          ) as { id: string };
           
           // 更新文章关联
-          db.prepare(`
-            UPDATE post_categories
+          await db.run(
+            `UPDATE post_categories
             SET category_id = ?
-            WHERE category_id = ?
-          `).run(newCategory.id, existingCategory.id);
+            WHERE category_id = ?`,
+            [newCategory.id, existingCategory.id]
+          );
           
           // 删除旧分类记录
-          db.prepare(`
-            DELETE FROM categories WHERE id = ?
-          `).run(existingCategory.id);
+          await db.run(
+            `DELETE FROM categories WHERE id = ?`,
+            [existingCategory.id]
+          );
         } else {
           // 仅更新现有记录
-          db.prepare(`
-            UPDATE categories
+          await db.run(
+            `UPDATE categories
             SET name = ?, description = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE slug = ?
-          `).run(data.name, data.description || '', oldSlug);
+            WHERE slug = ?`,
+            [data.name, data.description || '', oldSlug]
+          );
         }
       } else {
         // 分类不存在，创建新记录
-        db.prepare(`
-          INSERT INTO categories (slug, name, description, post_count, created_at, updated_at)
-          VALUES (?, ?, ?, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-        `).run(newSlug, data.name, data.description || '');
+        await db.run(
+          `INSERT INTO categories (slug, name, description, post_count, created_at, updated_at)
+          VALUES (?, ?, ?, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+          [newSlug, data.name, data.description || '']
+        );
       }
       
       // 提交事务
-      db.prepare('COMMIT').run();
+      await db.exec('COMMIT');
       
       // 清除分类缓存
       revalidatePath('/api/categories/db-categories');
@@ -180,7 +188,7 @@ export async function PUT(
       console.log(`[API] 成功更新分类 ${oldSlug} -> ${newSlug}`);
     } catch (error) {
       // 回滚事务
-      db.prepare('ROLLBACK').run();
+      await db.exec('ROLLBACK');
       throw error;
     }
     
@@ -243,13 +251,17 @@ export async function DELETE(
     
     try {
       // 查找分类 ID
-      const category = db.prepare(`
-        SELECT id FROM categories WHERE slug = ?
-      `).get(categorySlug) as { id: string } | undefined;
+      const category = await db.get(
+        `SELECT id FROM categories WHERE slug = ?`,
+        [categorySlug]
+      ) as { id: string } | undefined;
       
       if (category) {
         // 删除分类
-        db.prepare(`DELETE FROM categories WHERE id = ?`).run(category.id);
+        await db.run(
+          `DELETE FROM categories WHERE id = ?`,
+          [category.id]
+        );
         
         // 清除分类缓存
         revalidatePath('/api/categories/db-categories');

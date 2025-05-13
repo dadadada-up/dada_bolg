@@ -15,47 +15,47 @@ export async function POST() {
     
     // 检查并添加 description 列
     try {
-      db.prepare('SELECT description FROM categories LIMIT 1').get();
+      await db.get('SELECT description FROM categories LIMIT 1');
       console.log('[API] description 列已存在');
     } catch (error) {
       console.log('[API] 添加 description 列');
-      db.prepare('ALTER TABLE categories ADD COLUMN description TEXT').run();
+      await db.exec('ALTER TABLE categories ADD COLUMN description TEXT');
       results.addedColumns.push('description');
     }
     
     // 检查并添加 post_count 列
     try {
-      db.prepare('SELECT post_count FROM categories LIMIT 1').get();
+      await db.get('SELECT post_count FROM categories LIMIT 1');
       console.log('[API] post_count 列已存在');
     } catch (error) {
       console.log('[API] 添加 post_count 列');
-      db.prepare('ALTER TABLE categories ADD COLUMN post_count INTEGER DEFAULT 0').run();
+      await db.exec('ALTER TABLE categories ADD COLUMN post_count INTEGER DEFAULT 0');
       results.addedColumns.push('post_count');
     }
     
     // 检查并添加 created_at 列
     try {
-      db.prepare('SELECT created_at FROM categories LIMIT 1').get();
+      await db.get('SELECT created_at FROM categories LIMIT 1');
       console.log('[API] created_at 列已存在');
     } catch (error) {
       console.log('[API] 添加 created_at 列');
       // 先添加列，然后更新为当前时间戳
-      db.prepare('ALTER TABLE categories ADD COLUMN created_at INTEGER DEFAULT 0').run();
+      await db.exec('ALTER TABLE categories ADD COLUMN created_at INTEGER DEFAULT 0');
       const timestamp = Math.floor(Date.now() / 1000);
-      db.prepare('UPDATE categories SET created_at = ?').run(timestamp);
+      await db.run('UPDATE categories SET created_at = ?', [timestamp]);
       results.addedColumns.push('created_at');
     }
     
     // 检查并添加 updated_at 列
     try {
-      db.prepare('SELECT updated_at FROM categories LIMIT 1').get();
+      await db.get('SELECT updated_at FROM categories LIMIT 1');
       console.log('[API] updated_at 列已存在');
     } catch (error) {
       console.log('[API] 添加 updated_at 列');
       // 先添加列，然后更新为当前时间戳
-      db.prepare('ALTER TABLE categories ADD COLUMN updated_at INTEGER DEFAULT 0').run();
+      await db.exec('ALTER TABLE categories ADD COLUMN updated_at INTEGER DEFAULT 0');
       const timestamp = Math.floor(Date.now() / 1000);
-      db.prepare('UPDATE categories SET updated_at = ?').run(timestamp);
+      await db.run('UPDATE categories SET updated_at = ?', [timestamp]);
       results.addedColumns.push('updated_at');
     }
     

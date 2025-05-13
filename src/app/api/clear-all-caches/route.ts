@@ -40,15 +40,15 @@ export async function POST(request: Request) {
     
     // 3. 清理API缓存表
     try {
-      const db = getDb();
+      const db = await getDb();
       
       // 清理API响应缓存
-      db.prepare('DELETE FROM api_cache').run();
+      await db.run('DELETE FROM api_cache');
       results.apiCache = true;
       console.log('[清理缓存] API缓存清理: 成功');
       
       // 重置同步状态
-      db.prepare('UPDATE sync_status SET sync_in_progress = 0 WHERE id = 1').run();
+      await db.run('UPDATE sync_status SET sync_in_progress = 0 WHERE id = 1');
       results.serverCache = true;
       console.log('[清理缓存] 服务器状态重置: 成功');
     } catch (error) {

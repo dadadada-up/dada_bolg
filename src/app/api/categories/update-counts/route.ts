@@ -25,15 +25,15 @@ export async function POST() {
     const db = await getDb();
     
     // 开始事务
-    db.prepare('BEGIN TRANSACTION').run();
+    await db.exec('BEGIN TRANSACTION');
     
     try {
       // 获取所有分类
-      const categories = db.prepare(`
+      const categories = await db.all(`
         SELECT id, name, slug, description, post_count
         FROM categories
         ORDER BY name, slug
-      `).all() as CategoryRecord[];
+      `) as CategoryRecord[];
       
       // 记录更新的分类计数
       let updatedCount = 0;
@@ -41,29 +41,29 @@ export async function POST() {
       // 更新每个分类的文章计数
       for (const category of categories) {
         // 计算该分类关联的已发布文章数量
-        const result = db.prepare(`
+        const result = await db.get(`
           SELECT COUNT(DISTINCT pc.post_id) as count
           FROM post_categories pc
           JOIN posts p ON pc.post_id = p.id
           WHERE pc.category_id = ? AND p.published = 1
-        `).get(category.id) as CountResult;
+        `, [category.id]) as CountResult;
         
         const postCount = result.count || 0;
         
         // 如果计数不同，则更新
         if (postCount !== category.post_count) {
-          db.prepare(`
+          await db.run(`
             UPDATE categories
             SET post_count = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
-          `).run(postCount, category.id);
+          `, [postCount, category.id]);
           
           updatedCount++;
         }
       }
       
       // 提交事务
-      db.prepare('COMMIT').run();
+      await db.exec('COMMIT');
       
       // 使用重新验证路径替代清除缓存函数
       revalidatePath('/api/categories/db-categories');
@@ -77,7 +77,7 @@ export async function POST() {
       });
     } catch (error) {
       // 回滚事务
-      db.prepare('ROLLBACK').run();
+      await db.exec('ROLLBACK');
       throw error;
     }
     

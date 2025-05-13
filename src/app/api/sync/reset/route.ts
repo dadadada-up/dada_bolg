@@ -7,10 +7,10 @@ initializeDatabase();
 
 export async function POST(request: Request) {
   try {
-    const db = getDb();
+    const db = await getDb();
     
     // 创建同步状态表，如果不存在
-    db.exec(`
+    await db.exec(`
       CREATE TABLE IF NOT EXISTS sync_status (
         id INTEGER PRIMARY KEY CHECK (id = 1),
         last_sync_time INTEGER,
@@ -22,17 +22,21 @@ export async function POST(request: Request) {
     `);
     
     // 检查同步状态记录是否存在
-    const syncStatus = db.prepare("SELECT * FROM sync_status WHERE id = 1").get();
+    const syncStatus = await db.get("SELECT * FROM sync_status WHERE id = 1");
     
     if (syncStatus) {
       // 重置同步状态
-      db.prepare("UPDATE sync_status SET sync_in_progress = 0, last_sync_time = ? WHERE id = 1")
-        .run(getTimestamp());
+      await db.run(
+        "UPDATE sync_status SET sync_in_progress = 0, last_sync_time = ? WHERE id = 1",
+        [getTimestamp()]
+      );
       console.log("[同步] 同步状态已重置");
     } else {
       // 创建初始同步状态记录
-      db.prepare("INSERT INTO sync_status (id, last_sync_time, sync_in_progress) VALUES (1, ?, 0)")
-        .run(getTimestamp());
+      await db.run(
+        "INSERT INTO sync_status (id, last_sync_time, sync_in_progress) VALUES (1, ?, 0)",
+        [getTimestamp()]
+      );
       console.log("[同步] 已创建新的同步状态记录");
     }
     

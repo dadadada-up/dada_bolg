@@ -22,8 +22,8 @@ export async function POST(request: Request) {
     
     // 4. 重置同步状态
     console.log('[API] 重置同步状态...');
-    const db = getDb();
-    db.prepare('UPDATE sync_status SET sync_in_progress = 0 WHERE id = 1').run();
+    const db = await getDb();
+    await db.run('UPDATE sync_status SET sync_in_progress = 0 WHERE id = 1');
     
     return Response.json({
       success: true,
@@ -40,8 +40,8 @@ export async function POST(request: Request) {
     
     // 确保同步状态被重置
     try {
-      const db = getDb();
-      db.prepare('UPDATE sync_status SET sync_in_progress = 0 WHERE id = 1').run();
+      const db = await getDb();
+      await db.run('UPDATE sync_status SET sync_in_progress = 0 WHERE id = 1');
     } catch (dbError) {
       console.error('[API] 重置同步状态失败:', dbError);
     }

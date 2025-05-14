@@ -2,4 +2,13 @@
 backups/
 .git/
 node_modules/
-.next/cache/ 
+.next/
+src/**/*.tsx
+src/**/*.ts
+src/app
+pages
+next.config.js
+tsconfig.json
+middleware.ts
+middleware.js
+.env*.local 

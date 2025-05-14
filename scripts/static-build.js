@@ -7,7 +7,15 @@ import { fileURLToPath } from 'url';
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const rootDir = path.join(__dirname, '..');
 const publicDir = path.join(rootDir, 'public');
-const outputDir = path.join(rootDir, '.vercel/output/static');
+const isVercel = process.env.VERCEL === '1';
+const outputDir = isVercel 
+  ? path.join(rootDir, '.vercel', 'output', 'static')
+  : path.join(rootDir, 'out');
+
+console.log(`开始静态构建过程...`);
+console.log(`环境: ${isVercel ? 'Vercel' : '本地'}`);
+console.log(`输入目录: ${publicDir}`);
+console.log(`输出目录: ${outputDir}`);
 
 async function copyDir(src, dest) {
   try {
@@ -34,8 +42,6 @@ async function copyDir(src, dest) {
 }
 
 async function main() {
-  console.log('开始静态构建过程...');
-  
   try {
     // 确保输出目录存在
     await fs.mkdir(outputDir, { recursive: true });

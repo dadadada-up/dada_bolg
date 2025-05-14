@@ -2,7 +2,7 @@
   "version": 2,
   "public": true,
   "framework": null,
-  "buildCommand": false,
-  "installCommand": false,
+  "buildCommand": "node scripts/vercel-build.js",
+  "installCommand": "npm install",
   "outputDirectory": "public"
 }

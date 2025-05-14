@@ -8,6 +8,7 @@
     "dev:port": "next dev -p",
     "dev:check": "./scripts/check-ports.sh && next dev -p 3001",
     "build": "node scripts/generate-static-pages.js && node scripts/static-build.js",
+    "build:next": "next build",
     "start": "node scripts/static-server.js",
     "start:static": "node scripts/static-server.js",
     "start:port": "next start -p",

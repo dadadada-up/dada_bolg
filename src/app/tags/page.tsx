@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { MainLayout } from "@/components/layout/main-layout";
-import { tagRepository } from "@/lib/db/repositories";
+import { getAllTags } from "@/lib/static-generation";
 
 export const metadata: Metadata = {
   title: "标签 - Dada Blog",
@@ -17,12 +17,10 @@ export const metadata: Metadata = {
 };
 
 export default async function TagsPage() {
-  // 通过仓库直接获取所有标签
-  let tags;
-  try {
-    tags = await tagRepository.getAllTags();
-  } catch (error) {
-    console.error('获取标签失败:', error);
+  // 通过静态生成工具函数获取所有标签
+  const tags = await getAllTags();
+  
+  if (!tags || tags.length === 0) {
     return (
       <MainLayout>
         <div className="max-w-4xl mx-auto">

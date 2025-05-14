@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Category } from '@/types/post';
-import { categoryRepository } from '@/lib/db/repositories';
+import { getAllCategories } from '@/lib/static-generation';
 
 // 设置页面元数据
 export const metadata: Metadata = {
@@ -18,23 +18,18 @@ type CategoryWithDisplay = {
 };
 
 async function getCategories(): Promise<CategoryWithDisplay[]> {
-  try {
-    // 直接从数据库获取分类
-    const categories = await categoryRepository.getAllCategories();
-    
-    // 过滤掉文章数为0的分类
-    const filteredCategories = categories.filter((category: Category) => category.postCount > 0);
-    
-    // 转换为需要的格式
-    return filteredCategories.map((category: Category) => ({
-      name: category.slug, // 使用slug作为英文标识
-      displayName: category.name, // 使用name作为显示名称
-      count: category.postCount // 使用postCount作为文章数量
-    }));
-  } catch (error) {
-    console.error('获取分类数据失败:', error);
-    return [];
-  }
+  // 直接从静态生成工具函数获取分类
+  const categories = await getAllCategories();
+  
+  // 过滤掉文章数为0的分类
+  const filteredCategories = categories.filter((category: Category) => category.postCount > 0);
+  
+  // 转换为需要的格式
+  return filteredCategories.map((category: Category) => ({
+    name: category.slug, // 使用slug作为英文标识
+    displayName: category.name, // 使用name作为显示名称
+    count: category.postCount // 使用postCount作为文章数量
+  }));
 }
 
 export default async function CategoriesPage() {

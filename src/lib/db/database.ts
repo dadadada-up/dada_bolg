@@ -3,6 +3,8 @@ import fs from 'fs';
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { isVercelBuild } from '@/lib/env';
+import { useTurso } from './turso-client';
+import { TursoDatabase } from './turso-adapter';
 
 // 数据库文件路径
 const DB_PATH = process.env.DB_PATH || path.resolve(process.cwd(), 'data', 'blog.db');
@@ -18,7 +20,10 @@ let dbInstance: Database | null = null;
  */
 export async function getDatabase(): Promise<Database> {
   // 在构建时始终使用模拟数据库
-  console.log('[数据库] 获取数据库实例');
+  if (isVercelBuild) {
+    console.log('[数据库] Vercel构建环境，使用模拟数据库');
+    return createMockDatabase();
+  }
   
   if (!dbInstance) {
     await initializeDatabase();
@@ -34,16 +39,39 @@ export async function initializeDatabase(): Promise<Database> {
     return dbInstance;
   }
 
-  console.log(`[数据库] 初始化数据库连接: ${DB_PATH}`);
-
-  // 始终使用模拟数据库
-  console.log('[数据库] 使用模拟数据库');
-  
-  // 创建一个模拟的数据库实例
-  dbInstance = createMockDatabase();
-  console.log('[数据库] 模拟数据库初始化成功');
-  
-  return dbInstance;
+  try {
+    if (useTurso) {
+      // 使用Turso数据库
+      console.log('[数据库] 初始化Turso数据库连接');
+      dbInstance = new TursoDatabase();
+      console.log('[数据库] Turso数据库初始化成功');
+    } else {
+      // 使用本地SQLite数据库
+      console.log(`[数据库] 初始化本地SQLite数据库: ${DB_PATH}`);
+      
+      // 确保数据目录存在
+      const dbDir = path.dirname(DB_PATH);
+      if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true });
+      }
+      
+      // 打开数据库连接
+      dbInstance = await open({
+        filename: DB_PATH,
+        driver: sqlite3.Database,
+      });
+      
+      // 启用外键约束
+      await dbInstance.exec('PRAGMA foreign_keys = ON');
+      
+      console.log('[数据库] SQLite数据库初始化成功');
+    }
+    
+    return dbInstance;
+  } catch (error) {
+    console.error('[数据库] 初始化失败:', error);
+    throw error;
+  }
 }
 
 /**
@@ -51,9 +79,25 @@ export async function initializeDatabase(): Promise<Database> {
  */
 export async function closeDatabase(): Promise<void> {
   if (dbInstance) {
-    await dbInstance.close();
+    if (!useTurso) {
+      await dbInstance.close();
+    }
     dbInstance = null;
     console.log('[数据库] 连接已关闭');
+  }
+}
+
+/**
+ * 检查数据库连接状态
+ */
+export async function checkDatabaseConnection(): Promise<boolean> {
+  try {
+    const db = await getDatabase();
+    await db.get('SELECT 1');
+    return true;
+  } catch (error) {
+    console.error('[数据库] 连接检查失败:', error);
+    return false;
   }
 }
 
@@ -140,34 +184,35 @@ export function getCurrentTimestamp(): string {
 }
 
 /**
- * 创建模拟数据库实例，用于Vercel构建环境
- * @returns 模拟数据库实例
+ * 创建一个模拟的数据库实例（用于Vercel构建过程）
  */
 function createMockDatabase(): Database {
-  // 创建一个模拟的数据库对象，所有方法都返回空结果
-  return {
-    // 基本方法
-    close: async () => {},
-    exec: async () => {},
+  const mockDb: Partial<Database> = {
+    async exec(): Promise<void> {
+      console.log('[模拟数据库] 执行SQL');
+      return Promise.resolve();
+    },
     
-    // 查询方法
-    all: async () => [],
-    get: async () => undefined,
-    run: async () => ({ changes: 0, lastID: 0 }),
+    async get(): Promise<any> {
+      console.log('[模拟数据库] 获取数据');
+      return Promise.resolve(null);
+    },
     
-    // 其他可能使用的方法
-    prepare: () => ({
-      all: async () => [],
-      get: async () => undefined,
-      run: async () => ({ changes: 0, lastID: 0 }),
-      finalize: async () => {}
-    }),
+    async all(): Promise<any[]> {
+      console.log('[模拟数据库] 获取所有数据');
+      return Promise.resolve([]);
+    },
     
-    // SQLite特定方法
-    configure: () => {},
+    async run(): Promise<any> {
+      console.log('[模拟数据库] 运行SQL');
+      return Promise.resolve({ lastID: 0, changes: 0 });
+    },
     
-    // 必须返回的属性
-    driver: sqlite3.Database,
-    filename: 'mock-db.db'
-  } as unknown as Database;
+    async close(): Promise<void> {
+      console.log('[模拟数据库] 关闭连接');
+      return Promise.resolve();
+    }
+  };
+  
+  return mockDb as Database;
 } 

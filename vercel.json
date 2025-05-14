@@ -13,7 +13,7 @@
     "autoAlias": true
   },
   "ignoreCommand": "find . -name '.venv*' -type d -prune -o -name 'backups' -type d -prune -o -name '.git' -type d -prune",
-  "buildCommand": "npm run build",
+  "buildCommand": "next build",
   "cleanUrls": true,
   "headers": [
     {
@@ -21,6 +21,22 @@
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
+    }
+  ],
+  "env": {
+    "IS_VERCEL": "1",
+    "NEXT_PUBLIC_IS_VERCEL": "1"
+  },
+  "build": {
+    "env": {
+      "IS_VERCEL": "1",
+      "NEXT_PUBLIC_IS_VERCEL": "1"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     }
   ]
 }

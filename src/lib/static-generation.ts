@@ -5,12 +5,19 @@
 
 import { categoryRepository, tagRepository, postRepository } from '@/lib/db/repositories';
 import { Category, Post, Tag } from '@/types/post';
+import { isVercelBuild } from '@/lib/env';
 
 /**
  * 安全的获取所有分类的静态参数
  * 这个函数用于generateStaticParams，它不会使用fetch
  */
 export async function getCategoryParams(): Promise<{ slug: string }[]> {
+  // 在Vercel构建时返回空数组
+  if (isVercelBuild) {
+    console.log('[静态生成] Vercel构建时，返回空分类参数');
+    return [];
+  }
+
   try {
     // 直接使用分类仓库获取所有分类
     const categories = await categoryRepository.getAllCategories();
@@ -36,6 +43,12 @@ export async function getCategoryParams(): Promise<{ slug: string }[]> {
  * 这个函数用于generateStaticParams，它不会使用fetch
  */
 export async function getTagParams(): Promise<{ slug: string }[]> {
+  // 在Vercel构建时返回空数组
+  if (isVercelBuild) {
+    console.log('[静态生成] Vercel构建时，返回空标签参数');
+    return [];
+  }
+
   try {
     // 直接使用标签仓库获取所有标签
     const tags = await tagRepository.getAllTags();
@@ -60,6 +73,12 @@ export async function getTagParams(): Promise<{ slug: string }[]> {
  * 安全的获取分类信息
  */
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  // 在Vercel构建时返回null
+  if (isVercelBuild) {
+    console.log(`[静态生成] Vercel构建时，跳过获取分类: ${slug}`);
+    return null;
+  }
+
   try {
     return await categoryRepository.getCategoryBySlug(slug);
   } catch (error) {
@@ -72,6 +91,12 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
  * 安全的获取标签信息
  */
 export async function getTagBySlug(slug: string): Promise<Tag | null> {
+  // 在Vercel构建时返回null
+  if (isVercelBuild) {
+    console.log(`[静态生成] Vercel构建时，跳过获取标签: ${slug}`);
+    return null;
+  }
+
   try {
     return await tagRepository.getTagBySlug(slug);
   } catch (error) {
@@ -84,6 +109,12 @@ export async function getTagBySlug(slug: string): Promise<Tag | null> {
  * 安全的获取分类下的文章
  */
 export async function getPostsByCategory(categorySlug: string): Promise<Post[]> {
+  // 在Vercel构建时返回空数组
+  if (isVercelBuild) {
+    console.log(`[静态生成] Vercel构建时，跳过获取分类文章: ${categorySlug}`);
+    return [];
+  }
+
   try {
     const { posts } = await postRepository.getAllPosts({
       category: categorySlug,
@@ -103,6 +134,12 @@ export async function getPostsByCategory(categorySlug: string): Promise<Post[]> 
  * 安全的获取标签下的文章
  */
 export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
+  // 在Vercel构建时返回空数组
+  if (isVercelBuild) {
+    console.log(`[静态生成] Vercel构建时，跳过获取标签文章: ${tagSlug}`);
+    return [];
+  }
+
   try {
     const { posts } = await postRepository.getAllPosts({
       tag: tagSlug,
@@ -122,6 +159,12 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
  * 安全的获取所有分类
  */
 export async function getAllCategories(): Promise<Category[]> {
+  // 在Vercel构建时返回空数组
+  if (isVercelBuild) {
+    console.log('[静态生成] Vercel构建时，跳过获取所有分类');
+    return [];
+  }
+
   try {
     return await categoryRepository.getAllCategories();
   } catch (error) {
@@ -134,6 +177,12 @@ export async function getAllCategories(): Promise<Category[]> {
  * 安全的获取所有标签
  */
 export async function getAllTags(): Promise<Tag[]> {
+  // 在Vercel构建时返回空数组
+  if (isVercelBuild) {
+    console.log('[静态生成] Vercel构建时，跳过获取所有标签');
+    return [];
+  }
+
   try {
     return await tagRepository.getAllTags();
   } catch (error) {

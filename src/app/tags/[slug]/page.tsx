@@ -4,17 +4,7 @@ import Link from "next/link";
 import { PostCard } from "@/components/post-card";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Post } from "@/types/post";
-import { tagRepository } from "@/lib/db/repositories";
-
-// 获取基础URL函数
-function getBaseUrl() {
-  // 在服务器端渲染时，使用环境变量
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
-  }
-  // 默认为本地开发环境
-  return 'http://localhost:3001';
-}
+import { tagRepository, postRepository } from "@/lib/db/repositories";
 
 // 直接使用仓库获取标签数据，而不是通过API
 export async function generateStaticParams() {
@@ -42,51 +32,46 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function TagPage({ params }: { params: { slug: string } }) {
   const tagName = params.slug;
-  const baseUrl = getBaseUrl();
   
-  // 通过API获取该标签下的文章
-  const apiUrl = `${baseUrl}/api/posts-new?tag=${tagName}&limit=100`;
-  
-  const response = await fetch(apiUrl, { 
-    cache: 'no-store',
-    headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache'
+  // 直接从数据库获取该标签下的文章
+  try {
+    const { posts, total } = await postRepository.getAllPosts({
+      tag: tagName,
+      limit: 100,
+      published: true,
+      sortBy: 'created_at',
+      sortOrder: 'desc'
+    });
+    
+    // 如果标签不存在或没有文章，返回404
+    if (posts.length === 0) {
+      notFound();
     }
-  });
-  
-  if (!response.ok) {
+    
+    return (
+      <MainLayout>
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <Link href="/tags" className="text-primary hover:underline">
+              ← 返回所有标签
+            </Link>
+          </div>
+          
+          <h1 className="text-3xl font-bold mb-8">#{tagName}</h1>
+          <p className="text-muted-foreground mb-8">
+            共 {posts.length} 篇文章
+          </p>
+          
+          <div className="grid gap-8">
+            {posts.map(post => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        </div>
+      </MainLayout>
+    );
+  } catch (error) {
+    console.error('获取标签文章失败:', error);
     notFound();
   }
-  
-  const data = await response.json();
-  const posts: Post[] = data.data || [];
-  
-  // 如果标签不存在或没有文章，返回404
-  if (posts.length === 0) {
-    notFound();
-  }
-  
-  return (
-    <MainLayout>
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <Link href="/tags" className="text-primary hover:underline">
-            ← 返回所有标签
-          </Link>
-        </div>
-        
-        <h1 className="text-3xl font-bold mb-8">#{tagName}</h1>
-        <p className="text-muted-foreground mb-8">
-          共 {posts.length} 篇文章
-        </p>
-        
-        <div className="grid gap-8">
-          {posts.map(post => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
-      </div>
-    </MainLayout>
-  );
 } 

@@ -4,17 +4,7 @@ import Link from "next/link";
 import { PostCard } from "@/components/post-card";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Post } from "@/types/post";
-import { categoryRepository } from "@/lib/db/repositories";
-
-// 获取基础URL函数
-function getBaseUrl() {
-  // 在服务器端渲染时，使用环境变量
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
-  }
-  // 默认为本地开发环境
-  return 'http://localhost:3001';
-}
+import { categoryRepository, postRepository } from "@/lib/db/repositories";
 
 // 直接使用仓库获取分类数据，而不是通过API
 export async function generateStaticParams() {
@@ -60,7 +50,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const categorySlug = params.slug;
-  const baseUrl = getBaseUrl();
   
   // 获取分类信息
   let categoryName = categorySlug;
@@ -74,50 +63,46 @@ export default async function CategoryPage({ params }: { params: { slug: string 
     console.error('获取分类信息失败:', error);
   }
   
-  // 通过API获取该分类下的文章
-  const apiUrl = `${baseUrl}/api/posts-new?category=${categorySlug}&limit=1000`;
-  
-  const response = await fetch(apiUrl, { 
-    cache: 'no-store',
-    headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache'
+  // 直接从数据库获取该分类下的文章
+  try {
+    const { posts, total } = await postRepository.getAllPosts({
+      category: categorySlug,
+      limit: 1000,
+      published: true,
+      sortBy: 'created_at',
+      sortOrder: 'desc'
+    });
+    
+    // 如果分类不存在或没有文章，返回404
+    if (posts.length === 0) {
+      notFound();
     }
-  });
-  
-  if (!response.ok) {
+    
+    return (
+      <MainLayout>
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <Link href="/categories" className="text-primary hover:underline">
+              ← 返回所有分类
+            </Link>
+          </div>
+          
+          <h1 className="text-3xl font-bold mb-4">{categoryName} 分类</h1>
+          
+          <p className="mb-8 text-muted-foreground">
+            共找到 {posts.length} 篇文章
+          </p>
+          
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map(post => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        </div>
+      </MainLayout>
+    );
+  } catch (error) {
+    console.error('获取分类文章失败:', error);
     notFound();
   }
-  
-  const data = await response.json();
-  const posts: Post[] = data.data || [];
-  
-  // 如果分类不存在或没有文章，返回404
-  if (posts.length === 0) {
-    notFound();
-  }
-  
-  return (
-    <MainLayout>
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <Link href="/categories" className="text-primary hover:underline">
-            ← 返回所有分类
-          </Link>
-        </div>
-        
-        <h1 className="text-3xl font-bold mb-4">{categoryName} 分类</h1>
-        
-        <p className="mb-8 text-muted-foreground">
-          共找到 {posts.length} 篇文章
-        </p>
-        
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map(post => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
-      </div>
-    </MainLayout>
-  );
 } 

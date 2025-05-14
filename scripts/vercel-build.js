@@ -33,6 +33,34 @@ function runScript(scriptPath) {
   return result;
 }
 
+// 复制目录函数
+async function copyDir(src, dest) {
+  log(`复制目录: ${src} -> ${dest}`);
+  try {
+    // 确保目标目录存在
+    await fs.mkdir(dest, { recursive: true });
+    
+    // 读取源目录
+    const entries = await fs.readdir(src, { withFileTypes: true });
+    
+    // 复制文件和目录
+    for (const entry of entries) {
+      const srcPath = path.join(src, entry.name);
+      const destPath = path.join(dest, entry.name);
+      
+      if (entry.isDirectory()) {
+        await copyDir(srcPath, destPath);
+      } else {
+        await fs.copyFile(srcPath, destPath);
+        log(`复制文件: ${srcPath}`);
+      }
+    }
+  } catch (error) {
+    console.error(`复制目录失败: ${error.message}`);
+    throw error;
+  }
+}
+
 async function vercelBuild() {
   try {
     log('开始执行纯静态部署流程');
@@ -112,6 +140,52 @@ async function vercelBuild() {
 </body>
 </html>`;
       await fs.writeFile(notFoundPath, defaultNotFoundContent);
+    }
+    
+    // 5. 额外步骤：直接将分类和标签页面复制到输出目录
+    log('直接复制分类和标签页面到输出目录...');
+    const outputDir = path.join(rootDir, '.vercel', 'output', 'static');
+    
+    // 确保输出目录存在
+    await fs.mkdir(outputDir, { recursive: true });
+    
+    // 确保分类目录存在于输出目录
+    const outputCategoriesDir = path.join(outputDir, 'categories');
+    await fs.mkdir(outputCategoriesDir, { recursive: true });
+    
+    // 确保标签目录存在于输出目录
+    const outputTagsDir = path.join(outputDir, 'tags');
+    await fs.mkdir(outputTagsDir, { recursive: true });
+    
+    // 复制分类和标签目录
+    const publicCategoriesDir = path.join(rootDir, 'public', 'categories');
+    const publicTagsDir = path.join(rootDir, 'public', 'tags');
+    
+    await copyDir(publicCategoriesDir, outputCategoriesDir);
+    await copyDir(publicTagsDir, outputTagsDir);
+    
+    // 确保index.html文件正确复制
+    log('确保所有关键页面都正确复制...');
+    const files = [
+      'index.html',
+      'categories/index.html',
+      'tags/index.html',
+      '404.html'
+    ];
+    
+    for (const file of files) {
+      const srcPath = path.join(rootDir, 'public', file);
+      const destPath = path.join(outputDir, file);
+      const destDir = path.dirname(destPath);
+      
+      await fs.mkdir(destDir, { recursive: true });
+      
+      try {
+        await fs.copyFile(srcPath, destPath);
+        log(`确保文件复制: ${file}`);
+      } catch (err) {
+        log(`警告：无法复制文件 ${file}: ${err.message}`);
+      }
     }
 
     log('静态部署流程完成');

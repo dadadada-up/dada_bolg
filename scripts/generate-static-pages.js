@@ -184,6 +184,13 @@ function generateCategoriesIndexPage(categories) {
       flex-wrap: wrap;
       margin: 1rem 0;
     }
+    .static-note {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #f4f4f4;
+      border-left: 4px solid #0070f3;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -194,6 +201,10 @@ function generateCategoriesIndexPage(categories) {
     
     <div class="categories">
       ${categoryLinks}
+    </div>
+    
+    <div class="static-note">
+      <p><strong>注意</strong>：这是静态部署版本的分类页面。当前网站采用纯静态HTML部署，所有内容均为预生成。</p>
     </div>
   </div>
 </body>
@@ -251,6 +262,13 @@ function generateTagsIndexPage(tags) {
       flex-wrap: wrap;
       margin: 1rem 0;
     }
+    .static-note {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #f4f4f4;
+      border-left: 4px solid #0070f3;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -261,6 +279,10 @@ function generateTagsIndexPage(tags) {
     
     <div class="tags">
       ${tagLinks}
+    </div>
+    
+    <div class="static-note">
+      <p><strong>注意</strong>：这是静态部署版本的标签页面。当前网站采用纯静态HTML部署，所有内容均为预生成。</p>
     </div>
   </div>
 </body>

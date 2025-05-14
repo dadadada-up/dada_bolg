@@ -33,13 +33,86 @@
     .back-link:hover {
       text-decoration: underline;
     }
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .static-note {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #f4f4f4;
+      border-left: 4px solid #0070f3;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <a href="/" class="back-link">← 返回首页</a>
     <h1>所有分类</h1>
-    <p>加载中...</p>
+    <p>共 9 个分类</p>
+    
+    <div class="categories">
+      <a href="/categories/technology/" 
+        style="display: inline-block; margin: 0.5rem; padding: 0.5rem 1rem; 
+               border: 1px solid #ccc; border-radius: 4px; 
+               color: #0070f3; text-decoration: none;">
+      技术
+     </a>
+      <a href="/categories/programming/" 
+        style="display: inline-block; margin: 0.5rem; padding: 0.5rem 1rem; 
+               border: 1px solid #ccc; border-radius: 4px; 
+               color: #0070f3; text-decoration: none;">
+      编程
+     </a>
+      <a href="/categories/web-development/" 
+        style="display: inline-block; margin: 0.5rem; padding: 0.5rem 1rem; 
+               border: 1px solid #ccc; border-radius: 4px; 
+               color: #0070f3; text-decoration: none;">
+      Web开发
+     </a>
+      <a href="/categories/javascript/" 
+        style="display: inline-block; margin: 0.5rem; padding: 0.5rem 1rem; 
+               border: 1px solid #ccc; border-radius: 4px; 
+               color: #0070f3; text-decoration: none;">
+      JavaScript
+     </a>
+      <a href="/categories/react/" 
+        style="display: inline-block; margin: 0.5rem; padding: 0.5rem 1rem; 
+               border: 1px solid #ccc; border-radius: 4px; 
+               color: #0070f3; text-decoration: none;">
+      React
+     </a>
+      <a href="/categories/nextjs/" 
+        style="display: inline-block; margin: 0.5rem; padding: 0.5rem 1rem; 
+               border: 1px solid #ccc; border-radius: 4px; 
+               color: #0070f3; text-decoration: none;">
+      Next.js
+     </a>
+      <a href="/categories/database/" 
+        style="display: inline-block; margin: 0.5rem; padding: 0.5rem 1rem; 
+               border: 1px solid #ccc; border-radius: 4px; 
+               color: #0070f3; text-decoration: none;">
+      数据库
+     </a>
+      <a href="/categories/backend/" 
+        style="display: inline-block; margin: 0.5rem; padding: 0.5rem 1rem; 
+               border: 1px solid #ccc; border-radius: 4px; 
+               color: #0070f3; text-decoration: none;">
+      后端
+     </a>
+      <a href="/categories/frontend/" 
+        style="display: inline-block; margin: 0.5rem; padding: 0.5rem 1rem; 
+               border: 1px solid #ccc; border-radius: 4px; 
+               color: #0070f3; text-decoration: none;">
+      前端
+     </a>
+    </div>
+    
+    <div class="static-note">
+      <p><strong>注意</strong>：这是静态部署版本的分类页面。当前网站采用纯静态HTML部署，所有内容均为预生成。</p>
+    </div>
   </div>
 </body>
-</html> 
+</html>

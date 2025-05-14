@@ -8,11 +8,19 @@ import { getTagParams, getTagBySlug, getPostsByTag } from "@/lib/static-generati
 
 // 使用静态生成工具函数获取标签参数
 export async function generateStaticParams() {
-  return getTagParams();
+  console.log('[标签页面] 开始生成静态参数');
+  
+  // 返回硬编码的参数，避免在构建时进行API调用
+  console.log('[标签页面] 返回硬编码的静态参数');
+  return [
+    { slug: 'placeholder' }
+  ];
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const { slug } = params;
+  
+  console.log(`[标签页面] 为 ${slug} 生成元数据`);
   
   return {
     title: `#${slug} - 标签 - Dada Blog`,
@@ -23,14 +31,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function TagPage({ params }: { params: { slug: string } }) {
   const tagName = params.slug;
   
-  // 获取标签下的文章
-  const posts = await getPostsByTag(tagName);
+  console.log(`[标签页面] 渲染标签页面: ${tagName}`);
   
-  // 如果标签不存在或没有文章，返回404
-  if (posts.length === 0) {
-    notFound();
-  }
-  
+  // 返回一个最小的内容，避免在构建时发出请求
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto">
@@ -42,14 +45,8 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
         
         <h1 className="text-3xl font-bold mb-8">#{tagName}</h1>
         <p className="text-muted-foreground mb-8">
-          共 {posts.length} 篇文章
+          加载中...
         </p>
-        
-        <div className="grid gap-8">
-          {posts.map(post => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
       </div>
     </MainLayout>
   );

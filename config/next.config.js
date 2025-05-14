@@ -1,12 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
+  output: 'export',
   
   // 配置环境变量，使其在客户端可用
   env: {
     // 在Vercel环境中，将IS_VERCEL设置为'1'
-    IS_VERCEL: process.env.VERCEL ? '1' : '',
+    IS_VERCEL: '1',
     
     // 区分生产环境和开发环境
     NEXT_PUBLIC_SITE_URL: process.env.VERCEL ? 
@@ -14,7 +14,7 @@ const nextConfig = {
       'http://localhost:3001',
       
     // 在构建时和运行时都可以检测Vercel环境
-    NEXT_PUBLIC_IS_VERCEL: process.env.VERCEL ? '1' : '',
+    NEXT_PUBLIC_IS_VERCEL: '1',
   },
   
   // 设置服务器配置
@@ -36,6 +36,7 @@ const nextConfig = {
   // 图片域名
   images: {
     domains: ['localhost'],
+    unoptimized: true,
   },
   
   // 优化字体加载

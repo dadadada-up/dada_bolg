@@ -13,7 +13,7 @@
     "autoAlias": true
   },
   "ignoreCommand": "find . -name '.venv*' -type d -prune -o -name 'backups' -type d -prune -o -name '.git' -type d -prune",
-  "buildCommand": "next build",
+  "buildCommand": "NEXT_PUBLIC_SITE_URL=https://dada-blog.vercel.app IS_VERCEL=1 NEXT_PUBLIC_IS_VERCEL=1 next build",
   "cleanUrls": true,
   "headers": [
     {
@@ -25,12 +25,14 @@
   ],
   "env": {
     "IS_VERCEL": "1",
-    "NEXT_PUBLIC_IS_VERCEL": "1"
+    "NEXT_PUBLIC_IS_VERCEL": "1",
+    "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app"
   },
   "build": {
     "env": {
       "IS_VERCEL": "1",
-      "NEXT_PUBLIC_IS_VERCEL": "1"
+      "NEXT_PUBLIC_IS_VERCEL": "1",
+      "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app"
     }
   },
   "routes": [

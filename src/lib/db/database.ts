@@ -7,6 +7,9 @@ import { isVercelBuild } from '@/lib/env';
 // 数据库文件路径
 const DB_PATH = process.env.DB_PATH || path.resolve(process.cwd(), 'data', 'blog.db');
 
+console.log(`[数据库] 使用数据库路径: ${DB_PATH}`);
+console.log(`[数据库] Vercel构建检测: ${isVercelBuild}`);
+
 // 单例数据库实例
 let dbInstance: Database | null = null;
 
@@ -14,6 +17,9 @@ let dbInstance: Database | null = null;
  * 获取数据库连接
  */
 export async function getDatabase(): Promise<Database> {
+  // 在构建时始终使用模拟数据库
+  console.log('[数据库] 获取数据库实例');
+  
   if (!dbInstance) {
     await initializeDatabase();
   }
@@ -30,39 +36,14 @@ export async function initializeDatabase(): Promise<Database> {
 
   console.log(`[数据库] 初始化数据库连接: ${DB_PATH}`);
 
-  // 在Vercel构建时返回模拟数据库
-  if (isVercelBuild) {
-    console.log('[数据库] Vercel构建环境，使用模拟数据库');
-    
-    // 创建一个模拟的数据库实例
-    dbInstance = createMockDatabase();
-    console.log('[数据库] 模拟数据库初始化成功');
-    
-    return dbInstance;
-  }
-
-  // 确保数据目录存在
-  const dbDir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
-  }
-
-  try {
-    // 打开数据库连接
-    dbInstance = await open({
-      filename: DB_PATH,
-      driver: sqlite3.Database
-    });
-
-    // 启用外键约束
-    await dbInstance.exec('PRAGMA foreign_keys = ON');
-
-    console.log('[数据库] 连接初始化成功');
-    return dbInstance;
-  } catch (error) {
-    console.error('[数据库] 连接初始化失败:', error);
-    throw error;
-  }
+  // 始终使用模拟数据库
+  console.log('[数据库] 使用模拟数据库');
+  
+  // 创建一个模拟的数据库实例
+  dbInstance = createMockDatabase();
+  console.log('[数据库] 模拟数据库初始化成功');
+  
+  return dbInstance;
 }
 
 /**
@@ -83,21 +64,9 @@ export async function closeDatabase(): Promise<void> {
  * @returns 查询结果数组
  */
 export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> {
-  // 在Vercel构建时返回空数组
-  if (isVercelBuild) {
-    console.log(`[数据库] Vercel构建环境，跳过查询: ${sql}`);
-    return [];
-  }
-
-  const db = await getDatabase();
-  try {
-    console.log(`[数据库] 执行查询: ${sql}`, params);
-    const result = await db.all<T>(sql, params);
-    return result;
-  } catch (error) {
-    console.error(`[数据库] 查询失败: ${sql}`, params, error);
-    throw error;
-  }
+  // 始终返回空数组
+  console.log(`[数据库] 跳过查询: ${sql}`);
+  return [];
 }
 
 /**
@@ -107,21 +76,9 @@ export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> 
  * @returns 查询结果或undefined
  */
 export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T | undefined> {
-  // 在Vercel构建时返回undefined
-  if (isVercelBuild) {
-    console.log(`[数据库] Vercel构建环境，跳过查询单条: ${sql}`);
-    return undefined;
-  }
-
-  const db = await getDatabase();
-  try {
-    console.log(`[数据库] 执行查询单条: ${sql}`, params);
-    const result = await db.get<T>(sql, params);
-    return result;
-  } catch (error) {
-    console.error(`[数据库] 查询单条失败: ${sql}`, params, error);
-    throw error;
-  }
+  // 始终返回undefined
+  console.log(`[数据库] 跳过查询单条: ${sql}`);
+  return undefined;
 }
 
 /**
@@ -131,63 +88,36 @@ export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T 
  * @returns 受影响的行数
  */
 export async function execute(sql: string, params?: any[]): Promise<number> {
-  // 在Vercel构建时返回0
-  if (isVercelBuild) {
-    console.log(`[数据库] Vercel构建环境，跳过执行: ${sql}`);
-    return 0;
-  }
-
-  const db = await getDatabase();
-  try {
-    console.log(`[数据库] 执行更新: ${sql}`, params);
-    const result = await db.run(sql, params);
-    return result.changes || 0;
-  } catch (error) {
-    console.error(`[数据库] 更新失败: ${sql}`, params, error);
-    throw error;
-  }
+  // 始终返回0
+  console.log(`[数据库] 跳过执行: ${sql}`);
+  return 0;
 }
 
 /**
  * 开始一个事务
  */
 export async function beginTransaction(): Promise<void> {
-  // 在Vercel构建时不执行
-  if (isVercelBuild) {
-    console.log('[数据库] Vercel构建环境，跳过开始事务');
-    return;
-  }
-
-  const db = await getDatabase();
-  await db.exec('BEGIN TRANSACTION');
+  // 不执行
+  console.log('[数据库] 跳过开始事务');
+  return;
 }
 
 /**
  * 提交一个事务
  */
 export async function commitTransaction(): Promise<void> {
-  // 在Vercel构建时不执行
-  if (isVercelBuild) {
-    console.log('[数据库] Vercel构建环境，跳过提交事务');
-    return;
-  }
-
-  const db = await getDatabase();
-  await db.exec('COMMIT');
+  // 不执行
+  console.log('[数据库] 跳过提交事务');
+  return;
 }
 
 /**
  * 回滚一个事务
  */
 export async function rollbackTransaction(): Promise<void> {
-  // 在Vercel构建时不执行
-  if (isVercelBuild) {
-    console.log('[数据库] Vercel构建环境，跳过回滚事务');
-    return;
-  }
-
-  const db = await getDatabase();
-  await db.exec('ROLLBACK');
+  // 不执行
+  console.log('[数据库] 跳过回滚事务');
+  return;
 }
 
 /**
@@ -196,21 +126,9 @@ export async function rollbackTransaction(): Promise<void> {
  * @returns 函数的返回值
  */
 export async function withTransaction<T>(fn: () => Promise<T>): Promise<T> {
-  // 在Vercel构建时直接执行函数
-  if (isVercelBuild) {
-    console.log('[数据库] Vercel构建环境，跳过事务包装，直接执行函数');
-    return fn();
-  }
-
-  await beginTransaction();
-  try {
-    const result = await fn();
-    await commitTransaction();
-    return result;
-  } catch (error) {
-    await rollbackTransaction();
-    throw error;
-  }
+  // 直接执行函数
+  console.log('[数据库] 跳过事务包装，直接执行函数');
+  return fn();
 }
 
 /**

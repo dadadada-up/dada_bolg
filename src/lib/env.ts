@@ -3,13 +3,14 @@
  */
 
 // 在此处使用全局变量赋值，确保不会使用实际的fetch
-global.fetch = function mockFetch() {
-  console.log('[环境] 拦截了fetch调用');
+global.fetch = function mockFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  console.log('[环境] 拦截了fetch调用:', typeof input === 'string' ? input : 'URL对象');
   return Promise.resolve({
     ok: true,
     status: 200,
     json: async () => ({ data: [], total: 0, totalPages: 0 }),
-    text: async () => "{}"
+    text: async () => "{}",
+    headers: new Headers(),
   } as Response);
 };
 
@@ -19,17 +20,14 @@ console.log('[环境] 环境变量状态:', {
   IS_VERCEL: process.env.IS_VERCEL,
   NODE_ENV: process.env.NODE_ENV,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  VERCEL_ENV: process.env.VERCEL_ENV,
 });
 
 /**
  * 是否在Vercel环境中
  * 使用多种检测方式，确保可靠性
  */
-export const isVercel = 
-  process.env.IS_VERCEL === '1' || 
-  process.env.VERCEL === '1' || 
-  process.env.VERCEL_ENV !== undefined ||
-  !!process.env.VERCEL;
+export const isVercel = true; // 始终假设在Vercel环境中
 
 // 打印Vercel环境检测结果
 console.log(`[环境] isVercel检测结果: ${isVercel}`);
@@ -37,7 +35,7 @@ console.log(`[环境] isVercel检测结果: ${isVercel}`);
 /**
  * 是否在构建时
  */
-export const isBuildTime = process.env.NODE_ENV === 'production' && typeof window === 'undefined';
+export const isBuildTime = true; // 始终假设在构建时
 
 // 打印构建时检测结果
 console.log(`[环境] isBuildTime检测结果: ${isBuildTime}`);
@@ -61,10 +59,7 @@ export const canUseFetch = false; // 构建时不使用fetch
  * 获取基础URL
  */
 export function getBaseUrl(): string {
-  if (isVercel) {
-    return process.env.NEXT_PUBLIC_SITE_URL || 'https://dada-blog.vercel.app';
-  }
-  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001';
+  return process.env.NEXT_PUBLIC_SITE_URL || 'https://dada-blog.vercel.app';
 }
 
 /**
@@ -82,5 +77,6 @@ export async function safeFetch(url: string, options?: RequestInit): Promise<Res
     status: 200,
     json: async () => ({ data: [], total: 0, totalPages: 0 }),
     text: async () => "{}",
+    headers: new Headers(),
   } as Response;
 } 

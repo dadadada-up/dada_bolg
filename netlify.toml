@@ -1,0 +1,3 @@
+[build]
+  publish = '.vercel/output/static'
+  command = 'echo Skipping build'

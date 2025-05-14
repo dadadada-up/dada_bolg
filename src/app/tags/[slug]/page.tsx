@@ -5,9 +5,20 @@ import { PostCard } from "@/components/post-card";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Post } from "@/types/post";
 
+// 获取基础URL函数
+function getBaseUrl() {
+  // 在服务器端渲染时，使用环境变量
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  // 默认为本地开发环境
+  return 'http://localhost:3001';
+}
+
 export async function generateStaticParams() {
   // 通过API获取所有标签
-  const apiUrl = `/api/tags`;
+  const baseUrl = getBaseUrl();
+  const apiUrl = `${baseUrl}/api/tags`;
   const response = await fetch(apiUrl);
   
   if (!response.ok) {
@@ -33,9 +44,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function TagPage({ params }: { params: { slug: string } }) {
   const tagName = params.slug;
+  const baseUrl = getBaseUrl();
   
   // 通过API获取该标签下的文章
-  const apiUrl = `/api/posts-new?tag=${tagName}&limit=100`;
+  const apiUrl = `${baseUrl}/api/posts-new?tag=${tagName}&limit=100`;
   
   const response = await fetch(apiUrl, { 
     cache: 'no-store',

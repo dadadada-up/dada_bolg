@@ -5,9 +5,20 @@ import { PostCard } from "@/components/post-card";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Post } from "@/types/post";
 
+// 获取基础URL函数
+function getBaseUrl() {
+  // 在服务器端渲染时，使用环境变量
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  // 默认为本地开发环境
+  return 'http://localhost:3001';
+}
+
 export async function generateStaticParams() {
   // 通过API获取所有分类
-  const apiUrl = `/api/categories-new`;
+  const baseUrl = getBaseUrl();
+  const apiUrl = `${baseUrl}/api/categories-new`;
   const response = await fetch(apiUrl);
   
   if (!response.ok) {
@@ -26,7 +37,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const { slug } = params;
   
   // 获取分类信息
-  const apiUrl = `/api/categories-new`;
+  const baseUrl = getBaseUrl();
+  const apiUrl = `${baseUrl}/api/categories-new`;
   const response = await fetch(apiUrl);
   
   if (!response.ok) {
@@ -54,9 +66,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const categorySlug = params.slug;
+  const baseUrl = getBaseUrl();
   
   // 获取分类信息
-  const categoriesApiUrl = `/api/categories-new`;
+  const categoriesApiUrl = `${baseUrl}/api/categories-new`;
   const categoriesResponse = await fetch(categoriesApiUrl);
   
   let categoryName = categorySlug;
@@ -69,7 +82,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   }
   
   // 通过API获取该分类下的文章
-  const apiUrl = `/api/posts-new?category=${categorySlug}&limit=1000`;
+  const apiUrl = `${baseUrl}/api/posts-new?category=${categorySlug}&limit=1000`;
   
   const response = await fetch(apiUrl, { 
     cache: 'no-store',

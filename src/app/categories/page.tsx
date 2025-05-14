@@ -4,6 +4,16 @@ import { Metadata } from 'next';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Category } from '@/types/post';
 
+// 获取基础URL函数
+function getBaseUrl() {
+  // 在服务器端渲染时，使用环境变量
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  // 默认为本地开发环境
+  return 'http://localhost:3001';
+}
+
 // 设置页面元数据
 export const metadata: Metadata = {
   title: '文章分类 | Dada Blog',
@@ -18,8 +28,9 @@ type CategoryWithDisplay = {
 
 async function getCategories(): Promise<CategoryWithDisplay[]> {
   try {
-    // 使用相对路径API URL
-    const res = await fetch(`/api/categories-new`);
+    // 使用绝对路径API URL
+    const baseUrl = getBaseUrl();
+    const res = await fetch(`${baseUrl}/api/categories-new`);
     
     if (!res.ok) {
       throw new Error(`获取分类失败: ${res.status}`);

@@ -3,6 +3,16 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { MainLayout } from "@/components/layout/main-layout";
 
+// 获取基础URL函数
+function getBaseUrl() {
+  // 在服务器端渲染时，使用环境变量
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  // 默认为本地开发环境
+  return 'http://localhost:3001';
+}
+
 export const metadata: Metadata = {
   title: "标签 - Dada Blog",
   description: "浏览Dada博客的所有文章标签",
@@ -17,7 +27,8 @@ export const metadata: Metadata = {
 
 export default async function TagsPage() {
   // 通过API获取所有标签
-  const apiUrl = `/api/tags`;
+  const baseUrl = getBaseUrl();
+  const apiUrl = `${baseUrl}/api/tags`;
   const response = await fetch(apiUrl);
   
   if (!response.ok) {

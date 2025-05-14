@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PostCard } from "@/components/post-card";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Post } from "@/types/post";
+import { categoryRepository } from "@/lib/db/repositories";
 
 // 获取基础URL函数
 function getBaseUrl() {
@@ -15,53 +16,46 @@ function getBaseUrl() {
   return 'http://localhost:3001';
 }
 
+// 直接使用仓库获取分类数据，而不是通过API
 export async function generateStaticParams() {
-  // 通过API获取所有分类
-  const baseUrl = getBaseUrl();
-  const apiUrl = `${baseUrl}/api/categories-new`;
-  const response = await fetch(apiUrl);
-  
-  if (!response.ok) {
-    console.error('生成静态参数时获取分类失败');
+  try {
+    // 直接通过数据库仓库获取所有分类
+    const categories = await categoryRepository.getAllCategories();
+    
+    return categories.map((category) => ({
+      slug: category.slug,
+    }));
+  } catch (error) {
+    console.error('生成静态参数时获取分类失败:', error);
     return [];
   }
-  
-  const categories = await response.json();
-  
-  return categories.map((category: { slug: string }) => ({
-    slug: category.slug,
-  }));
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const { slug } = params;
   
-  // 获取分类信息
-  const baseUrl = getBaseUrl();
-  const apiUrl = `${baseUrl}/api/categories-new`;
-  const response = await fetch(apiUrl);
-  
-  if (!response.ok) {
+  try {
+    // 直接从数据库获取分类信息
+    const category = await categoryRepository.getCategoryBySlug(slug);
+    
+    if (!category) {
+      return {
+        title: `${slug} 分类的文章 - Dada Blog`,
+        description: `查看所有 ${slug} 分类下的文章。`,
+      };
+    }
+    
+    return {
+      title: `${category.name} 分类的文章 - Dada Blog`,
+      description: `查看所有 ${category.name} 分类下的文章。`,
+    };
+  } catch (error) {
+    console.error('获取分类元数据失败:', error);
     return {
       title: `${slug} 分类的文章 - Dada Blog`,
       description: `查看所有 ${slug} 分类下的文章。`,
     };
   }
-  
-  const categories = await response.json();
-  const category = categories.find((cat: { slug: string }) => cat.slug === slug);
-  
-  if (!category) {
-    return {
-      title: `${slug} 分类的文章 - Dada Blog`,
-      description: `查看所有 ${slug} 分类下的文章。`,
-    };
-  }
-  
-  return {
-    title: `${category.name} 分类的文章 - Dada Blog`,
-    description: `查看所有 ${category.name} 分类下的文章。`,
-  };
 }
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
@@ -69,16 +63,15 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   const baseUrl = getBaseUrl();
   
   // 获取分类信息
-  const categoriesApiUrl = `${baseUrl}/api/categories-new`;
-  const categoriesResponse = await fetch(categoriesApiUrl);
-  
   let categoryName = categorySlug;
-  if (categoriesResponse.ok) {
-    const categories = await categoriesResponse.json();
-    const category = categories.find((cat: { slug: string }) => cat.slug === categorySlug);
+  try {
+    // 直接从数据库获取分类信息
+    const category = await categoryRepository.getCategoryBySlug(categorySlug);
     if (category) {
       categoryName = category.name;
     }
+  } catch (error) {
+    console.error('获取分类信息失败:', error);
   }
   
   // 通过API获取该分类下的文章

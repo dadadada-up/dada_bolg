@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PostCard } from "@/components/post-card";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Post } from "@/types/post";
+import { tagRepository } from "@/lib/db/repositories";
 
 // 获取基础URL函数
 function getBaseUrl() {
@@ -15,22 +16,19 @@ function getBaseUrl() {
   return 'http://localhost:3001';
 }
 
+// 直接使用仓库获取标签数据，而不是通过API
 export async function generateStaticParams() {
-  // 通过API获取所有标签
-  const baseUrl = getBaseUrl();
-  const apiUrl = `${baseUrl}/api/tags`;
-  const response = await fetch(apiUrl);
-  
-  if (!response.ok) {
-    console.error('生成静态参数时获取标签失败');
+  try {
+    // 直接通过数据库仓库获取所有标签
+    const tags = await tagRepository.getAllTags();
+    
+    return tags.map((tag) => ({
+      slug: tag.slug,
+    }));
+  } catch (error) {
+    console.error('生成静态参数时获取标签失败:', error);
     return [];
   }
-  
-  const tags = await response.json();
-  
-  return tags.map((tag: { slug: string }) => ({
-    slug: tag.slug,
-  }));
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {

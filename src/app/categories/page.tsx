@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Category } from '@/types/post';
+import { categoryRepository } from '@/lib/db/repositories';
 
 // 获取基础URL函数
 function getBaseUrl() {
@@ -28,15 +29,8 @@ type CategoryWithDisplay = {
 
 async function getCategories(): Promise<CategoryWithDisplay[]> {
   try {
-    // 使用绝对路径API URL
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/categories-new`);
-    
-    if (!res.ok) {
-      throw new Error(`获取分类失败: ${res.status}`);
-    }
-    
-    const categories = await res.json();
+    // 直接从数据库获取分类
+    const categories = await categoryRepository.getAllCategories();
     
     // 过滤掉文章数为0的分类
     const filteredCategories = categories.filter((category: Category) => category.postCount > 0);

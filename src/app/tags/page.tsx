@@ -2,16 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { MainLayout } from "@/components/layout/main-layout";
-
-// 获取基础URL函数
-function getBaseUrl() {
-  // 在服务器端渲染时，使用环境变量
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
-  }
-  // 默认为本地开发环境
-  return 'http://localhost:3001';
-}
+import { tagRepository } from "@/lib/db/repositories";
 
 export const metadata: Metadata = {
   title: "标签 - Dada Blog",
@@ -26,13 +17,12 @@ export const metadata: Metadata = {
 };
 
 export default async function TagsPage() {
-  // 通过API获取所有标签
-  const baseUrl = getBaseUrl();
-  const apiUrl = `${baseUrl}/api/tags`;
-  const response = await fetch(apiUrl);
-  
-  if (!response.ok) {
-    console.error('获取标签失败');
+  // 通过仓库直接获取所有标签
+  let tags;
+  try {
+    tags = await tagRepository.getAllTags();
+  } catch (error) {
+    console.error('获取标签失败:', error);
     return (
       <MainLayout>
         <div className="max-w-4xl mx-auto">
@@ -46,8 +36,6 @@ export default async function TagsPage() {
       </MainLayout>
     );
   }
-  
-  const tags = await response.json();
   
   // 计算标签权重 (为了标签云)
   const maxCount = Math.max(...tags.map((tag: any) => tag.postCount));

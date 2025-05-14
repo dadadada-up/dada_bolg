@@ -63,3 +63,71 @@ npm run dev:check
 ## 许可证
 
 本项目采用 MIT 许可证。查看 [LICENSE](docs/legal/LICENSE) 文件了解详情。
+
+# Dada Blog 静态站点
+
+这是一个静态HTML网站，可以使用多种方式部署：
+
+## 部署方式
+
+### 1. Vercel
+
+使用 `vercel.json` 配置文件进行部署，设置为静态站点模式：
+
+```json
+{
+  "version": 2,
+  "public": true,
+  "framework": null,
+  "buildCommand": false,
+  "installCommand": false,
+  "outputDirectory": "public"
+}
+```
+
+这种方式会完全绕过Next.js构建过程，直接使用预构建的静态页面，避免在Vercel构建时出现数据库连接错误。
+
+### 2. 本地静态服务器
+
+可以使用内置的静态服务器启动：
+
+```bash
+npm start
+# 或者
+node scripts/static-server.js
+```
+
+### 3. 其他静态托管服务
+
+可以将 `/public` 目录中的文件部署到任何静态托管服务中，如GitHub Pages、Netlify等。
+
+## 静态构建流程
+
+1. 执行 `npm run build` 会进行以下操作：
+   - 生成静态页面（categories和tags页面）
+   - 将所有静态文件从`public`目录复制到Vercel输出目录
+
+2. 静态构建无需连接到数据库，所有页面都是预生成的HTML文件。
+
+3. 如需添加新的静态页面，可以编辑`scripts/generate-static-pages.js`文件，添加更多的分类或标签。
+
+## 目录结构
+
+- `/public` - 静态文件目录
+  - `/public/index.html` - 首页
+  - `/public/categories/` - 分类页面目录
+  - `/public/tags/` - 标签页面目录
+  - `/public/api/` - 静态API响应目录
+
+## 开发
+
+```bash
+# 安装依赖
+npm install
+
+# 生成静态页面
+node scripts/generate-static-pages.js
+
+# 启动静态服务器
+npm start
+```

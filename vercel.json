@@ -1,29 +1,8 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
+  "public": true,
   "framework": null,
   "buildCommand": false,
-  "devCommand": false,
   "installCommand": false,
-  "outputDirectory": ".vercel/output/static",
-  "public": true,
-  "cleanUrls": true,
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
-      ]
-    }
-  ],
-  "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/404.html",
-      "status": 404
-    }
-  ]
+  "outputDirectory": "public"
 }

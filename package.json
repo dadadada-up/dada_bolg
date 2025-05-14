@@ -7,8 +7,9 @@
     "dev": "next dev -p 3001",
     "dev:port": "next dev -p",
     "dev:check": "./scripts/check-ports.sh && next dev -p 3001",
-    "build": "next build",
-    "start": "next start",
+    "build": "node scripts/generate-static-pages.js && node scripts/static-build.js",
+    "start": "node scripts/static-server.js",
+    "start:static": "node scripts/static-server.js",
     "start:port": "next start -p",
     "lint": "next lint",
     "test": "vitest run",
@@ -30,6 +31,9 @@
     "test-repo-backup": "npx ts-node scripts/test-repo-backup.ts",
     "reset-github-repo": "npx ts-node scripts/reset-github-repo.ts",
     "reset-and-backup": "node scripts/reset-and-backup.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   },
   "dependencies": {
     "@bytemd/plugin-gfm": "^1.22.0",
@@ -89,7 +93,7 @@
     "remark-math": "^6.0.0",
     "remark-rehype": "^11.1.0",
     "remark-toc": "^9.0.0",
-    "remark-unwrap-images": "^4.0.1",
+    "remark-unwrap-images": "^4.0.0",
     "sharp": "^0.34.1",
     "sqlite": "^5.1.1",
     "swr": "^2.2.5",
@@ -113,5 +117,10 @@
     "simple-git": "^3.27.0",
     "sqlite3": "^5.1.7",
     "vitest": "^3.1.2"
-  }
+  },
+  "keywords": [
+    "static",
+    "blog",
+    "nextjs"
+  ]
 }

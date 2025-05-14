@@ -1,0 +1,7 @@
+{
+  "status": "ok",
+  "message": "这是静态JSON API响应",
+  "time": "2024-05-05T12:00:00Z",
+  "site": "Dada Blog",
+  "version": "1.0.0"
+} 

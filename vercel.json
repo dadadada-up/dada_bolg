@@ -1,19 +1,9 @@
 {
   "version": 2,
   "public": true,
-  "framework": "nextjs",
-  "git": {
-    "deploymentEnabled": {
-      "main": true
-    }
-  },
-  "github": {
-    "enabled": true,
-    "silent": false,
-    "autoAlias": true
-  },
-  "ignoreCommand": "find . -name '.venv*' -type d -prune -o -name 'backups' -type d -prune -o -name '.git' -type d -prune",
-  "buildCommand": "NODE_OPTIONS='--max_old_space_size=4096' NEXT_PUBLIC_SITE_URL=https://dada-blog.vercel.app IS_VERCEL=1 NEXT_PUBLIC_IS_VERCEL=1 NEXT_PRIVATE_NO_CLIENT_FETCH=true next build",
+  "framework": false,
+  "buildCommand": null,
+  "outputDirectory": ".vercel/output/static",
   "cleanUrls": true,
   "headers": [
     {
@@ -23,24 +13,14 @@
       ]
     }
   ],
-  "env": {
-    "IS_VERCEL": "1",
-    "NEXT_PUBLIC_IS_VERCEL": "1",
-    "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
-    "NEXT_PRIVATE_NO_CLIENT_FETCH": "true"
-  },
-  "build": {
-    "env": {
-      "IS_VERCEL": "1",
-      "NEXT_PUBLIC_IS_VERCEL": "1",
-      "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
-      "NEXT_PRIVATE_NO_CLIENT_FETCH": "true"
-    }
-  },
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/404.html",
+      "status": 404
     }
   ]
 }

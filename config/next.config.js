@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export',
+  output: 'standalone',
   
   // 配置环境变量，使其在客户端可用
   env: {
@@ -31,6 +31,10 @@ const nextConfig = {
   experimental: {
     // appDir: true,
     // serverActions: true,
+    // 禁用ISR
+    isrMemoryCacheSize: 0,
+    // 禁用服务器组件
+    serverComponentsExternalPackages: [],
   },
   
   // 图片域名

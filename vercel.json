@@ -13,26 +13,28 @@
     "autoAlias": true
   },
   "ignoreCommand": "find . -name '.venv*' -type d -prune -o -name 'backups' -type d -prune -o -name '.git' -type d -prune",
-  "buildCommand": "NEXT_PUBLIC_SITE_URL=https://dada-blog.vercel.app IS_VERCEL=1 NEXT_PUBLIC_IS_VERCEL=1 next build",
+  "buildCommand": "NODE_OPTIONS='--max_old_space_size=4096' NEXT_PUBLIC_SITE_URL=https://dada-blog.vercel.app IS_VERCEL=1 NEXT_PUBLIC_IS_VERCEL=1 NEXT_PRIVATE_NO_CLIENT_FETCH=true next build",
   "cleanUrls": true,
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
       ]
     }
   ],
   "env": {
     "IS_VERCEL": "1",
     "NEXT_PUBLIC_IS_VERCEL": "1",
-    "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app"
+    "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
+    "NEXT_PRIVATE_NO_CLIENT_FETCH": "true"
   },
   "build": {
     "env": {
       "IS_VERCEL": "1",
       "NEXT_PUBLIC_IS_VERCEL": "1",
-      "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app"
+      "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
+      "NEXT_PRIVATE_NO_CLIENT_FETCH": "true"
     }
   },
   "routes": [

@@ -2,6 +2,17 @@
  * 环境工具，帮助检测当前运行环境并提供相应的功能
  */
 
+// 在此处使用全局变量赋值，确保不会使用实际的fetch
+global.fetch = function mockFetch() {
+  console.log('[环境] 拦截了fetch调用');
+  return Promise.resolve({
+    ok: true,
+    status: 200,
+    json: async () => ({ data: [], total: 0, totalPages: 0 }),
+    text: async () => "{}"
+  } as Response);
+};
+
 // 打印当前环境信息，帮助调试
 console.log('[环境] 环境变量状态:', {
   VERCEL: process.env.VERCEL,

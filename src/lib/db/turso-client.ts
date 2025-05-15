@@ -25,44 +25,70 @@ export interface TursoClientConfig {
  */
 export function createClient(config: TursoClientConfig): TursoClient {
   console.log(`[Turso] 初始化客户端，URL: ${config.url}`);
+  console.log(`[Turso] 认证令牌是否存在: ${!!config.authToken}`);
+  console.log(`[Turso] 同步URL是否存在: ${!!config.syncUrl}`);
   
-  // 使用真实的@libsql/client
-  const client: Client = createTursoClient({
-    url: config.url,
-    authToken: config.authToken,
-    syncUrl: config.syncUrl,
-  });
+  try {
+    // 使用真实的@libsql/client
+    const client: Client = createTursoClient({
+      url: config.url,
+      authToken: config.authToken,
+      syncUrl: config.syncUrl,
+    });
 
-  // 包装接口
-  return {
-    async execute({ sql, args = [] }) {
-      console.log(`[Turso] 执行SQL: ${sql}`);
-      if (args.length > 0) {
-        console.log(`[Turso] 参数: ${JSON.stringify(args)}`);
+    // 包装接口
+    return {
+      async execute({ sql, args = [] }) {
+        console.log(`[Turso] 执行SQL: ${sql}`);
+        if (args.length > 0) {
+          console.log(`[Turso] 参数: ${JSON.stringify(args)}`);
+        }
+        try {
+          return await client.execute({ sql, args });
+        } catch (error) {
+          console.error(`[Turso] SQL执行错误:`, error);
+          throw error;
+        }
+      },
+      
+      async batch(statements) {
+        console.log(`[Turso] 批量执行 ${statements.length} 条语句`);
+        // 确保每个语句都有args属性
+        const formattedStatements = statements.map(stmt => ({
+          sql: stmt.sql,
+          args: stmt.args || []
+        }));
+        try {
+          return await client.batch(formattedStatements);
+        } catch (error) {
+          console.error(`[Turso] 批量执行错误:`, error);
+          throw error;
+        }
+      },
+      
+      async sync() {
+        console.log('[Turso] 同步数据');
+        try {
+          return await client.sync();
+        } catch (error) {
+          console.error(`[Turso] 同步错误:`, error);
+          throw error;
+        }
       }
-      return client.execute({ sql, args });
-    },
-    
-    async batch(statements) {
-      console.log(`[Turso] 批量执行 ${statements.length} 条语句`);
-      // 确保每个语句都有args属性
-      const formattedStatements = statements.map(stmt => ({
-        sql: stmt.sql,
-        args: stmt.args || []
-      }));
-      return client.batch(formattedStatements);
-    },
-    
-    async sync() {
-      console.log('[Turso] 同步数据');
-      return client.sync();
-    }
-  };
+    };
+  } catch (error) {
+    console.error('[Turso] 客户端初始化失败:', error);
+    throw error;
+  }
 }
 
 // 环境检测功能
 const isTursoEnabled = (): boolean => {
-  return !!process.env.TURSO_DATABASE_URL && !!process.env.TURSO_AUTH_TOKEN;
+  const enabled = !!process.env.TURSO_DATABASE_URL && !!process.env.TURSO_AUTH_TOKEN;
+  console.log(`[Turso] 是否启用: ${enabled}`);
+  console.log(`[Turso] 数据库URL: ${process.env.TURSO_DATABASE_URL ? '已设置' : '未设置'}`);
+  console.log(`[Turso] 认证令牌: ${process.env.TURSO_AUTH_TOKEN ? '已设置' : '未设置'}`);
+  return enabled;
 };
 
 // 创建默认客户端实例

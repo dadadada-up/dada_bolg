@@ -3,6 +3,7 @@ import { Post } from '@/types/post';
 import { slugify } from '@/lib/utils';
 import { postRepository } from '@/lib/db/repositories';
 import { initializeDatabase } from '@/lib/db/database';
+import { getAllFallbackPosts } from '@/lib/fallback-data';
 
 // 确保数据库初始化
 initializeDatabase().catch(console.error);
@@ -76,52 +77,121 @@ export async function GET(request: Request) {
       publishedFilter = false;
     }
     
-    // 从数据库获取数据
-    const result = await postRepository.getAllPosts({ 
-      limit, 
-      offset: (page - 1) * limit,
-      category,
-      tag,
-      search,
-      searchField, // 传递搜索字段限制
-      published: publishedFilter,
-      sortBy,
-      sortOrder,
-      includeUnpublished
-    });
-    
-    console.log(`[API] 查询返回文章数: ${result.posts.length}, 总数: ${result.total}`);
-    
-    const response = {
-      total: result.total,
-      page,
-      limit,
-      totalPages: Math.ceil(result.total / limit),
-      data: result.posts,
-    };
-    
-    // 结果列表中的标题（用于调试）
-    if (result.posts.length > 0) {
-      console.log(`[API] 返回文章标题: ${result.posts.map(p => p.title).join(', ')}`);
+    try {
+      // 从数据库获取数据
+      const result = await postRepository.getAllPosts({ 
+        limit, 
+        offset: (page - 1) * limit,
+        category,
+        tag,
+        search,
+        searchField, // 传递搜索字段限制
+        published: publishedFilter,
+        sortBy,
+        sortOrder,
+        includeUnpublished
+      });
+      
+      console.log(`[API] 查询返回文章数: ${result.posts.length}, 总数: ${result.total}`);
+      
+      const response = {
+        total: result.total,
+        page,
+        limit,
+        totalPages: Math.ceil(result.total / limit),
+        data: result.posts,
+      };
+      
+      // 结果列表中的标题（用于调试）
+      if (result.posts.length > 0) {
+        console.log(`[API] 返回文章标题: ${result.posts.map(p => p.title).join(', ')}`);
+      }
+      
+      // 更新缓存
+      apiCache.set(cacheKey, {
+        data: response,
+        timestamp: now
+      });
+      
+      return Response.json(response);
+    } catch (error) {
+      console.error('数据库查询失败，使用备用数据:', error);
+      
+      // 使用备用数据
+      const fallbackPosts = getAllFallbackPosts();
+      
+      // 简单的过滤逻辑
+      let filteredPosts = [...fallbackPosts];
+      
+      // 过滤分类
+      if (category) {
+        filteredPosts = filteredPosts.filter(post => 
+          post.categories.map(c => c.toLowerCase()).includes(category.toLowerCase())
+        );
+      }
+      
+      // 过滤标签
+      if (tag) {
+        filteredPosts = filteredPosts.filter(post => 
+          post.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
+        );
+      }
+      
+      // 过滤搜索
+      if (search) {
+        const searchLower = search.toLowerCase();
+        filteredPosts = filteredPosts.filter(post => {
+          if (searchField === 'title') {
+            return post.title.toLowerCase().includes(searchLower);
+          } else if (searchField === 'content') {
+            return post.content.toLowerCase().includes(searchLower);
+          } else {
+            // 搜索所有字段
+            return (
+              post.title.toLowerCase().includes(searchLower) ||
+              post.content.toLowerCase().includes(searchLower) ||
+              (post.description || '').toLowerCase().includes(searchLower)
+            );
+          }
+        });
+      }
+      
+      // 过滤发布状态
+      if (publishedFilter !== undefined) {
+        filteredPosts = filteredPosts.filter(post => 
+          (post.is_published || post.published) === publishedFilter
+        );
+      }
+      
+      // 分页
+      const start = (page - 1) * limit;
+      const end = start + limit;
+      const paginatedPosts = filteredPosts.slice(start, end);
+      
+      const response = {
+        total: filteredPosts.length,
+        page,
+        limit,
+        totalPages: Math.ceil(filteredPosts.length / limit),
+        data: paginatedPosts,
+        fallback: true // 标记为备用数据
+      };
+      
+      console.log(`[API] 使用备用数据，返回 ${paginatedPosts.length} 篇文章`);
+      
+      return Response.json(response);
     }
-    
-    // 更新缓存
-    apiCache.set(cacheKey, {
-      data: response,
-      timestamp: now
-    });
-    
-    return Response.json(response);
     
   } catch (error) {
     console.error('Error fetching posts:', error);
-    // 出错时返回空结果
+    // 最终备用：返回空结果
     const response = {
       total: 0,
       page: 1,
       limit: 10,
       totalPages: 0,
       data: [],
+      error: true
     };
     return Response.json(response);
   }
@@ -154,20 +224,28 @@ export async function POST(request: Request) {
       tags: postData.tags || []
     };
     
-    // 保存文章
-    const postId = await postRepository.savePost(post);
-    
-    // 清除缓存
-    clearApiCache();
-    
-    // 获取保存后的完整文章数据
-    const savedPost = await postRepository.getPostBySlug(post.slug);
-    
-    return Response.json({
-      success: true,
-      postId,
-      post: savedPost
-    });
+    try {
+      // 保存文章
+      const postId = await postRepository.savePost(post);
+      
+      // 清除缓存
+      clearApiCache();
+      
+      // 获取保存后的完整文章数据
+      const savedPost = await postRepository.getPostBySlug(post.slug);
+      
+      return Response.json({
+        success: true,
+        postId,
+        post: savedPost
+      });
+    } catch (error) {
+      console.error('数据库保存失败:', error);
+      return Response.json(
+        { error: '数据库保存失败，请稍后再试', details: error instanceof Error ? error.message : String(error) },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('创建文章失败:', error);
     return Response.json(

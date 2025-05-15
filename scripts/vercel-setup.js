@@ -3,6 +3,15 @@
  * 此脚本在Vercel构建时运行，确保环境正确设置
  */
 
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import path from 'path';
+
+// 获取当前文件的目录路径
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '..');
+
 console.log('🚀 Vercel部署前准备开始...');
 
 // 设置环境变量标记
@@ -30,46 +39,51 @@ if (!process.env.NEXT_PUBLIC_SITE_URL) {
   process.env.NEXT_PUBLIC_SITE_URL = 'https://dada-blog.vercel.app';
 }
 
-// 测试Turso连接 (可选)
-async function testTursoConnection() {
-  try {
-    const { createClient } = await import('@libsql/client');
-    
-    const client = createClient({
-      url: process.env.TURSO_DATABASE_URL,
-      authToken: process.env.TURSO_AUTH_TOKEN
-    });
-    
-    const result = await client.execute('SELECT 1 as test');
-    if (result.rows[0]?.test === 1) {
-      console.log('✅ Turso数据库连接测试成功!');
-    } else {
-      console.warn('⚠️ Turso连接测试返回异常结果', result);
-    }
-  } catch (error) {
-    console.error('❌ Turso数据库连接测试失败:', error.message);
-    // 不退出，允许构建继续
-  }
+// 准备静态文件
+console.log('📁 准备静态文件...');
+
+// 确保public/images目录存在
+const publicImagesDir = path.join(rootDir, 'public', 'images');
+if (!fs.existsSync(publicImagesDir)) {
+  fs.mkdirSync(publicImagesDir, { recursive: true });
+  console.log(`✅ 创建目录: ${publicImagesDir}`);
 }
 
-// 在生产构建中不进行连接测试，避免安装额外依赖
-if (process.env.NODE_ENV !== 'production') {
-  testTursoConnection().catch(err => {
-    console.error('Turso连接测试出错:', err);
-  });
-} else {
-  console.log('ℹ️ 生产环境构建: 跳过数据库连接测试');
+// 运行其他准备工作，例如准备静态文件
+try {
+  // 生成占位SVG图片
+  const createPlaceholderSvg = (name, color) => {
+    const svgContent = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="${color}" />
+  <text x="600" y="315" font-family="Arial" font-size="60" fill="white" text-anchor="middle" dominant-baseline="middle">
+    ${name}
+  </text>
+</svg>`;
+    
+    const svgPath = path.join(publicImagesDir, `${name}.svg`);
+    fs.writeFileSync(svgPath, svgContent);
+    console.log(`✅ 创建SVG: ${svgPath}`);
+  };
+  
+  // 创建常用图片的占位图
+  createPlaceholderSvg('blog-default', '#3B82F6');
+  createPlaceholderSvg('og-image', '#2563EB');
+} catch (error) {
+  console.error('❌ 静态文件准备出错:', error);
 }
 
-console.log('✅ Vercel部署前准备完成');
+// 输出环境信息
 console.log('📊 环境信息:');
 console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
-console.log(`- SITE_URL: ${process.env.NEXT_PUBLIC_SITE_URL}`);
-console.log(`- TURSO_DATABASE: ${process.env.TURSO_DATABASE_URL.substring(0, 20)}...`);
+console.log(`- NEXT_PUBLIC_SITE_URL: ${process.env.NEXT_PUBLIC_SITE_URL}`);
+console.log(`- TURSO_DATABASE_URL: ${process.env.TURSO_DATABASE_URL ? '已设置' : '未设置'}`);
+console.log(`- TURSO_AUTH_TOKEN: ${process.env.TURSO_AUTH_TOKEN ? '已设置' : '未设置'}`);
 
-// 导出配置用于其他脚本
-module.exports = {
+console.log('✅ Vercel部署前准备完成!');
+
+// 导出配置，可供其他模块使用
+export const config = {
   isVercel: true,
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
-  tursoUrl: process.env.TURSO_DATABASE_URL
+  tursoEnabled: !!process.env.TURSO_DATABASE_URL && !!process.env.TURSO_AUTH_TOKEN
 }; 

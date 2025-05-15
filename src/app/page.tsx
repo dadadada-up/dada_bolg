@@ -8,6 +8,7 @@ import { FeaturedCategories } from "@/components/home/featured-categories";
 import { FeaturedPosts } from "@/components/home/featured-posts";
 import { categoryMappings } from "@/lib/github";
 import { headers } from "next/headers";
+import { getAllFallbackPosts, fallbackCategories } from "@/lib/fallback-data";
 
 // 配置页面为动态渲染
 export const dynamic = 'force-dynamic';
@@ -44,17 +45,6 @@ export const metadata: Metadata = {
   },
 };
 
-// 备用分类数据
-const fallbackCategories: Category[] = [
-  { name: "产品管理", slug: "product-management", postCount: 5 },
-  { name: "技术工具", slug: "tech-tools", postCount: 8 },
-  { name: "家庭生活", slug: "family-life", postCount: 4 },
-  { name: "保险", slug: "insurance", postCount: 3 },
-  { name: "金融", slug: "finance", postCount: 3 },
-  { name: "开源", slug: "open-source", postCount: 2 },
-  { name: "个人博客", slug: "personal-blog", postCount: 1 }
-];
-
 // 获取当前主机URL
 function getBaseUrl() {
   // 优先使用环境变量
@@ -85,8 +75,13 @@ export default async function HomePage() {
   console.log("文章API URL:", apiUrl);
   
   let posts: Post[] = [];
+  let useBackupData = false;
+  
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiUrl, { 
+      next: { revalidate: 300 }, // 5分钟缓存
+      cache: 'no-store' // 确保获取最新内容
+    });
     
     if (!response.ok) {
       console.error("获取文章失败:", response.status, response.statusText);
@@ -94,11 +89,27 @@ export default async function HomePage() {
     }
     
     const data = await response.json();
+    
+    // 检查是否使用了备用数据
+    if (data.fallback) {
+      console.log("API返回了备用数据");
+      useBackupData = true;
+    }
+    
     posts = data.data || [];
+    
+    // 如果没有文章数据，使用备用数据
+    if (!posts || posts.length === 0) {
+      console.log("API返回空数据，使用备用数据");
+      posts = getAllFallbackPosts(6);
+      useBackupData = true;
+    }
   } catch (error) {
     console.error("获取文章出错:", error);
-    // 失败时使用空数组
-    posts = [];
+    // 失败时使用备用数据
+    console.log("API请求失败，使用备用数据");
+    posts = getAllFallbackPosts(6);
+    useBackupData = true;
   }
 
   // 获取所有分类
@@ -106,33 +117,47 @@ export default async function HomePage() {
   console.log("分类API URL:", categoriesApiUrl);
   
   let categories: Category[] = [];
+  
   try {
-    const categoriesResponse = await fetch(categoriesApiUrl);
-    
-    if (categoriesResponse.ok) {
-      const categoriesData = await categoriesResponse.json();
-      console.log('分类数据:', categoriesData);
+    if (useBackupData) {
+      console.log("由于使用备用文章数据，直接使用备用分类数据");
+      categories = fallbackCategories;
+    } else {
+      const categoriesResponse = await fetch(categoriesApiUrl, { 
+        next: { revalidate: 600 }, // 10分钟缓存
+        cache: 'no-store' // 确保获取最新内容
+      });
       
-      // 根据API返回的格式取出分类数据
-      if (Array.isArray(categoriesData)) {
-        // API直接返回数组
-        categories = categoriesData;
-      } else if (categoriesData && categoriesData.data && Array.isArray(categoriesData.data)) {
-        // API返回包含data字段的对象
-        categories = categoriesData.data;
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json();
+        console.log('分类数据:', categoriesData);
+        
+        // 根据API返回的格式取出分类数据
+        if (Array.isArray(categoriesData)) {
+          // API直接返回数组
+          categories = categoriesData;
+        } else if (categoriesData && categoriesData.data && Array.isArray(categoriesData.data)) {
+          // API返回包含data字段的对象
+          categories = categoriesData.data;
+        }
+        
+        // 筛选有文章的分类展示
+        categories = categories
+          .filter(category => category.postCount > 0);
+      } else {
+        throw new Error('获取分类失败');
       }
-      
-      // 筛选有文章的分类展示
-      categories = categories
-        .filter(category => category.postCount > 0);
     }
   } catch (error) {
     console.error('获取分类失败:', error);
+    // 使用备用分类数据
+    console.log('使用备用分类数据');
+    categories = fallbackCategories;
   }
   
   // 如果没有获取到分类数据，使用备用数据
   if (!categories || categories.length === 0) {
-    console.log('使用备用分类数据');
+    console.log('未获取到有效分类数据，使用备用分类数据');
     categories = fallbackCategories;
   }
 

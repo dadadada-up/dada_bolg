@@ -2,13 +2,18 @@
 backups/
 .git/
 node_modules/
-.next/
-src/**/*.tsx
-src/**/*.ts
-src/app
-pages
-next.config.js
-tsconfig.json
-middleware.ts
-middleware.js
-.env*.local 
+# 忽略不需要的目录和文件
+.cache/
+.github/
+docs/
+# 保留必要的Next.js文件
+# .next/  # 注释掉，不忽略这个目录
+# src/**/*.tsx  # 注释掉，不忽略TypeScript文件
+# src/**/*.ts  # 注释掉，不忽略TypeScript文件
+# src/app  # 注释掉，不忽略app目录
+# pages  # 注释掉，不忽略pages目录
+# next.config.js  # 注释掉，不忽略Next.js配置
+# tsconfig.json  # 注释掉，不忽略TypeScript配置
+# middleware.ts  # 注释掉，不忽略中间件
+# middleware.js  # 注释掉，不忽略中间件
+# .env*.local  # 本地环境文件在Vercel上不会被使用，但不要显式忽略 

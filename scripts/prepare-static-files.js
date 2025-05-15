@@ -1,142 +1,129 @@
 /**
- * 准备静态文件脚本
- * 此脚本用于为Vercel部署准备必要的静态文件
+ * 在Vercel构建阶段准备静态文件的脚本
+ * 当Turso数据库配置不可用时，作为备选方案提供静态页面
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
-// 获取当前文件的目录
+// 获取当前文件的目录路径
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
-// 目录路径
+// 输出目录配置
+const outputDir = path.join(rootDir, '.vercel', 'output', 'static');
 const publicDir = path.join(rootDir, 'public');
-const imagesDir = path.join(publicDir, 'images');
-const staticDir = path.join(imagesDir, 'static');
+const staticAssetsDir = path.join(outputDir, '_next', 'static');
 
-// 确保目录存在
-const ensureDir = (dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-    console.log(`创建目录: ${dir}`);
-  }
-};
+// 只有在没有配置Turso或者明确请求静态构建时才执行静态构建
+const shouldUseStaticFallback = process.env.USE_STATIC_FALLBACK === 'true' || 
+                               (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN);
 
-// 复制文件
-const copyFile = (src, dest) => {
-  try {
-    const content = fs.readFileSync(src);
-    fs.writeFileSync(dest, content);
-    console.log(`复制文件: ${path.basename(src)} → ${dest}`);
-  } catch (error) {
-    console.error(`复制文件失败 ${src}: ${error.message}`);
+// 定义复制文件的函数
+function copyFileSync(source, target) {
+  // 确保目标文件夹存在
+  const targetDir = path.dirname(target);
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
   }
-};
+  
+  // 复制文件
+  fs.copyFileSync(source, target);
+}
 
-// 创建文本文件
-const createTextFile = (dest, content) => {
-  try {
-    fs.writeFileSync(dest, content);
-    console.log(`创建文件: ${dest}`);
-  } catch (error) {
-    console.error(`创建文件失败 ${dest}: ${error.message}`);
+// 定义递归复制目录的函数
+function copyDirSync(source, target) {
+  // 创建目标目录
+  if (!fs.existsSync(target)) {
+    fs.mkdirSync(target, { recursive: true });
   }
-};
+  
+  // 读取源目录内容
+  const entries = fs.readdirSync(source, { withFileTypes: true });
+  
+  // 遍历源目录中的每个条目
+  for (const entry of entries) {
+    const srcPath = path.join(source, entry.name);
+    const destPath = path.join(target, entry.name);
+    
+    if (entry.isDirectory()) {
+      // 递归复制子目录
+      copyDirSync(srcPath, destPath);
+    } else {
+      // 复制文件
+      copyFileSync(srcPath, destPath);
+    }
+  }
+}
 
 // 主函数
-function main() {
-  console.log('开始准备静态文件...');
+async function main() {
+  console.log('准备Vercel部署文件...');
   
-  // 确保目录存在
-  ensureDir(publicDir);
-  ensureDir(imagesDir);
-  ensureDir(staticDir);
+  // 检查环境
+  console.log(`当前环境: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`是否在Vercel环境: ${process.env.VERCEL ? 'true' : 'false'}`);
+  console.log(`使用静态部署备选方案: ${shouldUseStaticFallback ? 'true' : 'false'}`);
   
-  // 创建索引模板文件
-  if (!fs.existsSync(path.join(publicDir, 'index-template.html'))) {
-    createTextFile(path.join(publicDir, 'index-template.html'), `
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dada Blog - 加载中</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-      background-color: #f8f9fa;
-    }
-    h1 { color: #2563eb; }
-    .loader {
-      width: 50px;
-      height: 50px;
-      border: 5px solid #e2e8f0;
-      border-top-color: #2563eb;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
-</head>
-<body>
-  <div class="loader"></div>
-  <h1>Dada Blog</h1>
-  <p>Next.js应用正在加载中，请稍候...</p>
-  <script>setTimeout(() => window.location.reload(), 5000);</script>
-</body>
-</html>
-    `);
+  if (!shouldUseStaticFallback) {
+    console.log('✅ 检测到Turso数据库配置，将使用正常Next.js构建流程');
+    return;
   }
   
-  // 创建简单的SVG占位图
-  const defaultImages = [
-    { name: 'blog-default.jpg', color: '#3B82F6' },
-    { name: 'get-started.jpg', color: '#22C55E' },
-    { name: 'database.jpg', color: '#F59E0B' },
-    { name: 'vercel.jpg', color: '#000000' },
-    { name: 'responsive.jpg', color: '#8B5CF6' },
-    { name: 'seo.jpg', color: '#EC4899' },
-    { name: 'og-image.jpg', color: '#2563EB' }
-  ];
+  console.log('⚠️ 未检测到Turso数据库配置，将使用静态部署备选方案');
+
+  // 创建.vercel/output目录（如果不存在）
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
   
-  // 创建SVG占位图
-  defaultImages.forEach(({ name, color }) => {
-    const svgContent = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1200" height="630" fill="${color}" />
-  <text x="600" y="315" font-family="Arial" font-size="60" fill="white" text-anchor="middle" dominant-baseline="middle">
-    ${name.replace('.jpg', '')}
-  </text>
-</svg>`;
-    
-    createTextFile(path.join(imagesDir, `${name}.svg`), svgContent);
-    createTextFile(path.join(staticDir, `${name}.svg`), svgContent);
-    
-    // 创建一个简单的JPG占位文件（非真实JPG，只是文本）
-    if (!fs.existsSync(path.join(imagesDir, name))) {
-      createTextFile(path.join(imagesDir, name), `This is a placeholder for ${name}. Replace with a real JPG file.`);
+  // 创建静态HTML页面
+  console.log('正在生成静态HTML页面...');
+
+  try {
+    execSync('node scripts/generate-static-pages.js', { 
+      stdio: 'inherit',
+      cwd: rootDir 
+    });
+    console.log('✅ 静态页面生成成功');
+  } catch (error) {
+    console.error('❌ 静态页面生成失败:', error);
+    process.exit(1);
+  }
+  
+  // 将public目录下的所有文件复制到输出目录
+  console.log(`正在复制public目录内容到 ${outputDir}...`);
+  copyDirSync(publicDir, outputDir);
+  console.log('✅ 复制完成');
+  
+  // 创建.vercel/output/config.json文件
+  console.log('正在创建Vercel配置文件...');
+  
+  const vercelConfig = {
+    version: 3,
+    routes: [
+      { handle: "filesystem" },
+      { src: "/(.*)", dest: "/404.html" }
+    ],
+    overrides: {
+      '404.html': { path: '/404.html', contentType: 'text/html; charset=utf-8' }
     }
-    if (!fs.existsSync(path.join(staticDir, name))) {
-      createTextFile(path.join(staticDir, name), `This is a placeholder for ${name}. Replace with a real JPG file.`);
-    }
-  });
+  };
   
-  // 创建占位文本文件
-  createTextFile(path.join(staticDir, 'dummy.txt'), '这是占位文件，用于确保目录存在。');
+  fs.writeFileSync(
+    path.join(rootDir, '.vercel', 'output', 'config.json'),
+    JSON.stringify(vercelConfig, null, 2)
+  );
   
-  console.log('静态文件准备完成！');
+  console.log('✅ 配置文件创建成功');
+  console.log('✅ 静态部署准备完成');
 }
 
 // 执行主函数
-main(); 
+main().catch(error => {
+  console.error('❌ 构建过程出错:', error);
+  process.exit(1);
+}); 

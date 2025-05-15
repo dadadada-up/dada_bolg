@@ -20,16 +20,14 @@ process.env.IS_VERCEL = '1';
 process.env.NEXT_PUBLIC_IS_VERCEL = '1';
 
 // 检查Turso配置
-if (!process.env.TURSO_DATABASE_URL) {
-  console.error('❌ 错误: 未设置TURSO_DATABASE_URL环境变量');
-  console.error('请在Vercel项目设置中配置此环境变量');
-  process.exit(1);
-}
-
-if (!process.env.TURSO_AUTH_TOKEN) {
-  console.error('❌ 错误: 未设置TURSO_AUTH_TOKEN环境变量');
-  console.error('请在Vercel项目设置中配置此环境变量');
-  process.exit(1);
+if (process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN) {
+  console.log('✅ 检测到Turso数据库配置');
+  console.log(`   数据库URL: ${process.env.TURSO_DATABASE_URL.substring(0, 20)}...`);
+  console.log('   认证令牌: ********');
+} else {
+  console.warn('⚠️ 未检测到Turso数据库配置，将尝试使用静态部署备选方案');
+  // 设置标记以便后续脚本知道需要使用静态部署方案
+  process.env.USE_STATIC_FALLBACK = 'true';
 }
 
 // 确保网站URL正确设置

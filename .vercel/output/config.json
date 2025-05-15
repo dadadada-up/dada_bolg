@@ -2,6 +2,9 @@
   "version": 3,
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/(.*)", "status": 404, "dest": "/404.html" }
-  ]
+    { "src": "/(.*)", "dest": "/404.html" }
+  ],
+  "overrides": {
+    "404.html": { "path": "/404.html", "contentType": "text/html; charset=utf-8" }
+  }
 } 

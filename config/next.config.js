@@ -1,14 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export',
-  distDir: '.vercel/output/static',
   trailingSlash: true,
   
   // 配置环境变量，使其在客户端可用
   env: {
-    // 在Vercel环境中，将IS_VERCEL设置为'1'
-    IS_VERCEL: '1',
+    // 强制启用Vercel环境检测
+    VERCEL: process.env.VERCEL || '1',
+    IS_VERCEL: process.env.VERCEL || '1',
+    
+    // 标记当前为构建环境
+    IS_BUILD: '1',
     
     // 区分生产环境和开发环境
     NEXT_PUBLIC_SITE_URL: process.env.VERCEL ? 
@@ -16,29 +18,38 @@ const nextConfig = {
       'http://localhost:3001',
       
     // 在构建时和运行时都可以检测Vercel环境
-    NEXT_PUBLIC_IS_VERCEL: '1',
+    NEXT_PUBLIC_IS_VERCEL: process.env.VERCEL || '1',
+    NEXT_PUBLIC_BUILD_MODE: '1',
   },
   
   // 设置服务器配置
   serverRuntimeConfig: {
     // 服务器端环境变量
+    isVercel: true,
+    isVercelBuild: true,
   },
   
   // 设置客户端配置
   publicRuntimeConfig: {
     // 客户端环境变量
+    isVercel: true, 
+    isVercelBuild: true,
   },
   
-  // 禁用各种功能以确保完全静态化
+  // 图像配置
   images: {
-    unoptimized: true,
     disableStaticImages: false,
-    loader: 'custom',
-    loaderFile: './src/lib/image-loader.js',
+    domains: ['assets.vercel.com', 'vercel.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
   
-  // 禁用字体优化
-  optimizeFonts: false,
+  // 允许字体优化
+  optimizeFonts: true,
   
   // 禁用TypeScript类型检查，解决Vercel构建错误
   typescript: {
@@ -73,21 +84,13 @@ const nextConfig = {
     ];
   },
   
-  // 禁用webpack分析
+  // 更新webpack配置
   webpack: (config) => {
-    // 禁用fetch
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
       path: false,
-      crypto: false,
-      http: false,
-      https: false,
-      net: false,
-      tls: false,
-      zlib: false,
-      stream: false,
-      fetch: false,
+      sqlite3: false,
     };
     return config;
   },

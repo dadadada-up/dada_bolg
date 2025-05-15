@@ -7,6 +7,10 @@ import { HeroSection } from "@/components/home/hero-section";
 import { FeaturedCategories } from "@/components/home/featured-categories";
 import { FeaturedPosts } from "@/components/home/featured-posts";
 import { categoryMappings } from "@/lib/github";
+import { headers } from "next/headers";
+
+// 配置页面为动态渲染
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Dada Blog - 首页",
@@ -51,21 +55,55 @@ const fallbackCategories: Category[] = [
   { name: "个人博客", slug: "personal-blog", postCount: 1 }
 ];
 
-export default async function HomePage() {
-  // 通过API获取文章
-  const apiUrl = `/api/posts-new?limit=6`;
-  
-  const response = await fetch(apiUrl);
-  
-  if (!response.ok) {
-    throw new Error('获取文章失败');
+// 获取当前主机URL
+function getBaseUrl() {
+  // 优先使用环境变量
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
   }
   
-  const data = await response.json();
-  const posts: Post[] = data.data || [];
+  // 回退到请求头获取主机
+  try {
+    const headersList = headers();
+    const host = headersList.get("host") || "localhost:3002"; // 更新默认端口
+    const protocol = host.includes("localhost") ? "http" : "https";
+    return `${protocol}://${host}`;
+  } catch (error) {
+    // 最终回退到默认值
+    console.error("获取请求头失败，使用默认值:", error);
+    return "http://localhost:3002";
+  }
+}
+
+export default async function HomePage() {
+  // 获取基础URL
+  const baseUrl = getBaseUrl();
+  console.log("基础URL:", baseUrl);
+  
+  // 通过API获取文章
+  const apiUrl = `${baseUrl}/api/posts-new?limit=6`;
+  console.log("文章API URL:", apiUrl);
+  
+  let posts: Post[] = [];
+  try {
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) {
+      console.error("获取文章失败:", response.status, response.statusText);
+      throw new Error('获取文章失败');
+    }
+    
+    const data = await response.json();
+    posts = data.data || [];
+  } catch (error) {
+    console.error("获取文章出错:", error);
+    // 失败时使用空数组
+    posts = [];
+  }
 
   // 获取所有分类
-  const categoriesApiUrl = `/api/categories-new`;
+  const categoriesApiUrl = `${baseUrl}/api/categories-new`;
+  console.log("分类API URL:", categoriesApiUrl);
   
   let categories: Category[] = [];
   try {

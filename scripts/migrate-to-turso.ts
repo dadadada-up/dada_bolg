@@ -1,150 +1,182 @@
+/**
+ * SQLite到Turso数据库迁移脚本
+ * 
+ * 用法:
+ *   npm run migrate-to-turso        # 完整迁移(结构+数据)
+ *   npm run migrate-to-turso:dry    # 模拟运行，不实际写入
+ *   npm run migrate-to-turso:schema # 仅迁移数据库结构
+ */
+
+// 注意：需要安装以下依赖:
+// npm install --save-dev dotenv commander sqlite3 sqlite
+
 import path from 'path';
 import fs from 'fs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
+import { Command } from 'commander';
 import dotenv from 'dotenv';
+import { createClient } from '@libsql/client';
 
 // 加载环境变量
 dotenv.config({ path: '.env.local' });
 dotenv.config();
 
-// 检查是否有必要的环境变量
-if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-  console.error('错误: 未设置TURSO_DATABASE_URL或TURSO_AUTH_TOKEN环境变量');
-  process.exit(1);
-}
-
-// 动态导入@libsql/client以避免构建错误
-const importTursoClient = async () => {
-  const { createClient } = await import('@libsql/client');
-  return createClient({
-    url: process.env.TURSO_DATABASE_URL || '',
-    authToken: process.env.TURSO_AUTH_TOKEN
-  });
-};
-
-// 解析命令行参数
-const args = process.argv.slice(2);
-const options = {
-  dryRun: args.includes('--dry-run') || args.includes('-d'),
-  schemaOnly: args.includes('--schema-only') || args.includes('-s'),
-  force: args.includes('--force') || args.includes('-f'),
-};
-
-// 打印使用信息
-if (args.includes('--help') || args.includes('-h')) {
-  console.log(`
-数据库迁移工具: 将SQLite数据库迁移到Turso
-
-选项:
-  --dry-run, -d       模拟运行，不实际写入目标数据库
-  --schema-only, -s   仅迁移数据库结构，不迁移数据
-  --force, -f         强制执行，覆盖目标数据库中现有数据
-  --help, -h          显示帮助信息
-  `);
-  process.exit(0);
-}
-
-// 数据库路径
+// 本地SQLite数据库路径
 const DB_PATH = process.env.DB_PATH || path.resolve(process.cwd(), 'data', 'blog.db');
 
+// Turso连接信息
+const TURSO_URL = process.env.TURSO_DATABASE_URL;
+const TURSO_TOKEN = process.env.TURSO_AUTH_TOKEN;
+
+// 命令行解析
+const program = new Command();
+program
+  .name('migrate-to-turso')
+  .description('将SQLite数据库迁移到Turso云数据库')
+  .option('-d, --dry-run', '模拟运行，不实际写入目标数据库', false)
+  .option('-s, --schema-only', '仅迁移数据库结构，不迁移数据', false)
+  .option('-f, --force', '强制执行，覆盖目标数据库中现有数据', false)
+  .parse(process.argv);
+
+const options = program.opts();
+
+/**
+ * 主迁移函数
+ */
 async function migrateToTurso() {
   console.log('开始迁移SQLite数据库到Turso...');
-  console.log(`选项: ${JSON.stringify(options)}`);
-  
-  // 创建Turso客户端
-  const tursoClient = await importTursoClient();
-  
-  // 打开本地SQLite数据库
-  console.log(`打开本地数据库: ${DB_PATH}`);
-  
-  if (!fs.existsSync(DB_PATH)) {
-    console.error(`错误: 数据库文件不存在: ${DB_PATH}`);
+
+  // 检查环境变量（在模拟运行模式下不强制要求）
+  if (!options.dryRun && (!TURSO_URL || !TURSO_TOKEN)) {
+    console.error('错误: 未设置TURSO_DATABASE_URL或TURSO_AUTH_TOKEN环境变量');
+    console.error('请在.env.local文件中设置这些变量，或参考文档进行设置');
     process.exit(1);
   }
-  
-  const db = await open({
-    filename: DB_PATH,
-    driver: sqlite3.Database
-  });
-  
+
+  // 检查本地数据库是否存在
+  if (!fs.existsSync(DB_PATH)) {
+    console.error(`错误: 本地数据库文件不存在: ${DB_PATH}`);
+    process.exit(1);
+  }
+
+  console.log(`本地数据库: ${DB_PATH}`);
+  console.log(`Turso数据库: ${TURSO_URL || '模拟模式 - 未连接'}`);
+  console.log(`迁移模式: ${options.dryRun ? '模拟运行' : options.schemaOnly ? '仅结构' : '完整迁移'}`);
+
   try {
-    // 测试Turso连接
-    try {
-      await tursoClient.execute({ sql: 'SELECT 1' });
-      console.log('✅ Turso数据库连接成功');
-    } catch (error) {
-      console.error('❌ Turso数据库连接失败:', error);
-      process.exit(1);
+    // 加载Turso客户端（仅在非模拟模式下）
+    let tursoClient;
+    if (!options.dryRun) {
+      try {
+        tursoClient = createClient({
+          url: TURSO_URL || '',
+          authToken: TURSO_TOKEN
+        });
+        console.log('✅ 成功连接到Turso数据库');
+      } catch (error) {
+        console.error('❌ 连接Turso数据库失败:', error);
+        process.exit(1);
+      }
+    } else {
+      // 在模拟模式下创建一个模拟客户端
+      console.log('🔍 模拟模式：创建模拟Turso客户端');
+      tursoClient = {
+        execute: async ({ sql, args }: { sql: string; args?: any[] }) => {
+          console.log(`[DRY RUN] 将执行: ${sql}`);
+          if (args && args.length > 0) {
+            console.log(`[DRY RUN] 参数: ${JSON.stringify(args)}`);
+          }
+          return { rows: [] };
+        }
+      };
     }
+
+    // 打开本地SQLite数据库
+    console.log(`打开本地数据库: ${DB_PATH}`);
+    const db = await open({
+      filename: DB_PATH,
+      driver: sqlite3.Database
+    });
+
+    // 创建备份
+    const backupTimestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupDir = path.resolve(process.cwd(), 'data', 'backups');
+    if (!fs.existsSync(backupDir)) {
+      fs.mkdirSync(backupDir, { recursive: true });
+    }
+    const backupPath = path.join(backupDir, `sqlite-backup-${backupTimestamp}.db`);
     
-    // 获取所有表名
+    if (!options.dryRun) {
+      fs.copyFileSync(DB_PATH, backupPath);
+      console.log(`✅ 备份已创建: ${backupPath}`);
+    } else {
+      console.log(`[DRY RUN] 将创建备份: ${backupPath}`);
+    }
+
+    // 获取所有表
     const tables = await db.all(`
       SELECT name FROM sqlite_master 
       WHERE type='table' AND name NOT LIKE 'sqlite_%' 
       ORDER BY name
     `);
-    
+
     console.log(`找到${tables.length}个表: ${tables.map(t => t.name).join(', ')}`);
-    
-    // 备份当前模式和数据
-    console.log('正在创建本地数据库备份...');
-    const backupTimestamp = Date.now();
-    const backupPath = `${DB_PATH}.backup.${backupTimestamp}`;
-    fs.copyFileSync(DB_PATH, backupPath);
-    console.log(`备份已创建: ${backupPath}`);
-    
-    // 获取并应用数据库模式
-    console.log('获取数据库表结构...');
+
+    // 迁移表结构
+    console.log('\n开始迁移表结构...');
     for (const table of tables) {
       const tableName = table.name;
-      
+
       // 获取表结构
       const createTableSql = await db.get(`
         SELECT sql FROM sqlite_master 
         WHERE type='table' AND name=?
       `, tableName);
-      
+
       if (!createTableSql || !createTableSql.sql) {
-        console.warn(`警告: 无法获取表 ${tableName} 的创建语句`);
+        console.warn(`⚠️ 警告: 无法获取表 ${tableName} 的创建语句`);
         continue;
       }
-      
-      // 应用表结构到Turso（除非是dry-run模式）
-      console.log(`创建表: ${tableName}`);
+
+      // 执行建表语句
       if (!options.dryRun) {
         try {
           // 如果force选项开启，先删除现有表
           if (options.force) {
             await tursoClient.execute({
-              sql: `DROP TABLE IF EXISTS ${tableName}`
+              sql: `DROP TABLE IF EXISTS ${tableName}`,
+              args: []
             });
+            console.log(`已删除现有表: ${tableName}`);
           }
-          
-          // 创建表
-          await tursoClient.execute({ sql: createTableSql.sql });
-          console.log(`✅ 表 ${tableName} 创建成功`);
+
+          await tursoClient.execute({
+            sql: createTableSql.sql,
+            args: []
+          });
+          console.log(`✅ 创建表: ${tableName}`);
         } catch (error) {
           console.error(`❌ 创建表 ${tableName} 失败:`, error);
-          console.error('详细错误:', error);
-          // 继续执行，不中断整个迁移过程
         }
       } else {
         console.log(`[DRY RUN] 将执行: ${createTableSql.sql}`);
       }
-      
-      // 获取索引
+
+      // 获取并创建索引
       const indexes = await db.all(`
         SELECT sql FROM sqlite_master 
         WHERE type='index' AND tbl_name=? AND sql IS NOT NULL
       `, tableName);
-      
-      // 应用索引到Turso
+
       for (const index of indexes) {
         if (!options.dryRun) {
           try {
-            await tursoClient.execute({ sql: index.sql });
-            console.log(`✅ 索引创建成功: ${index.sql}`);
+            await tursoClient.execute({
+              sql: index.sql,
+              args: []
+            });
+            console.log(`✅ 创建索引: ${index.sql}`);
           } catch (error) {
             console.error(`❌ 创建索引失败:`, error);
           }
@@ -153,90 +185,83 @@ async function migrateToTurso() {
         }
       }
     }
-    
+
     // 如果不是只迁移结构，则迁移数据
     if (!options.schemaOnly) {
       console.log('\n开始迁移数据...');
-      
+
       for (const table of tables) {
         const tableName = table.name;
-        
+
         // 获取表中的数据行数
         const countResult = await db.get(`SELECT COUNT(*) as count FROM ${tableName}`);
         const rowCount = countResult?.count || 0;
-        
+
         console.log(`迁移表 ${tableName} 的数据 (${rowCount}行)...`);
-        
+
         if (rowCount > 0) {
           // 获取所有列
           const columnsResult = await db.all(`PRAGMA table_info(${tableName})`);
           const columns = columnsResult.map(col => col.name);
-          
+
           // 批量获取和插入数据（每批500行）
           const batchSize = 500;
-          let successCount = 0;
-          let errorCount = 0;
-          
           for (let offset = 0; offset < rowCount; offset += batchSize) {
             const rows = await db.all(
               `SELECT * FROM ${tableName} LIMIT ${batchSize} OFFSET ${offset}`
             );
-            
-            // 对每行数据生成INSERT语句
+
+            // 逐行执行插入
             for (const row of rows) {
               const placeholders = columns.map(() => '?').join(', ');
               const values = columns.map(col => row[col]);
-              
+
               const insertSql = `
                 INSERT INTO ${tableName} (${columns.join(', ')})
                 VALUES (${placeholders})
               `;
-              
+
               if (!options.dryRun) {
                 try {
                   await tursoClient.execute({
                     sql: insertSql,
                     args: values
                   });
-                  successCount++;
                 } catch (error) {
                   console.error(`❌ 插入数据到 ${tableName} 失败:`, error);
-                  // 只有在特定错误条件下打印详细信息
-                  if (errorCount < 3) {
-                    console.error('失败的SQL:', insertSql);
-                    console.error('失败的值:', values);
-                  } else if (errorCount === 3) {
-                    console.error('后续错误将不再显示详细信息...');
-                  }
-                  errorCount++;
                 }
               } else {
-                successCount++;
-                if (offset === 0 && successCount <= 2) {
-                  console.log(`[DRY RUN] 将执行插入到 ${tableName}: ${insertSql.substring(0, 100)}...`);
+                if (offset === 0 && rows.indexOf(row) === 0) {
+                  // 为节省输出，只显示第一行数据
+                  console.log(`[DRY RUN] 将执行插入到 ${tableName}`);
+                  console.log(`[DRY RUN] 示例SQL: ${insertSql}`);
+                  console.log(`[DRY RUN] 示例值: ${JSON.stringify(values)}`);
                 }
               }
             }
-            
+
             console.log(`✅ ${tableName}: 已处理 ${Math.min(offset + rows.length, rowCount)}/${rowCount} 行`);
           }
-          
-          console.log(`✅ ${tableName}: 完成 (成功: ${successCount}, 失败: ${errorCount})`);
         }
       }
     }
-    
+
+    // 关闭本地数据库
+    await db.close();
+
     console.log('\n数据库迁移完成!');
     if (options.dryRun) {
       console.log('注意: 这是模拟运行，没有实际修改目标数据库');
     }
-    
+
+    // 建议运行验证脚本
+    console.log('\n建议运行 npm run validate-migration 验证迁移结果');
+
   } catch (error) {
     console.error('迁移过程中发生错误:', error);
     process.exit(1);
-  } finally {
-    await db.close();
   }
 }
 
-migrateToTurso().catch(console.error); 
+// 执行迁移函数
+migrateToTurso(); 

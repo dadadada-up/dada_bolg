@@ -19,9 +19,6 @@
     "VERCEL_BUILD_CACHE": "0",
     "NEXT_CONFIG": "configs/next.config.js"
   },
-  "buildCache": {
-    "enabled": false
-  },
   "headers": [
     {
       "source": "/(.*)",
@@ -41,8 +38,8 @@
       ]
     }
   ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "status": 404, "dest": "/404.html" }
-  ]
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/404.html" }
+  ],
+  "cleanUrls": true
 } 

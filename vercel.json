@@ -10,8 +10,8 @@
     "silent": true
   },
   "env": {
-    "TURSO_DATABASE_URL": "@turso_database_url",
-    "TURSO_AUTH_TOKEN": "@turso_auth_token",
+    "TURSO_DATABASE_URL": "libsql://dada-blog-db-dadadada-up.aws-ap-northeast-1.turso.io",
+    "TURSO_AUTH_TOKEN": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDc0MDc4NDAsImlkIjoiODU2YmRjMDMtMjQ0OC00ZDI4LTgyNjctYzA0NjgzMzdkYjQ2IiwicmlkIjoiYTIyZjg1MzMtNmIyMC00YzkxLWE5ZTctMTFkZThmNzI2NzgyIn0.VPloGmK_AkhDNs-ZaskAM-3R2rL0dZXXj7saEwoJCjbBrjBHxau4HQn1yTltBZbRBo0UzfwrSad3dYtnXuv1BA",
     "NEXT_PUBLIC_DATABASE_MODE": "turso",
     "NEXT_PUBLIC_IS_VERCEL": "1"
   },

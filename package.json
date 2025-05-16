@@ -45,6 +45,8 @@
     "reset-and-backup": "node scripts/reset-and-backup.js",
     "test-turso": "node scripts/test-turso-connection.js",
     "turso:check": "node scripts/test-turso-connection.js",
+    "verify-turso": "node scripts/verify-vercel-turso.js",
+    "verify-build": "node scripts/verify-vercel-build.js",
     "vercel:test-turso": "node test-vercel-build.js && node scripts/test-turso-connection.js"
   },
   "engines": {

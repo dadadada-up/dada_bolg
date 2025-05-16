@@ -1,0 +1,4 @@
+# 强制Vercel重新构建
+# 时间戳: 2025-05-16 15:45:00
+VERCEL_FORCE_REBUILD=true
+DISABLE_CACHE=true 

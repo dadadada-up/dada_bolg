@@ -4,7 +4,7 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["hnd1", "iad1", "sfo1"],
+  "regions": ["iad1"],
   "public": true,
   "github": {
     "silent": true

@@ -15,7 +15,8 @@
     "TURSO_AUTH_TOKEN": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDc0MDc4NDAsImlkIjoiODU2YmRjMDMtMjQ0OC00ZDI4LTgyNjctYzA0NjgzMzdkYjQ2IiwicmlkIjoiYTIyZjg1MzMtNmIyMC00YzkxLWE5ZTctMTFkZThmNzI2NzgyIn0.VPloGmK_AkhDNs-ZaskAM-3R2rL0dZXXj7saEwoJCjbBrjBHxau4HQn1yTltBZbRBo0UzfwrSad3dYtnXuv1BA",
     "NEXT_PUBLIC_DATABASE_MODE": "turso",
     "NEXT_PUBLIC_IS_VERCEL": "1",
-    "VERCEL_FORCE_NO_BUILD_CACHE": "1"
+    "VERCEL_FORCE_NO_BUILD_CACHE": "1",
+    "NEXT_CONFIG": "configs/next.config.js"
   },
   "headers": [
     {

@@ -16,7 +16,11 @@
     "NEXT_PUBLIC_DATABASE_MODE": "turso",
     "NEXT_PUBLIC_IS_VERCEL": "1",
     "VERCEL_FORCE_NO_BUILD_CACHE": "1",
+    "VERCEL_BUILD_CACHE": "0",
     "NEXT_CONFIG": "configs/next.config.js"
+  },
+  "buildCache": {
+    "enabled": false
   },
   "headers": [
     {

@@ -38,17 +38,21 @@ function ensure404Page() {
   // 检查public目录中是否有404.html
   const publicDir = path.join(rootDir, 'public');
   const source404 = path.join(publicDir, '404.html');
-  const target404 = path.join(staticDir, '404.html');
+  
+  // 两个目标位置：static目录和.vercel/output目录
+  const target404Static = path.join(staticDir, '404.html');
+  const target404Output = path.join(vercelOutputDir, '404.html');
+  
+  let html404Content = '';
   
   if (fs.existsSync(source404)) {
     console.log(`找到404.html，复制到输出目录...`);
-    fs.copyFileSync(source404, target404);
-    console.log(`✅ 已复制404.html到: ${target404}`);
+    html404Content = fs.readFileSync(source404, 'utf8');
   } else {
     console.log('⚠️ 公共目录中没有找到404.html，创建一个基本的404页面');
     
     // 创建一个基本的404页面
-    const basic404 = `<!DOCTYPE html>
+    html404Content = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -98,10 +102,19 @@ function ensure404Page() {
   </div>
 </body>
 </html>`;
-    
-    fs.writeFileSync(target404, basic404);
-    console.log('✅ 已创建基本的404.html页面');
   }
+  
+  // 将404.html写入多个位置，确保Vercel能找到它
+  fs.writeFileSync(target404Static, html404Content);
+  fs.writeFileSync(target404Output, html404Content);
+  
+  // 为了确保Next.js也能识别404页面，把它放在多个可能的位置
+  const nextOutput = path.join(vercelOutputDir, 'static', '_next');
+  if (fs.existsSync(nextOutput)) {
+    fs.writeFileSync(path.join(nextOutput, '404.html'), html404Content);
+  }
+  
+  console.log('✅ 已在多个位置创建404.html页面');
   
   // 创建或更新config.json
   let config = {
@@ -119,7 +132,23 @@ function ensure404Page() {
   if (fs.existsSync(configFile)) {
     try {
       const existingConfig = JSON.parse(fs.readFileSync(configFile, 'utf8'));
-      config = { ...existingConfig, ...config };
+      
+      // 手动合并配置，确保routes和overrides正确合并
+      config.version = existingConfig.version || 3;
+      if (existingConfig.routes) {
+        // 删除任何可能与我们的404路由冲突的路由
+        const filteredRoutes = existingConfig.routes.filter(route => 
+          !route.dest || !route.dest.includes('404.html')
+        );
+        config.routes = [...filteredRoutes, ...config.routes];
+      }
+      
+      // 合并overrides
+      config.overrides = { 
+        ...existingConfig.overrides, 
+        ...config.overrides 
+      };
+      
       console.log('合并了现有的配置文件');
     } catch (error) {
       console.error(`读取配置文件失败: ${error.message}`);
@@ -129,6 +158,29 @@ function ensure404Page() {
   // 写入配置文件
   fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
   console.log(`✅ 已创建/更新Vercel配置: ${configFile}`);
+  
+  // 添加一个build输出清单文件，明确列出404.html
+  const buildOutputPath = path.join(rootDir, '.vercel', 'output', 'build-output.json');
+  const buildOutput = {
+    routes: [
+      { 
+        src: "/(.*)", 
+        status: 404, 
+        dest: "/404.html" 
+      }
+    ],
+    staticFilesOutputPath: "static",
+    publicDirectoryPath: "public",
+    buildOutputs: [
+      {
+        path: "404.html",
+        type: "static"
+      }
+    ]
+  };
+  
+  fs.writeFileSync(buildOutputPath, JSON.stringify(buildOutput, null, 2));
+  console.log(`✅ 已创建构建输出清单`);
 }
 
 // 执行适配器函数

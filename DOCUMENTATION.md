@@ -30,7 +30,7 @@
 ## 数据库文档
 
 ### SQLite
-- [数据库模式](./turso_schema.sql) - 数据库表结构定义
+- [数据库模式](./turso_schema_fixed.sql) - 数据库表结构定义
 - [备份与恢复](./scripts/backup-turso.sh) - 数据库备份脚本
 
 ### Turso集成
@@ -41,11 +41,7 @@
 ## 部署指南
 
 ### Vercel部署
-- [Vercel静态部署](./VERCEL-STATIC-DEPLOY.md) - Vercel上的静态部署指南
-- [Turso-Vercel集成部署](./docs/turso-vercel-完整集成指南.md#5-vercel部署指南) - 使用Turso的Vercel部署方案
-
-### 其他部署选项
-- [Netlify部署](./netlify.toml) - Netlify部署配置
+- [Turso-Vercel集成部署](./docs/turso-vercel-完整集成指南.md#vercel部署配置) - 使用Turso的Vercel部署方案
 
 ## API文档
 
@@ -59,14 +55,13 @@
 ## 故障排除
 
 ### 常见问题
-- [Turso连接问题](./docs/turso-vercel-完整集成指南.md#81-常见问题及解决方案) - Turso连接相关问题解决方案
-- [部署问题](./docs/turso-vercel-完整集成指南.md#8-故障排除) - 部署过程中的问题排查
+- [Turso连接问题](./docs/turso-vercel-完整集成指南.md#常见问题与解决方案) - Turso连接相关问题解决方案
+- [部署问题](./docs/turso-vercel-完整集成指南.md#验证与测试) - 部署过程中的问题排查
 
 ### 调试工具
 - [测试脚本](./scripts/) - 各种测试和调试脚本
-  - `test-turso-connection.js` - 测试Turso连接
-  - `query-test.cjs` - 数据库查询测试
-  - `migrate-test.cjs` - 数据迁移测试
+  - `verify-vercel-turso.js` - 验证Turso连接
+  - `verify-vercel-build.js` - 验证Vercel构建环境
 
 ## 开发工具
 

@@ -9,6 +9,12 @@
   "github": {
     "silent": true
   },
+  "env": {
+    "TURSO_DATABASE_URL": "@turso_database_url",
+    "TURSO_AUTH_TOKEN": "@turso_auth_token",
+    "NEXT_PUBLIC_DATABASE_MODE": "turso",
+    "NEXT_PUBLIC_IS_VERCEL": "1"
+  },
   "headers": [
     {
       "source": "/(.*)",

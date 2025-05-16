@@ -3,3 +3,10 @@ backups/
 .git/
 node_modules/
 .cache/
+data/*.db
+data/backups/
+
+# 确保包含Turso相关文件
+!turso_schema_fixed.sql
+!turso_schema.sql
+!scripts/vercel-turso-setup.js

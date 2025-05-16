@@ -22,7 +22,8 @@
     "migrate-db": "node --experimental-specifier-resolution=node scripts/migrate-db.js",
     "vercel:prepare": "node scripts/prepare-static-files.js",
     "vercel:deploy": "vercel",
-    "vercel:build": "npm run vercel:prepare && next build",
+    "vercel:build": "node scripts/vercel-turso-setup.js && npm run vercel:prepare && next build",
+    "vercel:test-build": "node test-vercel-build.js",
     "migrate-to-turso": "ts-node scripts/migrate-to-turso.ts",
     "migrate-to-turso:dry": "ts-node scripts/migrate-to-turso.ts --dry-run",
     "migrate-to-turso:schema": "ts-node scripts/migrate-to-turso.ts --schema-only",
@@ -41,7 +42,10 @@
     "test-backup": "npx ts-node scripts/test-backup.ts",
     "test-repo-backup": "npx ts-node scripts/test-repo-backup.ts",
     "reset-github-repo": "npx ts-node scripts/reset-github-repo.ts",
-    "reset-and-backup": "node scripts/reset-and-backup.js"
+    "reset-and-backup": "node scripts/reset-and-backup.js",
+    "test-turso": "node scripts/test-turso-connection.js",
+    "turso:check": "node scripts/test-turso-connection.js",
+    "vercel:test-turso": "node test-vercel-build.js && node scripts/test-turso-connection.js"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -53,7 +57,7 @@
     "@bytemd/plugin-mermaid": "^1.22.0",
     "@bytemd/react": "^1.22.0",
     "@hookform/resolvers": "^5.0.1",
-    "@libsql/client": "^0.6.2",
+    "@libsql/client": "^0.15.6",
     "@radix-ui/react-dialog": "^1.1.13",
     "@radix-ui/react-dropdown-menu": "^2.1.14",
     "@radix-ui/react-select": "^2.2.4",

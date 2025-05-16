@@ -20,6 +20,9 @@ const nextConfig = {
     // 在构建时和运行时都可以检测Vercel环境
     NEXT_PUBLIC_IS_VERCEL: process.env.VERCEL || '1',
     NEXT_PUBLIC_BUILD_MODE: '1',
+    
+    // 数据库模式配置
+    NEXT_PUBLIC_DATABASE_MODE: process.env.TURSO_DATABASE_URL ? 'turso' : 'sqlite',
   },
   
   // 设置服务器配置
@@ -27,6 +30,8 @@ const nextConfig = {
     // 服务器端环境变量
     isVercel: true,
     isVercelBuild: true,
+    useTurso: !!process.env.TURSO_DATABASE_URL,
+    tursoUrl: process.env.TURSO_DATABASE_URL,
   },
   
   // 设置客户端配置
@@ -34,6 +39,7 @@ const nextConfig = {
     // 客户端环境变量
     isVercel: true, 
     isVercelBuild: true,
+    databaseMode: process.env.TURSO_DATABASE_URL ? 'turso' : 'sqlite',
   },
   
   // 图像配置
@@ -92,8 +98,21 @@ const nextConfig = {
       path: false,
       sqlite3: false,
     };
+    
+    // 优化Turso与Webpack的兼容性
+    if (process.env.TURSO_DATABASE_URL) {
+      config.externals = {
+        ...config.externals,
+        // 避免Webpack打包原生模块
+        sqlite3: 'commonjs sqlite3',
+      };
+    }
+    
     return config;
   },
+  
+  // 配置构建输出
+  output: process.env.TURSO_DATABASE_URL ? 'standalone' : undefined,
 }
 
 export default nextConfig 

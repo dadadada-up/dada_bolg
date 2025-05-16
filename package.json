@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "next build"
+    "vercel-build": "next build && cp public/404.html .next/404.html"
   },
   "dependencies": {
     "next": "^14.1.3",

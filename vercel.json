@@ -1,45 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel:build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
+  "buildCommand": "npm run build",
   "framework": "nextjs",
-  "regions": ["iad1"],
   "public": true,
-  "github": {
-    "silent": true,
-    "autoJobCancelation": true
-  },
   "env": {
     "TURSO_DATABASE_URL": "libsql://dada-blog-db-dadadada-up.aws-ap-northeast-1.turso.io",
     "TURSO_AUTH_TOKEN": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDc0MDc4NDAsImlkIjoiODU2YmRjMDMtMjQ0OC00ZDI4LTgyNjctYzA0NjgzMzdkYjQ2IiwicmlkIjoiYTIyZjg1MzMtNmIyMC00YzkxLWE5ZTctMTFkZThmNzI2NzgyIn0.VPloGmK_AkhDNs-ZaskAM-3R2rL0dZXXj7saEwoJCjbBrjBHxau4HQn1yTltBZbRBo0UzfwrSad3dYtnXuv1BA",
     "NEXT_PUBLIC_DATABASE_MODE": "turso",
-    "NEXT_PUBLIC_IS_VERCEL": "1",
-    "VERCEL_FORCE_NO_BUILD_CACHE": "1",
-    "VERCEL_BUILD_CACHE": "0",
-    "NEXT_CONFIG": "configs/next.config.js"
-  },
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        }
-      ]
-    }
-  ],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/404.html" }
-  ],
-  "cleanUrls": true
+    "NEXT_PUBLIC_IS_VERCEL": "1"
+  }
 } 

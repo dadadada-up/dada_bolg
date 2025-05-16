@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 // 加载SQL架构文件
-const schemaPath = path.join(rootDir, 'turso_schema_fixed.sql');
+const schemaPath = path.join(rootDir, 'data', 'db', 'turso_schema_fixed.sql');
 
 // 判断是否在Vercel环境中运行
 const isVercel = process.env.VERCEL === '1' || process.env.NEXT_PUBLIC_IS_VERCEL === '1';

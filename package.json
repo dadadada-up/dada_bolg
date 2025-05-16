@@ -22,7 +22,7 @@
     "migrate-db": "node --experimental-specifier-resolution=node scripts/migrate-db.js",
     "vercel:prepare": "node scripts/prepare-static-files.js",
     "vercel:deploy": "vercel",
-    "vercel:build": "node scripts/vercel-turso-setup.js && node scripts/prepare-static-files.js && next build --config configs/next.config.js",
+    "vercel:build": "node scripts/vercel-turso-setup.js && node scripts/prepare-static-files.js && next build --config configs/next.config.js && node scripts/next-adapter.js",
     "vercel:test-build": "node vercel/test-vercel-build.js",
     "migrate-to-turso": "ts-node scripts/migrate-to-turso.ts",
     "migrate-to-turso:dry": "ts-node scripts/migrate-to-turso.ts --dry-run",

@@ -68,18 +68,100 @@ async function main() {
   console.log(`是否在Vercel环境: ${process.env.VERCEL ? 'true' : 'false'}`);
   console.log(`使用静态部署备选方案: ${shouldUseStaticFallback ? 'true' : 'false'}`);
   
+  // 确保Vercel输出目录存在
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+  
+  // 无论是否使用Turso，都确保404.html页面存在
+  console.log('确保404.html页面存在...');
+  const source404 = path.join(publicDir, '404.html');
+  const target404 = path.join(outputDir, '404.html');
+  
+  if (fs.existsSync(source404)) {
+    console.log(`复制404页面: ${source404} -> ${target404}`);
+    copyFileSync(source404, target404);
+  } else {
+    console.log('⚠️ 在public目录中未找到404.html');
+    // 创建一个基本的404页面
+    const basic404 = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>页面未找到 - Dada Blog</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      margin-bottom: 1rem;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #0070f3;
+      text-decoration: none;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>404 - 页面未找到</h1>
+    <p>您访问的页面不存在或已被移除。</p>
+    <a href="/" class="back-link">返回首页</a>
+  </div>
+</body>
+</html>`;
+    fs.writeFileSync(target404, basic404);
+    console.log('✅ 创建了基本的404.html页面');
+  }
+  
   if (!shouldUseStaticFallback) {
     console.log('✅ 检测到Turso数据库配置，将使用正常Next.js构建流程');
+    
+    // 创建.vercel/output/config.json文件，确保404页面被注册
+    console.log('创建Vercel配置文件...');
+    const vercelConfig = {
+      version: 3,
+      routes: [
+        { handle: "filesystem" },
+        { src: "/(.*)", status: 404, dest: "/404.html" }
+      ]
+    };
+    
+    fs.writeFileSync(
+      path.join(rootDir, '.vercel', 'output', 'config.json'),
+      JSON.stringify(vercelConfig, null, 2)
+    );
+    
+    console.log('✅ 配置文件创建成功');
     return;
   }
   
   console.log('⚠️ 未检测到Turso数据库配置，将使用静态部署备选方案');
 
-  // 创建.vercel/output目录（如果不存在）
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
-  
   // 创建静态HTML页面
   console.log('正在生成静态HTML页面...');
 
@@ -106,7 +188,7 @@ async function main() {
     version: 3,
     routes: [
       { handle: "filesystem" },
-      { src: "/(.*)", dest: "/404.html" }
+      { src: "/(.*)", status: 404, dest: "/404.html" }
     ],
     overrides: {
       '404.html': { path: '/404.html', contentType: 'text/html; charset=utf-8' }

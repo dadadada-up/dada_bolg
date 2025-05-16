@@ -7,7 +7,8 @@
   "regions": ["iad1"],
   "public": true,
   "github": {
-    "silent": true
+    "silent": true,
+    "autoJobCancelation": true
   },
   "env": {
     "TURSO_DATABASE_URL": "libsql://dada-blog-db-dadadada-up.aws-ap-northeast-1.turso.io",

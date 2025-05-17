@@ -4,7 +4,23 @@ import { promises as fsPromises } from 'fs';
 import crypto from 'crypto';
 import { StorageService, FileInfo, UploadResult } from './storage-service';
 import { LocalStorageConfig } from '../config/storage';
-import sharp from 'sharp';
+
+// 动态导入sharp，只在非Vercel环境中使用
+let sharp: any = null;
+const isVercel = process.env.VERCEL === '1' || process.env.NEXT_PUBLIC_IS_VERCEL === '1';
+
+if (!isVercel) {
+  try {
+    // 只在非Vercel环境中导入sharp
+    import('sharp').then(module => {
+      sharp = module.default;
+    }).catch(err => {
+      console.warn('无法导入sharp库:', err.message);
+    });
+  } catch (error) {
+    console.warn('无法导入sharp库:', (error as Error).message);
+  }
+}
 
 /**
  * 本地存储服务实现
@@ -17,7 +33,7 @@ export class LocalStorageService implements StorageService {
 
   constructor(config: LocalStorageConfig, compressImages = true, maxWidth?: number, quality?: number) {
     this.config = config;
-    this.compressImages = compressImages;
+    this.compressImages = compressImages && !isVercel; // 在Vercel环境中禁用图片压缩
     this.maxWidth = maxWidth;
     this.quality = quality;
   }
@@ -47,16 +63,21 @@ export class LocalStorageService implements StorageService {
       const fullPath = path.join(uploadPath, filename);
       const storagePath = path.join(relativePath, filename);
 
-      // 处理图片（如果需要压缩）
+      // 处理图片（如果需要压缩且不在Vercel环境中）
       let buffer = file.buffer;
       let width: number | undefined;
       let height: number | undefined;
 
-      if (this.isImage(file.mimeType) && this.compressImages) {
-        const processedImage = await this.processImage(file.buffer);
-        buffer = processedImage.buffer;
-        width = processedImage.width;
-        height = processedImage.height;
+      if (this.isImage(file.mimeType) && this.compressImages && !isVercel && sharp) {
+        try {
+          const processedImage = await this.processImage(file.buffer);
+          buffer = processedImage.buffer;
+          width = processedImage.width;
+          height = processedImage.height;
+        } catch (error) {
+          console.warn('图片处理失败，使用原始图片:', (error as Error).message);
+          // 使用原始图片
+        }
       }
 
       // 写入文件
@@ -166,15 +187,25 @@ export class LocalStorageService implements StorageService {
    * @returns 处理后的图片信息
    */
   private async processImage(buffer: Buffer): Promise<{ buffer: Buffer; width: number; height: number }> {
+    if (!sharp || isVercel) {
+      // 在Vercel环境中或sharp不可用时，返回原始图片
+      return {
+        buffer,
+        width: 0,
+        height: 0
+      };
+    }
+    
     try {
-      let sharpInstance = sharp(buffer);
+      // 使用any类型避免TypeScript错误
+      const sharpInstance = sharp(buffer as any);
       
       // 获取图片元数据
       const metadata = await sharpInstance.metadata();
       
       // 如果设置了最大宽度且图片宽度大于最大宽度，则调整大小
       if (this.maxWidth && metadata.width && metadata.width > this.maxWidth) {
-        sharpInstance = sharpInstance.resize({
+        sharpInstance.resize({
           width: this.maxWidth,
           withoutEnlargement: true
         });
@@ -182,11 +213,11 @@ export class LocalStorageService implements StorageService {
       
       // 根据图片格式设置压缩选项
       if (metadata.format === 'jpeg' || metadata.format === 'jpg') {
-        sharpInstance = sharpInstance.jpeg({ quality: this.quality || 85 });
+        sharpInstance.jpeg({ quality: this.quality || 85 });
       } else if (metadata.format === 'png') {
-        sharpInstance = sharpInstance.png({ quality: this.quality || 85 });
+        sharpInstance.png({ quality: this.quality || 85 });
       } else if (metadata.format === 'webp') {
-        sharpInstance = sharpInstance.webp({ quality: this.quality || 85 });
+        sharpInstance.webp({ quality: this.quality || 85 });
       }
       
       // 处理图片

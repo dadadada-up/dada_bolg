@@ -1,6 +1,10 @@
 import { StorageService, StorageServiceFactory } from './storage-service';
 import { LocalStorageService } from './local-storage';
+import { VercelStorageService } from './vercel-storage';
 import { getStorageConfig } from '../config/storage';
+
+// 判断当前环境
+const isVercel = process.env.VERCEL === '1' || process.env.NEXT_PUBLIC_IS_VERCEL === '1';
 
 /**
  * 默认存储服务工厂
@@ -12,6 +16,12 @@ export class DefaultStorageServiceFactory implements StorageServiceFactory {
    */
   createStorageService(): StorageService {
     const config = getStorageConfig();
+    
+    // 如果在Vercel环境中，使用不依赖sharp的存储服务
+    if (isVercel) {
+      console.log('在Vercel环境中使用VercelStorageService');
+      return new VercelStorageService(config.local);
+    }
     
     // 根据配置类型创建相应的存储服务
     switch (config.type) {

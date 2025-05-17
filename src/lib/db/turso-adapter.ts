@@ -37,7 +37,7 @@ export class TursoDatabase implements Omit<Database, 'get'> {
       throw new Error('Turso客户端未初始化');
     }
   }
-
+  
   /**
    * 执行SQL并返回所有结果
    */
@@ -55,12 +55,12 @@ export class TursoDatabase implements Omit<Database, 'get'> {
       });
       
       return result.rows as T[];
-    } catch (error) {
+      } catch (error) {
       console.error('[TursoAdapter] 执行查询失败:', error);
       throw error;
     }
   }
-
+  
   /**
    * 执行SQL并返回单个结果
    * 注意: 这个方法返回类型与Database接口不完全兼容，但实际使用中可以正常工作
@@ -84,7 +84,7 @@ export class TursoDatabase implements Omit<Database, 'get'> {
       throw error;
     }
   }
-
+  
   /**
    * 执行SQL并返回受影响的行数
    */
@@ -114,7 +114,7 @@ export class TursoDatabase implements Omit<Database, 'get'> {
           lastID = idResult.rows[0]?.id;
         } catch (error) {
           console.warn('[TursoAdapter] 无法获取last_insert_rowid');
-        }
+  }
       }
       
       return {
@@ -126,7 +126,7 @@ export class TursoDatabase implements Omit<Database, 'get'> {
       throw error;
     }
   }
-
+  
   /**
    * 执行SQL不返回结果
    */
@@ -153,28 +153,28 @@ export class TursoDatabase implements Omit<Database, 'get'> {
       throw error;
     }
   }
-
+  
   /**
    * 开始事务
    */
   async begin(): Promise<void> {
     await this.exec('BEGIN TRANSACTION');
   }
-
+  
   /**
    * 提交事务
    */
   async commit(): Promise<void> {
     await this.exec('COMMIT');
   }
-
+  
   /**
    * 回滚事务
    */
   async rollback(): Promise<void> {
     await this.exec('ROLLBACK');
   }
-
+  
   /**
    * 准备语句（暂不支持，抛出错误）
    */

@@ -69,7 +69,9 @@ export function createClient(config: TursoClientConfig): TursoClient {
       async sync() {
         console.log('[Turso] 同步数据');
         try {
-          return await client.sync();
+          // 执行同步但忽略返回值，因为我们的接口定义为返回void
+          await client.sync();
+          return;
         } catch (error) {
           console.error(`[Turso] 同步错误:`, error);
           throw error;
@@ -83,7 +85,7 @@ export function createClient(config: TursoClientConfig): TursoClient {
 }
 
 // 环境检测功能
-const isTursoEnabled = (): boolean => {
+export const isTursoEnabled = (): boolean => {
   const enabled = !!process.env.TURSO_DATABASE_URL && !!process.env.TURSO_AUTH_TOKEN;
   console.log(`[Turso] 是否启用: ${enabled}`);
   console.log(`[Turso] 数据库URL: ${process.env.TURSO_DATABASE_URL ? '已设置' : '未设置'}`);
@@ -113,4 +115,6 @@ if (isTursoEnabled() && process.env.NODE_ENV !== 'production') {
 export default tursoClient;
 
 // 导出工具函数
-export const useTurso = isTursoEnabled(); 
+export function useTurso(): boolean {
+  return isTursoEnabled();
+} 

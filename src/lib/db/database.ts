@@ -13,7 +13,7 @@ import { useTurso } from './turso-client';
 const isVercel = process.env.VERCEL === '1';
 
 // 在Vercel环境中强制使用Turso
-const forceTurso = isVercel || useTurso;
+const forceTurso = isVercel || useTurso();
 
 // 数据库文件路径（本地开发用）
 const DB_PATH = process.env.DB_PATH || path.resolve(process.cwd(), 'data', 'blog.db');
@@ -32,6 +32,7 @@ let dbInstance: Database | null = null;
 // 动态导入sqlite3，避免在Vercel环境中直接导入
 async function getSqliteDriver() {
   if (forceTurso) {
+    console.log('[DB] 在Vercel环境中跳过SQLite数据库初始化');
     return null;
   }
   
@@ -51,6 +52,7 @@ async function getSqliteDriver() {
 // 动态导入sqlite，避免在Vercel环境中直接导入
 async function getSqliteOpen() {
   if (forceTurso) {
+    console.log('[DB] 在Vercel环境中跳过SQLite数据库初始化');
     return null;
   }
   

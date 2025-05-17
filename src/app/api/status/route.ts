@@ -34,14 +34,14 @@ export async function GET(request: Request) {
       ...systemInfo,
       status: 'online',
       database: {
-        type: useTurso ? 'Turso (云SQLite)' : 'SQLite (本地文件)',
+        type: useTurso() ? 'Turso (云SQLite)' : 'SQLite (本地文件)',
         connected: false,
-        url: useTurso ? '已配置' : '未配置',
+        url: useTurso() ? '已配置' : '未配置',
         initialized: false,
         version: null,
       } as DatabaseStatus,
       config: {
-        useTurso,
+        useTurso: useTurso(),
         hasTursoUrl: !!process.env.TURSO_DATABASE_URL,
         hasTursoToken: !!process.env.TURSO_AUTH_TOKEN,
         baseUrl: process.env.NEXT_PUBLIC_SITE_URL || '未配置',

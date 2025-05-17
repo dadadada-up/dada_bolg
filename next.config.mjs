@@ -69,7 +69,8 @@ const nextConfig = {
         ...(config.externals || []),
         'sqlite3',
         'sqlite',
-        'better-sqlite3'
+        'better-sqlite3',
+        'sharp'
       ];
     }
 

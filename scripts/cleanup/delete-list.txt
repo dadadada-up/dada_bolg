@@ -1,0 +1,54 @@
+# 此文件列出了确认可以删除的文件
+# 每行一个文件或目录路径（相对于项目根目录）
+
+# 测试API路由
+src/app/api/test
+src/app/api/test-turso
+src/app/api/turso-test
+src/app/api/db-test
+src/app/api/env-test
+src/app/api/github-test
+src/app/api/performance
+
+# 重复的API路由
+src/app/api/posts-new
+src/app/api/categories-new
+src/app/api/tags-new
+src/app/api/dashboard-new
+src/app/api/init
+src/app/api/init-db
+src/app/api/db-init
+
+# 临时文件和测试文件
+src/scripts/test-db.js
+src/tests
+temp.js
+temp.ts
+temp.json
+tmp.js
+tmp.ts
+tmp.json
+demo.js
+demo.ts
+example.js
+example.ts
+debug.log
+TODO.md
+NOTES.md
+CHANGELOG.md
+test.js
+
+# 已迁移到新位置的文件
+scripts/prepare-static-files.js
+scripts/next-adapter.js
+scripts/vercel-prebuild.js
+scripts/vercel-turso-setup.js
+turso-init.js
+scripts/vercel-prebuild.mjs
+scripts/next-adapter.mjs
+src/app/api/sync-single/route.ts
+src/app/api/sync/route.ts
+src/app/api/categories-new/db-categories/route.ts
+src/app/api/status/route.ts
+scripts/migrate-to-turso.ts
+README-turso.md 

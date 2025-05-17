@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "install:no-sqlite": "npm install --ignore-scripts",
-    "vercel:build": "node scripts/vercel-prebuild.mjs && next build && node scripts/next-adapter.mjs"
+    "vercel:build": "node scripts/vercel-prebuild.mjs && next build && node scripts/next-adapter.mjs",
+    "migrate-to-turso": "ts-node scripts/migrate-to-turso.ts",
+    "migrate-to-turso:dry": "ts-node scripts/migrate-to-turso.ts --dry-run",
+    "migrate-to-turso:schema": "ts-node scripts/migrate-to-turso.ts --schema-only"
   },
   "dependencies": {
     "@libsql/client": "0.15.6",
@@ -59,11 +62,14 @@
     "@types/react": "18.2.61",
     "@types/react-dom": "18.2.19",
     "autoprefixer": "^10.4.16",
+    "commander": "^13.1.0",
+    "dotenv": "^16.5.0",
     "eslint": "8.57.0",
     "eslint-config-next": "14.1.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
     "typescript": "5.3.3"
   },
   "engines": {

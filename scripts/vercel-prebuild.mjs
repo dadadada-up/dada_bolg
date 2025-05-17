@@ -17,6 +17,11 @@ console.log(`当前工作目录: ${process.cwd()}`);
 console.log(`脚本位置: ${__filename}`);
 console.log(`根目录: ${rootDir}`);
 
+// 强制设置环境变量
+process.env.NEXT_PUBLIC_DATABASE_MODE = 'turso';
+process.env.NEXT_PUBLIC_IS_VERCEL = '1';
+process.env.VERCEL = '1';
+
 // 检查环境变量
 console.log('检查环境变量...');
 const requiredEnvVars = ['TURSO_DATABASE_URL', 'TURSO_AUTH_TOKEN'];
@@ -25,6 +30,13 @@ const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 if (missingVars.length > 0) {
   console.warn(`警告: 缺少以下环境变量: ${missingVars.join(', ')}`);
   console.warn('请在Vercel项目设置中添加这些环境变量');
+} else {
+  console.log('✅ 所有必要的环境变量已设置');
+  console.log(`TURSO_DATABASE_URL: ${process.env.TURSO_DATABASE_URL ? '已设置' : '未设置'}`);
+  console.log(`TURSO_AUTH_TOKEN: ${process.env.TURSO_AUTH_TOKEN ? '已设置(长度: ' + process.env.TURSO_AUTH_TOKEN.length + ')' : '未设置'}`);
+  console.log(`NEXT_PUBLIC_DATABASE_MODE: ${process.env.NEXT_PUBLIC_DATABASE_MODE}`);
+  console.log(`NEXT_PUBLIC_IS_VERCEL: ${process.env.NEXT_PUBLIC_IS_VERCEL}`);
+  console.log(`VERCEL: ${process.env.VERCEL}`);
 }
 
 // 确保public目录存在

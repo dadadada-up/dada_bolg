@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "npm run vercel:build",
   "outputDirectory": ".next",
-  "installCommand": "npm install",
+  "installCommand": "npm install --ignore-scripts",
   "framework": "nextjs",
   "env": {
     "VERCEL_FORCE_NO_BUILD_CACHE": "1",

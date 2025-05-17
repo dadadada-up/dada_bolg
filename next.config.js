@@ -63,11 +63,12 @@ const nextConfig = {
       };
     } else {
       // 服务端构建时，确保原生模块正确处理
-      config.externals.push(
+      config.externals = [
+        ...(config.externals || []),
         'sqlite3',
         'sqlite',
         'better-sqlite3'
-      );
+      ];
     }
 
     return config;

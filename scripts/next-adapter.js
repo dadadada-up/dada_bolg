@@ -3,12 +3,10 @@
  * 确保Next.js构建过程正确处理自定义路由和404页面
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const fs = require('fs');
+const path = require('path');
 
 // 获取当前文件的目录路径
-const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 

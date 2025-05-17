@@ -2,13 +2,12 @@
   "name": "dada-blog",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel:build": "node --experimental-json-modules scripts/vercel-prebuild.js && next build && node --experimental-json-modules scripts/next-adapter.js"
+    "vercel:build": "VERCEL_FORCE_NO_BUILD_CACHE=1 node scripts/vercel-prebuild.js && next build && node scripts/next-adapter.js"
   },
   "dependencies": {
     "next": "14.1.3",

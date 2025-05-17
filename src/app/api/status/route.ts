@@ -3,7 +3,7 @@
  * 路径: /api/status
  */
 import { initializeDatabase, getDatabase } from '@/lib/db/database';
-import { useTurso } from '@/lib/db/turso-client';
+import { isTursoEnabled } from '@/lib/db/turso-client';
 
 // 系统信息
 const systemInfo = {
@@ -29,19 +29,22 @@ interface DatabaseStatus {
 
 export async function GET(request: Request) {
   try {
+    // 检查Turso是否启用
+    const isTursoActive = isTursoEnabled();
+    
     // 基本系统信息
     const statusInfo = {
       ...systemInfo,
       status: 'online',
       database: {
-        type: useTurso() ? 'Turso (云SQLite)' : 'SQLite (本地文件)',
+        type: isTursoActive ? 'Turso (云SQLite)' : 'SQLite (本地文件)',
         connected: false,
-        url: useTurso() ? '已配置' : '未配置',
+        url: isTursoActive ? '已配置' : '未配置',
         initialized: false,
         version: null,
       } as DatabaseStatus,
       config: {
-        useTurso: useTurso(),
+        useTurso: isTursoActive,
         hasTursoUrl: !!process.env.TURSO_DATABASE_URL,
         hasTursoToken: !!process.env.TURSO_AUTH_TOKEN,
         baseUrl: process.env.NEXT_PUBLIC_SITE_URL || '未配置',

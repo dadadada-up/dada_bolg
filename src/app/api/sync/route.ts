@@ -7,18 +7,31 @@ import {
   syncToLocal,
   getSyncStatus 
 } from '@/lib/sync-service';
-import initializeDatabase from '@/lib/db';
+import { getDatabase } from '@/lib/db/database';
 import { SyncService } from '@/lib/db/sync';
+
+// 检测是否在Vercel环境中
+const isVercel = process.env.VERCEL === '1';
 
 // 同步锁，防止并发同步操作
 let syncInProgress = false;
 let lastSyncTime: string | null = null;
 
-// 确保数据库初始化
-initializeDatabase();
-
 // 获取同步状态
 export async function GET() {
+  // 在Vercel环境中返回模拟数据
+  if (isVercel) {
+    console.log('[API] Vercel环境，返回模拟同步状态');
+    return Response.json({
+      status: {
+        status: 'idle',
+        lastSync: new Date().toISOString(),
+        pendingOperations: 0,
+        environment: 'vercel'
+      }
+    });
+  }
+  
   // 构造与客户端期望格式一致的响应
   const status = {
     status: syncInProgress ? 'syncing' : 'idle',
@@ -32,6 +45,22 @@ export async function GET() {
 // 触发同步
 export async function POST(request: Request) {
   try {
+    // 在Vercel环境中返回模拟数据
+    if (isVercel) {
+      console.log('[API] Vercel环境，返回模拟同步结果');
+      return Response.json({
+        success: true,
+        message: 'Vercel环境中的模拟同步操作',
+        result: {
+          added: 0,
+          updated: 0,
+          deleted: 0,
+          skipped: 0,
+          environment: 'vercel'
+        }
+      });
+    }
+    
     // 检查是否有同步操作正在进行
     if (syncInProgress) {
       return Response.json(
@@ -44,7 +73,20 @@ export async function POST(request: Request) {
     syncInProgress = true;
     
     // 初始化数据库
-    await initializeDatabase();
+    try {
+      await getDatabase();
+    } catch (error) {
+      console.error('[API] 数据库初始化失败:', error);
+      syncInProgress = false;
+      return Response.json(
+        { 
+          success: false, 
+          message: '数据库初始化失败', 
+          error: error instanceof Error ? error.message : String(error) 
+        },
+        { status: 500 }
+      );
+    }
     
     // 获取同步方向参数
     const { direction = 'bidirectional' } = await request.json();

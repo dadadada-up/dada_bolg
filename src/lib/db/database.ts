@@ -5,23 +5,67 @@
 
 import path from 'path';
 import fs from 'fs';
-import { Database, open } from 'sqlite';
-import sqlite3 from 'sqlite3';
+import { Database } from 'sqlite';
 import { TursoDatabase } from './turso-adapter';
 import { useTurso } from './turso-client';
+
+// 检测是否在Vercel环境中
+const isVercel = process.env.VERCEL === '1';
+
+// 在Vercel环境中强制使用Turso
+const forceTurso = isVercel || useTurso;
 
 // 数据库文件路径（本地开发用）
 const DB_PATH = process.env.DB_PATH || path.resolve(process.cwd(), 'data', 'blog.db');
 
 // 记录数据库配置信息
-if (useTurso) {
+if (forceTurso) {
   console.log('[数据库] 使用Turso云数据库');
+  if (isVercel) console.log('[数据库] 在Vercel环境中强制使用Turso');
 } else {
   console.log(`[数据库] 使用本地SQLite数据库: ${DB_PATH}`);
 }
 
 // 单例数据库实例
 let dbInstance: Database | null = null;
+
+// 动态导入sqlite3，避免在Vercel环境中直接导入
+async function getSqliteDriver() {
+  if (forceTurso) {
+    return null;
+  }
+  
+  try {
+    // 使用动态导入，确保在Vercel环境中不会尝试加载
+    const sqlite3Module = await import('sqlite3').catch(err => {
+      console.warn('[数据库] 导入sqlite3失败，尝试使用Turso替代:', err);
+      return null;
+    });
+    return sqlite3Module?.default;
+  } catch (error) {
+    console.error('[数据库] 导入sqlite3失败:', error);
+    return null;
+  }
+}
+
+// 动态导入sqlite，避免在Vercel环境中直接导入
+async function getSqliteOpen() {
+  if (forceTurso) {
+    return null;
+  }
+  
+  try {
+    // 使用动态导入，确保在Vercel环境中不会尝试加载
+    const sqliteModule = await import('sqlite').catch(err => {
+      console.warn('[数据库] 导入sqlite失败，尝试使用Turso替代:', err);
+      return null;
+    });
+    return sqliteModule?.open;
+  } catch (error) {
+    console.error('[数据库] 导入sqlite失败:', error);
+    return null;
+  }
+}
 
 /**
  * 获取数据库连接
@@ -42,9 +86,16 @@ export async function initializeDatabase(): Promise<Database> {
   }
 
   try {
-    if (useTurso) {
-      // 使用Turso数据库
+    // 在Vercel环境中或配置了Turso时，使用Turso数据库
+    if (forceTurso) {
       console.log('[数据库] 初始化Turso数据库连接');
+      
+      // 检查Turso配置
+      if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
+        console.error('[数据库] 缺少Turso配置，请设置TURSO_DATABASE_URL和TURSO_AUTH_TOKEN环境变量');
+        throw new Error('Turso配置缺失');
+      }
+      
       dbInstance = new TursoDatabase();
       console.log('[数据库] Turso数据库初始化成功');
     } else {
@@ -55,6 +106,23 @@ export async function initializeDatabase(): Promise<Database> {
       const dbDir = path.dirname(DB_PATH);
       if (!fs.existsSync(dbDir)) {
         fs.mkdirSync(dbDir, { recursive: true });
+      }
+      
+      // 动态导入sqlite和sqlite3
+      const sqlite3 = await getSqliteDriver();
+      const open = await getSqliteOpen();
+      
+      if (!sqlite3 || !open) {
+        console.warn('[数据库] 无法加载SQLite驱动，尝试使用Turso替代');
+        
+        // 如果SQLite加载失败但配置了Turso，则使用Turso
+        if (process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN) {
+          dbInstance = new TursoDatabase();
+          console.log('[数据库] 回退到Turso数据库');
+          return dbInstance;
+        }
+        
+        throw new Error('无法加载SQLite驱动，且未配置Turso替代');
       }
       
       // 打开数据库连接
@@ -81,7 +149,7 @@ export async function initializeDatabase(): Promise<Database> {
  */
 export async function closeDatabase(): Promise<void> {
   if (dbInstance) {
-    if (!useTurso) {
+    if (!forceTurso) {
       // 只对本地SQLite连接执行关闭
       await dbInstance.close();
     }

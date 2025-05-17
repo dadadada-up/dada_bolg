@@ -45,7 +45,33 @@ const nextConfig = {
         ],
       },
     ];
-  }
+  },
+  webpack: (config, { isServer }) => {
+    // 针对Vercel环境的特殊处理
+    if (!isServer) {
+      // 客户端构建时不使用这些模块
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        os: false,
+        crypto: false,
+        stream: false,
+        sqlite3: false,
+        sqlite: false,
+        'better-sqlite3': false,
+      };
+    } else {
+      // 服务端构建时，确保原生模块正确处理
+      config.externals.push(
+        'sqlite3',
+        'sqlite',
+        'better-sqlite3'
+      );
+    }
+
+    return config;
+  },
 }
 
-export default nextConfig 
+module.exports = nextConfig; 

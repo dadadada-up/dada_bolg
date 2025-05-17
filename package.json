@@ -2,13 +2,12 @@
   "name": "dada-blog",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/vercel-prebuild.mjs && next build && node scripts/next-adapter.mjs",
     "start": "next start",
     "lint": "next lint",
-    "vercel:build": "VERCEL_FORCE_NO_BUILD_CACHE=1 node scripts/vercel-prebuild.js && next build && node scripts/next-adapter.js"
+    "install:no-sqlite": "npm install --ignore-scripts"
   },
   "dependencies": {
     "next": "14.1.3",
@@ -35,7 +34,10 @@
     "mermaid": "^10.6.1",
     "tailwind-merge": "^2.1.0",
     "clsx": "^2.0.0",
-    "limax": "^4.1.0"
+    "limax": "^4.1.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.6",
+    "better-sqlite3": "^9.2.2"
   },
   "devDependencies": {
     "eslint": "8.57.0",
@@ -49,5 +51,8 @@
     "autoprefixer": "^10.4.16",
     "@tailwindcss/typography": "^0.5.10",
     "tailwindcss-animate": "^1.0.7"
+  },
+  "engines": {
+    "node": ">=18.17.0"
   }
 }

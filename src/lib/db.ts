@@ -1,9 +1,10 @@
 import { Database } from 'sqlite';
-import { open } from 'sqlite';
-import sqlite3 from 'sqlite3';
 import path from 'path';
 import fs from 'fs';
 import { Post } from '@/types/post';
+
+// 检测是否在Vercel环境中
+const isVercel = process.env.VERCEL === '1';
 
 let db: Database | null = null;
 
@@ -11,6 +12,11 @@ let db: Database | null = null;
 export async function getDb(): Promise<Database> {
   if (db) {
     return db;
+  }
+  
+  // 在Vercel环境中，跳过SQLite初始化
+  if (isVercel) {
+    throw new Error('在Vercel环境中不支持直接使用SQLite，请使用Turso数据库');
   }
   
   const dbPath = path.join(process.cwd(), 'data', 'blog.db');
@@ -21,12 +27,21 @@ export async function getDb(): Promise<Database> {
     fs.mkdirSync(dataDir, { recursive: true });
   }
   
-  db = await open({
-    filename: dbPath,
-    driver: sqlite3.Database
-  });
-  
-  return db;
+  try {
+    // 动态导入sqlite和sqlite3
+    const { open } = await import('sqlite');
+    const sqlite3 = await import('sqlite3');
+    
+    db = await open({
+      filename: dbPath,
+      driver: sqlite3.default.Database
+    });
+    
+    return db;
+  } catch (error) {
+    console.error('无法加载SQLite驱动:', error);
+    throw error;
+  }
 }
 
 interface SyncStatus {
@@ -37,6 +52,11 @@ interface SyncStatus {
 
 // 检查表是否存在
 async function tablesExist(): Promise<boolean> {
+  // 在Vercel环境中，跳过检查
+  if (isVercel) {
+    return true;
+  }
+  
   const db = await getDb();
   const result = await db.get(`
     SELECT name FROM sqlite_master 
@@ -47,6 +67,12 @@ async function tablesExist(): Promise<boolean> {
 
 // 创建数据库表
 export async function initializeDatabase() {
+  // 在Vercel环境中，跳过初始化
+  if (isVercel) {
+    console.log('[DB] 在Vercel环境中跳过SQLite数据库初始化');
+    return;
+  }
+  
   const db = await getDb();
   
   // 创建文章表
@@ -149,6 +175,12 @@ export async function initializeDatabase() {
 
 // 初始化数据库
 export default async function initDb() {
+  // 在Vercel环境中，跳过初始化
+  if (isVercel) {
+    console.log('[DB] 在Vercel环境中跳过SQLite数据库初始化');
+    return;
+  }
+  
   if (!(await tablesExist())) {
     await initializeDatabase();
   } else {
@@ -169,6 +201,20 @@ export function getTimestamp(): number {
 
 // 获取数据库状态信息
 export async function getDbStatus() {
+  // 在Vercel环境中，返回占位信息
+  if (isVercel) {
+    return {
+      initialized: true,
+      dbSize: 'N/A (Vercel环境)',
+      postCount: 0,
+      categoryCount: 0,
+      tagCount: 0,
+      lastSyncTime: null,
+      syncInProgress: false,
+      isVercel: true
+    };
+  }
+  
   const db = await getDb();
   
   const postCount = await db.get('SELECT COUNT(*) as count FROM posts');
@@ -186,7 +232,8 @@ export async function getDbStatus() {
     categoryCount: categoryCount?.count || 0,
     tagCount: tagCount?.count || 0,
     lastSyncTime: syncStatus?.last_sync_time || null,
-    syncInProgress: !!syncStatus?.sync_in_progress
+    syncInProgress: !!syncStatus?.sync_in_progress,
+    isVercel: false
   };
 }
 

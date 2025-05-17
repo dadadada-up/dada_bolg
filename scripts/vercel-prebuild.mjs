@@ -17,8 +17,24 @@ console.log(`当前工作目录: ${process.cwd()}`);
 console.log(`脚本位置: ${__filename}`);
 console.log(`根目录: ${rootDir}`);
 
-// 确保public目录中有404.html文件
+// 检查环境变量
+console.log('检查环境变量...');
+const requiredEnvVars = ['TURSO_DATABASE_URL', 'TURSO_AUTH_TOKEN'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.warn(`警告: 缺少以下环境变量: ${missingVars.join(', ')}`);
+  console.warn('请在Vercel项目设置中添加这些环境变量');
+}
+
+// 确保public目录存在
 const publicDir = path.join(rootDir, 'public');
+if (!fs.existsSync(publicDir)) {
+  console.log('创建public目录...');
+  fs.mkdirSync(publicDir, { recursive: true });
+}
+
+// 确保public目录中有404.html文件
 const file404 = path.join(publicDir, '404.html');
 
 if (!fs.existsSync(file404)) {
@@ -85,6 +101,13 @@ if (!fs.existsSync(rootFile404)) {
   console.log('复制404.html到项目根目录...');
   fs.copyFileSync(file404, rootFile404);
   console.log('✅ 已复制404.html到项目根目录');
+}
+
+// 确保.next目录存在（可能在首次构建时不存在）
+const nextDir = path.join(rootDir, '.next');
+if (!fs.existsSync(nextDir)) {
+  console.log('创建.next目录...');
+  fs.mkdirSync(nextDir, { recursive: true });
 }
 
 console.log('✅ Vercel预构建脚本执行完成'); 

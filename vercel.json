@@ -1,7 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel:build",
+  "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "installCommand": "npm install",
-  "framework": "nextjs"
+  "installCommand": "npm run install:no-sqlite",
+  "framework": "nextjs",
+  "env": {
+    "VERCEL_FORCE_NO_BUILD_CACHE": "1",
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+  }
 } 

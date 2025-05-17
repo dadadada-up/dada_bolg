@@ -1,14 +1,28 @@
 import { NextResponse } from 'next/server';
 import { getPosts } from '@/lib/github';
-import initializeDatabase, { getDb } from '@/lib/db';
-import { PostRepository } from '@/lib/db/repositories/posts';
+import { getDatabase } from '@/lib/db/database';
+
+// 检测是否在Vercel环境中
+const isVercel = process.env.VERCEL === '1';
 
 export async function GET() {
   try {
     console.log('[API] 开始单文章同步测试');
+    console.log(`[API] 当前环境: ${isVercel ? 'Vercel' : '本地开发'}`);
     
-    // 初始化数据库
-    await initializeDatabase();
+    // 在Vercel环境中返回模拟数据
+    if (isVercel) {
+      console.log('[API] Vercel环境，返回模拟数据');
+      return Response.json({
+        success: true,
+        message: 'Vercel环境中的模拟文章同步',
+        data: {
+          slug: 'example-post',
+          title: '示例文章',
+          environment: 'vercel'
+        }
+      });
+    }
     
     // 获取第一篇文章
     const posts = await getPosts();
@@ -22,19 +36,17 @@ export async function GET() {
     const post = posts[0];
     console.log(`[API] 选择同步文章: ${post.slug}`);
     
-    // 创建仓库
-    const postRepo = new PostRepository();
+    // 获取数据库连接
+    const db = await getDatabase();
+    console.log(`[API] 数据库连接成功`);
     
     // 转换为模型
     const yamlValid = Boolean(post.categories && post.categories.length > 0 && post.title && post.date);
-    const postModel = postRepo.convertPostToModel(post, yamlValid);
     console.log(`[API] 文章模型准备完成: ${post.slug}`);
     
     // 直接尝试创建文章
     try {
       console.log(`[API] 尝试直接创建文章: ${post.slug}`);
-      
-      const db = await getDb();
       
       // 先清除可能存在的记录
       await db.exec(`DELETE FROM posts WHERE slug = '${post.slug.replace(/'/g, "''")}'`);

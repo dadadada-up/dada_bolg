@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { Category } from '@/types/post';
 import initializeDatabase, { getDb, generateId } from '@/lib/db';
 
+// 检测是否在Vercel环境中
+const isVercel = process.env.VERCEL === '1';
+
 // 定义数据库分类记录的接口
 interface DbCategory {
   id: string;
@@ -25,6 +28,12 @@ const STANDARD_CATEGORIES = [
 
 // 确保数据库和标准分类都已初始化
 async function ensureCategoriesInitialized() {
+  // 在Vercel环境中跳过初始化
+  if (isVercel) {
+    console.log('[API] Vercel环境，跳过分类初始化');
+    return;
+  }
+  
   try {
     console.log('[API] 确保分类数据已初始化');
     await initializeDatabase();
@@ -78,8 +87,24 @@ let categoriesCache: Category[] | null = null;
 let categoriesCacheTimestamp = 0;
 const CACHE_TTL = 1000 * 60 * 5; // 5分钟缓存
 
-// 执行初始化
-ensureCategoriesInitialized();
+// 在非Vercel环境中执行初始化
+if (!isVercel) {
+  ensureCategoriesInitialized();
+}
+
+// 获取Vercel环境中的模拟分类数据
+function getMockCategories(): Category[] {
+  return [
+    { name: '技术工具', slug: 'tech-tools', postCount: 0, description: '' },
+    { name: '产品管理', slug: 'product-management', postCount: 0, description: '' },
+    { name: '开源', slug: 'open-source', postCount: 0, description: '' },
+    { name: '个人博客', slug: 'personal-blog', postCount: 0, description: '' },
+    { name: '金融', slug: 'finance', postCount: 0, description: '' },
+    { name: '保险', slug: 'insurance', postCount: 0, description: '' },
+    { name: '家庭生活', slug: 'family-life', postCount: 0, description: '' },
+    { name: '读书笔记', slug: 'reading', postCount: 0, description: '' }
+  ];
+}
 
 /**
  * 从数据库获取所有分类，不依赖于内存中的categoryMappings
@@ -87,6 +112,14 @@ ensureCategoriesInitialized();
 export async function GET() {
   try {
     console.log('[API] 开始从数据库获取分类数据');
+    console.log(`[API] 当前环境: ${isVercel ? 'Vercel' : '本地开发'}`);
+    
+    // 在Vercel环境中返回模拟数据
+    if (isVercel) {
+      console.log('[API] Vercel环境，返回模拟分类数据');
+      const mockCategories = getMockCategories();
+      return Response.json(mockCategories);
+    }
     
     // 检查缓存是否有效
     const now = Date.now();
@@ -250,6 +283,13 @@ export async function GET() {
     return Response.json(categories);
   } catch (error) {
     console.error('[API] 从数据库获取分类失败:', error);
+    
+    // 出错时返回默认分类，避免前端出错
+    if (isVercel) {
+      console.log('[API] 在Vercel环境中出错，返回默认分类');
+      return Response.json(getMockCategories());
+    }
+    
     return Response.json(
       { error: error instanceof Error ? error.message : '获取分类失败' },
       { status: 500 }

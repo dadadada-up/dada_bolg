@@ -5,22 +5,13 @@ import crypto from 'crypto';
 import { StorageService, FileInfo, UploadResult } from './storage-service';
 import { LocalStorageConfig } from '../config/storage';
 
-// 动态导入sharp，只在非Vercel环境中使用
-let sharp: any = null;
+// 判断当前环境
 const isVercel = process.env.VERCEL === '1' || process.env.NEXT_PUBLIC_IS_VERCEL === '1';
 
-if (!isVercel) {
-  try {
-    // 只在非Vercel环境中导入sharp
-    import('sharp').then(module => {
-      sharp = module.default;
-    }).catch(err => {
-      console.warn('无法导入sharp库:', err.message);
-    });
-  } catch (error) {
-    console.warn('无法导入sharp库:', (error as Error).message);
-  }
-}
+// 在非Vercel环境中动态导入sharp
+let sharpModule: any = null;
+
+// 不在此处导入sharp，避免webpack静态分析
 
 /**
  * 本地存储服务实现
@@ -36,6 +27,29 @@ export class LocalStorageService implements StorageService {
     this.compressImages = compressImages && !isVercel; // 在Vercel环境中禁用图片压缩
     this.maxWidth = maxWidth;
     this.quality = quality;
+    
+    // 在构造函数中动态导入sharp，避免webpack静态分析
+    if (!isVercel && !sharpModule) {
+      this.loadSharpModule().catch(err => {
+        console.warn('无法加载sharp模块:', err.message);
+      });
+    }
+  }
+  
+  /**
+   * 动态加载sharp模块
+   */
+  private async loadSharpModule(): Promise<void> {
+    if (isVercel || sharpModule) return;
+    
+    try {
+      // 动态导入sharp模块
+      const module = await import('sharp');
+      sharpModule = module.default || module;
+      console.log('成功加载sharp模块');
+    } catch (error) {
+      console.warn('无法导入sharp库:', (error as Error).message);
+    }
   }
 
   /**
@@ -68,7 +82,7 @@ export class LocalStorageService implements StorageService {
       let width: number | undefined;
       let height: number | undefined;
 
-      if (this.isImage(file.mimeType) && this.compressImages && !isVercel && sharp) {
+      if (this.isImage(file.mimeType) && this.compressImages && !isVercel && sharpModule) {
         try {
           const processedImage = await this.processImage(file.buffer);
           buffer = processedImage.buffer;
@@ -80,8 +94,9 @@ export class LocalStorageService implements StorageService {
         }
       }
 
-      // 写入文件
-      await fsPromises.writeFile(fullPath, buffer);
+      // 写入文件 - 使用Uint8Array避免类型错误
+      const uint8Array = new Uint8Array(buffer);
+      await fsPromises.writeFile(fullPath, uint8Array);
 
       // 构建URL
       const url = path.posix.join(this.config.baseUrl, relativePath.replace(/\\/g, '/'), filename);
@@ -187,7 +202,7 @@ export class LocalStorageService implements StorageService {
    * @returns 处理后的图片信息
    */
   private async processImage(buffer: Buffer): Promise<{ buffer: Buffer; width: number; height: number }> {
-    if (!sharp || isVercel) {
+    if (!sharpModule || isVercel) {
       // 在Vercel环境中或sharp不可用时，返回原始图片
       return {
         buffer,
@@ -198,7 +213,7 @@ export class LocalStorageService implements StorageService {
     
     try {
       // 使用any类型避免TypeScript错误
-      const sharpInstance = sharp(buffer as any);
+      const sharpInstance = sharpModule(buffer as any);
       
       // 获取图片元数据
       const metadata = await sharpInstance.metadata();

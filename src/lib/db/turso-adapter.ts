@@ -39,7 +39,7 @@ export class TursoDatabase implements Omit<Database, 'get'> {
   }
   
   /**
-   * 执行SQL并返回所有结果
+   * 执行SQL查询并返回所有结果
    */
   async all<T = any>(sql: string, ...params: any[]): Promise<T[]> {
     this.checkClient();
@@ -55,8 +55,61 @@ export class TursoDatabase implements Omit<Database, 'get'> {
       });
       
       return result.rows as T[];
-      } catch (error) {
+    } catch (error) {
       console.error('[TursoAdapter] 执行查询失败:', error);
+      
+      // 在开发环境中，优先尝试触发回退机制而不是返回备用数据
+      // 只有当特别指明时才使用备用数据
+      if (process.env.NODE_ENV === 'development' && process.env.USE_BACKUP_DATA === 'true') {
+        console.log('[TursoAdapter] 开发环境：使用模拟数据作为兜底');
+        
+        // 提取查询类型，简单判断是SELECT还是其他操作
+        const queryType = sql.trim().toLowerCase().startsWith('select') ? 'select' : 'other';
+        
+        if (queryType === 'select') {
+          // 针对不同的查询返回不同的模拟数据
+          if (sql.includes('FROM posts') || sql.includes('from posts')) {
+            // 返回文章模拟数据
+            return [
+              {
+                id: 1,
+                title: '示例文章',
+                slug: 'sample-post',
+                content: '这是一篇示例文章内容',
+                excerpt: '示例摘要',
+                description: '示例描述',
+                is_published: 1,
+                is_featured: 0,
+                cover_image: null,
+                created_at: Math.floor(Date.now() / 1000),
+                updated_at: Math.floor(Date.now() / 1000),
+                categories_str: '开发,测试',
+                tags_str: 'sample,test'
+              }
+            ] as unknown as T[];
+          } else if (sql.includes('FROM categories') || sql.includes('from categories')) {
+            // 返回分类模拟数据
+            return [
+              { id: 1, name: '开发', slug: 'development', description: '开发相关文章' },
+              { id: 2, name: '测试', slug: 'testing', description: '测试相关文章' }
+            ] as unknown as T[];
+          } else if (sql.includes('FROM tags') || sql.includes('from tags')) {
+            // 返回标签模拟数据
+            return [
+              { id: 1, name: 'sample', slug: 'sample' },
+              { id: 2, name: 'test', slug: 'test' }
+            ] as unknown as T[];
+          } else if (sql.includes('COUNT') || sql.includes('count')) {
+            // 返回计数查询模拟数据
+            return [{ total: 1, count: 1 }] as unknown as T[];
+          }
+        }
+        
+        // 默认返回空数组
+        return [] as T[];
+      }
+      
+      // 默认情况下抛出错误，让调用者处理
       throw error;
     }
   }
@@ -81,6 +134,67 @@ export class TursoDatabase implements Omit<Database, 'get'> {
       return result.rows[0] as T | undefined;
     } catch (error) {
       console.error('[TursoAdapter] 执行单行查询失败:', error);
+      
+      // 只有在明确要求使用备用数据时才使用
+      if (process.env.NODE_ENV === 'development' && process.env.USE_BACKUP_DATA === 'true') {
+        console.log('[TursoAdapter] 开发环境：使用模拟数据作为兜底');
+        
+        // 提取查询类型，简单判断是SELECT还是其他操作
+        const queryType = sql.trim().toLowerCase().startsWith('select') ? 'select' : 'other';
+        
+        if (queryType === 'select') {
+          // 针对不同的查询返回不同的模拟数据
+          if (sql.includes('FROM posts') || sql.includes('from posts')) {
+            // 返回单篇文章模拟数据
+            return {
+              id: 1,
+              title: '示例文章',
+              slug: 'sample-post',
+              content: '这是一篇示例文章内容',
+              excerpt: '示例摘要',
+              description: '示例描述',
+              is_published: 1,
+              is_featured: 0,
+              cover_image: null,
+              created_at: Math.floor(Date.now() / 1000),
+              updated_at: Math.floor(Date.now() / 1000),
+              categories_str: '开发,测试',
+              tags_str: 'sample,test'
+            } as unknown as T;
+          } else if (sql.includes('FROM categories') || sql.includes('from categories')) {
+            // 返回分类模拟数据
+            return { 
+              id: 1, 
+              name: '开发', 
+              slug: 'development', 
+              description: '开发相关文章' 
+            } as unknown as T;
+          } else if (sql.includes('FROM tags') || sql.includes('from tags')) {
+            // 返回标签模拟数据
+            return { 
+              id: 1, 
+              name: 'sample', 
+              slug: 'sample' 
+            } as unknown as T;
+          } else if (sql.includes('COUNT') || sql.includes('count')) {
+            // 返回计数查询模拟数据
+            return { 
+              total: 1, 
+              count: 1 
+            } as unknown as T;
+          } else if (sql.includes('last_insert_rowid()')) {
+            // 返回最后插入ID
+            return {
+              id: 1
+            } as unknown as T;
+          }
+        }
+        
+        // 默认返回undefined
+        return undefined;
+      }
+      
+      // 默认情况下抛出错误，让调用者处理
       throw error;
     }
   }
@@ -114,7 +228,7 @@ export class TursoDatabase implements Omit<Database, 'get'> {
           lastID = idResult.rows[0]?.id;
         } catch (error) {
           console.warn('[TursoAdapter] 无法获取last_insert_rowid');
-  }
+        }
       }
       
       return {
@@ -123,6 +237,25 @@ export class TursoDatabase implements Omit<Database, 'get'> {
       };
     } catch (error) {
       console.error('[TursoAdapter] 执行失败:', error);
+      
+      // 只有在明确要求使用备用数据时才使用
+      if (process.env.NODE_ENV === 'development' && process.env.USE_BACKUP_DATA === 'true') {
+        console.log('[TursoAdapter] 开发环境：使用模拟结果作为兜底');
+        
+        // 识别常见操作
+        if (sql.trim().toUpperCase().startsWith('INSERT')) {
+          return { lastID: 1, changes: 1 };
+        } else if (sql.trim().toUpperCase().startsWith('UPDATE')) {
+          return { changes: 1 };
+        } else if (sql.trim().toUpperCase().startsWith('DELETE')) {
+          return { changes: 1 };
+        }
+        
+        // 默认返回值
+        return { changes: 0 };
+      }
+      
+      // 默认情况下抛出错误，让调用者处理
       throw error;
     }
   }
@@ -150,6 +283,14 @@ export class TursoDatabase implements Omit<Database, 'get'> {
       }
     } catch (error) {
       console.error('[TursoAdapter] 执行失败:', error);
+      
+      // 只有在明确要求使用备用数据时才使用
+      if (process.env.NODE_ENV === 'development' && process.env.USE_BACKUP_DATA === 'true') {
+        console.log('[TursoAdapter] 开发环境：忽略exec执行错误并继续');
+        return;
+      }
+      
+      // 默认情况下抛出错误，让调用者处理
       throw error;
     }
   }

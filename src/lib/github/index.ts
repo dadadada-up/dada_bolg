@@ -63,14 +63,14 @@ export async function getPosts(): Promise<Post[]> {
           tags: JSON.parse(post.tags_json || '[]')
         }));
         
-        return posts;
+            return posts;
       }
     }
     
     // 如果Turso未启用或查询失败，使用备用数据
     console.log("[文章管理] 从Turso获取文章失败，使用备用数据");
     return getAllFallbackPosts();
-  } catch (error) {
+          } catch (error) {
     console.error('[文章管理] 获取文章失败:', error);
     
     // 失败时使用备用数据
@@ -98,7 +98,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       if (slugMapping && slugMapping.post_id) {
         postId = slugMapping.post_id;
         console.log(`[Turso] 找到slug映射: ${slug} -> post_id: ${postId}`);
-      } else {
+          } else {
         // 如果在映射表中找不到，直接在posts表中查找
         const postIdQuery = await queryOne(`
           SELECT id FROM posts WHERE slug = ? LIMIT 1
@@ -163,7 +163,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     // 如果Turso未启用或查询失败，使用备用数据
     console.log(`[文章管理] 从Turso获取文章${slug}失败，使用备用数据`);
     return getFallbackPostBySlug(slug) || null;
-  } catch (error) {
+    } catch (error) {
     console.error(`[文章管理] 获取文章${slug}失败:`, error);
     
     // 失败时使用备用数据
@@ -174,7 +174,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 // 获取文件内容 (Vercel环境中禁用)
 export async function getFileContent(path: string): Promise<string | null> {
   console.log(`[Vercel环境] 获取文件内容功能被禁用: ${path}`);
-  return null;
+    return null;
 }
 
 // 更新文章 (Vercel环境中禁用)
@@ -196,9 +196,9 @@ export async function createPost(post: Post): Promise<any> {
 // 刷新所有数据 (Vercel环境中禁用)
 export async function forceRefreshAllData(): Promise<boolean> {
   console.log("[Vercel环境] 刷新所有数据功能被禁用");
-  return false;
-}
-
+      return false;
+    }
+    
 // 清除缓存 (Vercel环境中禁用)
 export function clearContentCache(): void {
   console.log("[Vercel环境] 清除缓存功能被禁用");

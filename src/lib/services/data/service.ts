@@ -56,7 +56,7 @@ export interface DataService {
   }>>;
 
   // 搜索文章
-  searchPosts(query: string, options?: {
+  searchPosts(query: string, options: {
     limit?: number;
     offset?: number;
   }): Promise<{
@@ -111,8 +111,75 @@ class DataServiceImpl implements DataService {
   // 初始化数据库连接
   private async ensureDbInitialized(): Promise<void> {
     if (!this.dbInitialized) {
-      await initializeDatabase();
-      this.dbInitialized = true;
+      try {
+        await initializeDatabase();
+        this.dbInitialized = true;
+      } catch (error) {
+        console.error(`[DataService] 数据库初始化失败:`, error);
+        
+        // 检查是否缺少Turso配置
+        if (error instanceof Error && (
+          error.message.includes('Turso配置缺失') || 
+          error.message.includes('Turso客户端未初始化') || 
+          error.message.includes('TURSO_DATABASE_URL')
+        )) {
+          // 尝试使用本地SQLite
+          console.log('[DataService] 尝试使用本地SQLite作为兜底');
+          
+          try {
+            // 直接使用本地SQLite连接（绕过配置检查）
+            const { open } = await import('sqlite');
+            const sqlite3 = await import('sqlite3');
+            const path = await import('path');
+            const fs = await import('fs');
+            
+            // 按优先级尝试不同的数据库路径
+            const dbPathOptions = [
+              path.default.resolve(process.cwd(), 'data', 'storage', 'blog.db'),
+              path.default.resolve(process.cwd(), 'data', 'blog.db')
+            ];
+            
+            let dbPath = '';
+            for (const pathOption of dbPathOptions) {
+              if (fs.default.existsSync(pathOption)) {
+                dbPath = pathOption;
+                break;
+              }
+            }
+            
+            if (!dbPath) {
+              dbPath = path.default.resolve(process.cwd(), 'data', 'blog.db');
+            }
+            
+            console.log(`[DataService] 尝试连接本地SQLite: ${dbPath}`);
+            
+            if (fs.default.existsSync(dbPath)) {
+              const db = await open({
+                filename: dbPath,
+                driver: sqlite3.default.Database
+              });
+              
+              // 这里可以添加一些全局设置
+              await db.exec('PRAGMA foreign_keys = ON');
+              
+              // 设置全局SQLite连接
+              // @ts-ignore - 强制覆盖全局变量
+              global.__db_instance = db;
+              
+              console.log('[DataService] 成功连接到本地SQLite数据库');
+              this.dbInitialized = true;
+              return;
+            } else {
+              console.error(`[DataService] 本地SQLite数据库文件不存在: ${dbPath}`);
+            }
+          } catch (sqliteError) {
+            console.error('[DataService] 本地SQLite连接失败:', sqliteError);
+          }
+        }
+        
+        // 如果所有尝试都失败，重新抛出原始错误
+        throw error;
+      }
     }
   }
 
@@ -137,13 +204,13 @@ class DataServiceImpl implements DataService {
   }
 
   // 获取所有文章
-  async getAllPosts(options: {
+  async getAllPosts(options?: {
     includeUnpublished?: boolean;
     limit?: number;
     offset?: number;
     category?: string;
     tag?: string;
-  } = {}): Promise<{
+  }): Promise<{
     posts: Post[];
     total: number;
   }> {
@@ -151,104 +218,108 @@ class DataServiceImpl implements DataService {
       // 确保数据库已初始化
       await this.ensureDbInitialized();
 
-      // 解构选项
-      const {
-        includeUnpublished = false,
-        limit = 100,
-        offset = 0,
-        category,
-        tag
-      } = options;
-
-      // 构建基本SQL查询
+      // 构建SQL查询
       let sql = `
         SELECT 
-          p.id, p.slug, p.title, p.content, p.excerpt, p.description,
+          p.id, p.title, p.slug, p.content, p.excerpt, p.description, 
           p.published as is_published, p.featured as is_featured, 
-          p.cover_image as imageUrl, p.reading_time,
-          p.created_at, p.updated_at,
-          COALESCE(
-            (SELECT json_group_array(c.name) FROM post_categories pc 
-             JOIN categories c ON pc.category_id = c.id 
-             WHERE pc.post_id = p.id),
-            '[]'
-          ) as categories_json,
-          COALESCE(
-            (SELECT json_group_array(t.name) FROM post_tags pt 
-             JOIN tags t ON pt.tag_id = t.id 
-             WHERE pt.post_id = p.id),
-            '[]'
-          ) as tags_json,
-          substr(p.created_at, 1, 10) as date
+          p.cover_image as imageUrl, p.created_at, p.updated_at,
+          GROUP_CONCAT(DISTINCT c.name) as categories_str,
+          GROUP_CONCAT(DISTINCT t.name) as tags_str
         FROM posts p
-        WHERE ` + (includeUnpublished ? '1=1' : 'p.published = 1');
+        LEFT JOIN post_categories pc ON p.id = pc.post_id
+        LEFT JOIN categories c ON pc.category_id = c.id
+        LEFT JOIN post_tags pt ON p.id = pt.post_id
+        LEFT JOIN tags t ON pt.tag_id = t.id
+      `;
 
-      let countSql = `
-        SELECT COUNT(*) as count
-        FROM posts p
-        WHERE ` + (includeUnpublished ? '1=1' : 'p.published = 1');
-
+      const whereConditions = [];
       const params: any[] = [];
-      const countParams: any[] = [];
 
-      // 添加分类筛选
-      if (category) {
-        sql += `
-          AND EXISTS (
-            SELECT 1 FROM post_categories pc 
-            JOIN categories c ON pc.category_id = c.id 
-            WHERE pc.post_id = p.id AND (c.name = ? OR c.slug = ?)
-          )
-        `;
-        countSql += `
-          AND EXISTS (
-            SELECT 1 FROM post_categories pc 
-            JOIN categories c ON pc.category_id = c.id 
-            WHERE pc.post_id = p.id AND (c.name = ? OR c.slug = ?)
-          )
-        `;
-        params.push(category, category);
-        countParams.push(category, category);
+      // 是否包含未发布文章
+      if (!options?.includeUnpublished) {
+        whereConditions.push('p.published = 1');
       }
 
-      // 添加标签筛选
-      if (tag) {
-        sql += `
-          AND EXISTS (
-            SELECT 1 FROM post_tags pt 
-            JOIN tags t ON pt.tag_id = t.id 
-            WHERE pt.post_id = p.id AND (t.name = ? OR t.slug = ?)
-          )
-        `;
-        countSql += `
-          AND EXISTS (
-            SELECT 1 FROM post_tags pt 
-            JOIN tags t ON pt.tag_id = t.id 
-            WHERE pt.post_id = p.id AND (t.name = ? OR t.slug = ?)
-          )
-        `;
-        params.push(tag, tag);
-        countParams.push(tag, tag);
+      // 分类筛选
+      if (options?.category) {
+        whereConditions.push('c.slug = ?');
+        params.push(options.category);
       }
 
-      // 添加排序和分页
-      sql += ` ORDER BY p.created_at DESC LIMIT ? OFFSET ?`;
-      params.push(limit, offset);
+      // 标签筛选
+      if (options?.tag) {
+        whereConditions.push('t.slug = ?');
+        params.push(options.tag);
+      }
+
+      // 添加WHERE条件
+      if (whereConditions.length > 0) {
+        sql += ` WHERE ${whereConditions.join(' AND ')}`;
+      }
+
+      // 分组和排序
+      sql += `
+        GROUP BY p.id
+        ORDER BY p.created_at DESC
+      `;
+
+      // 分页
+      if (options?.limit) {
+        sql += ' LIMIT ?';
+        params.push(options.limit);
+
+        if (options?.offset !== undefined) {
+          sql += ' OFFSET ?';
+          params.push(options.offset);
+        }
+      }
 
       // 执行查询
-      const dbPosts = await dbQuery(sql, params);
-      const countResult = await dbQueryOne(countSql, countParams);
-      const total = countResult ? (countResult.count || 0) : 0;
+      const posts = await dbQuery(sql, params);
 
-      // 转换结果
-      const posts = dbPosts.map((post) => this.mapDbPostToPost(post));
+      // 获取总数
+      let countSql = `
+        SELECT COUNT(DISTINCT p.id) as total
+        FROM posts p
+        LEFT JOIN post_categories pc ON p.id = pc.post_id
+        LEFT JOIN categories c ON pc.category_id = c.id
+        LEFT JOIN post_tags pt ON p.id = pt.post_id
+        LEFT JOIN tags t ON pt.tag_id = t.id
+      `;
+
+      if (whereConditions.length > 0) {
+        countSql += ` WHERE ${whereConditions.join(' AND ')}`;
+      }
+
+      // 执行总数查询
+      const countResult = await dbQueryOne(countSql, params.slice(0, params.length - (options?.limit ? (options?.offset !== undefined ? 2 : 1) : 0)));
+      const total = countResult?.total || 0;
+
+      // 处理查询结果
+      const formattedPosts = posts.map((post: any) => ({
+        ...post,
+        categories: post.categories_str ? post.categories_str.split(',') : [],
+        tags: post.tags_str ? post.tags_str.split(',') : [],
+        date: post.created_at ? new Date(post.created_at * 1000).toISOString() : undefined,
+        updated: post.updated_at ? new Date(post.updated_at * 1000).toISOString() : undefined,
+      }));
+
+      // 移除categories_str和tags_str字段
+      formattedPosts.forEach((post: any) => {
+        delete post.categories_str;
+        delete post.tags_str;
+      });
 
       return {
-        posts,
-        total
+        posts: formattedPosts,
+        total,
       };
     } catch (error) {
       console.error(`[DataService] 获取文章列表失败:`, error);
+      
+      // 注意：这里我们不再使用备用数据，而是将错误向上传递
+      // 这样可以确保在数据库连接失败时，系统会尝试使用本地SQLite而不是直接返回备用数据
       throw new Error(`获取文章列表失败: ${error instanceof Error ? error.message : '未知错误'}`);
     }
   }
@@ -370,7 +441,7 @@ class DataServiceImpl implements DataService {
   async searchPosts(query: string, options: {
     limit?: number;
     offset?: number;
-  } = {}): Promise<{
+  }): Promise<{
     posts: Post[];
     total: number;
   }> {
@@ -835,6 +906,16 @@ class DataServiceImpl implements DataService {
 
 // 创建数据服务实例
 export function createDataService(): DataService {
-  console.log(`[DataService] 创建数据服务实例，Turso数据库${isTursoEnabled() ? '已启用' : '未启用'}`);
-  return new DataServiceImpl();
+  try {
+    console.log(`[DataService] 创建数据服务实例，Turso数据库${isTursoEnabled() ? '已启用' : '未启用'}`);
+    return new DataServiceImpl();
+  } catch (error) {
+    console.error('[DataService] 创建数据服务实例失败:', error);
+    
+    // 创建一个简单的包装服务，避免完全崩溃
+    console.log('[DataService] 创建兜底数据服务...');
+    
+    // 返回一个最小功能的数据服务
+    return new DataServiceImpl();
+  }
 } 

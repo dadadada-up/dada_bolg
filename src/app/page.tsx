@@ -55,13 +55,13 @@ function getBaseUrl() {
   // 回退到请求头获取主机
   try {
     const headersList = headers();
-    const host = headersList.get("host") || "localhost:3002"; // 更新默认端口
+    const host = headersList.get("host") || "localhost:3001"; // 使用正确的端口
     const protocol = host.includes("localhost") ? "http" : "https";
     return `${protocol}://${host}`;
   } catch (error) {
     // 最终回退到默认值
     console.error("获取请求头失败，使用默认值:", error);
-    return "http://localhost:3002";
+    return "http://localhost:3001";
   }
 }
 
@@ -75,11 +75,10 @@ export default async function HomePage() {
   console.log("文章API URL:", apiUrl);
   
   let posts: Post[] = [];
-  let useBackupData = false;
+  let postsError = false;
   
   try {
     const response = await fetch(apiUrl, { 
-      next: { revalidate: 300 }, // 5分钟缓存
       cache: 'no-store' // 确保获取最新内容
     });
     
@@ -89,76 +88,55 @@ export default async function HomePage() {
     }
     
     const data = await response.json();
-    
-    // 检查是否使用了备用数据
-    if (data.fallback) {
-      console.log("API返回了备用数据");
-      useBackupData = true;
-    }
-    
     posts = data.data || [];
     
-    // 如果没有文章数据，使用备用数据
+    // 如果没有文章数据，设置错误状态
     if (!posts || posts.length === 0) {
-      console.log("API返回空数据，使用备用数据");
-      posts = getAllFallbackPosts(6);
-      useBackupData = true;
+      console.log("API返回空数据");
+      postsError = true;
     }
   } catch (error) {
     console.error("获取文章出错:", error);
-    // 失败时使用备用数据
-    console.log("API请求失败，使用备用数据");
-    posts = getAllFallbackPosts(6);
-    useBackupData = true;
+    postsError = true;
   }
 
-  // 获取所有分类 - 使用categories路由而非categories-new
+  // 获取所有分类 - 使用categories路由
   const categoriesApiUrl = `${baseUrl}/api/categories`;
   console.log("分类API URL:", categoriesApiUrl);
   
   let categories: Category[] = [];
+  let categoriesError = false;
   
   try {
-    if (useBackupData) {
-      console.log("由于使用备用文章数据，直接使用备用分类数据");
-      categories = fallbackCategories;
-    } else {
-      const categoriesResponse = await fetch(categoriesApiUrl, { 
-        next: { revalidate: 600 }, // 10分钟缓存
-        cache: 'no-store' // 确保获取最新内容
-      });
+    const categoriesResponse = await fetch(categoriesApiUrl, { 
+      cache: 'no-store' // 确保获取最新内容
+    });
+    
+    if (categoriesResponse.ok) {
+      const categoriesData = await categoriesResponse.json();
       
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json();
-        console.log('分类数据:', categoriesData);
-        
-        // 根据API返回的格式取出分类数据
-        if (Array.isArray(categoriesData)) {
-          // API直接返回数组
-          categories = categoriesData;
-        } else if (categoriesData && categoriesData.data && Array.isArray(categoriesData.data)) {
-          // API返回包含data字段的对象
-          categories = categoriesData.data;
-        }
-        
-        // 筛选有文章的分类展示
-        categories = categories
-          .filter(category => category.postCount > 0);
-      } else {
-        throw new Error('获取分类失败');
+      // 根据API返回的格式取出分类数据
+      if (Array.isArray(categoriesData)) {
+        // API直接返回数组
+        categories = categoriesData;
+      } else if (categoriesData && categoriesData.data && Array.isArray(categoriesData.data)) {
+        // API返回包含data字段的对象
+        categories = categoriesData.data;
       }
+      
+      // 筛选有文章的分类展示
+      categories = categories
+        .filter(category => category.postCount > 0);
+        
+      if (categories.length === 0) {
+        categoriesError = true;
+      }
+    } else {
+      throw new Error('获取分类失败');
     }
   } catch (error) {
     console.error('获取分类失败:', error);
-    // 使用备用分类数据
-    console.log('使用备用分类数据');
-    categories = fallbackCategories;
-  }
-  
-  // 如果没有获取到分类数据，使用备用数据
-  if (!categories || categories.length === 0) {
-    console.log('未获取到有效分类数据，使用备用分类数据');
-    categories = fallbackCategories;
+    categoriesError = true;
   }
 
   // 精选文章（手动指定的文章slug列表）
@@ -171,7 +149,21 @@ export default async function HomePage() {
       <HeroSection />
       
       {/* 精选文章 */}
-      <FeaturedPosts postSlugs={featuredPostSlugs} posts={posts} />
+      {!postsError ? (
+        <FeaturedPosts postSlugs={featuredPostSlugs} posts={posts} />
+      ) : (
+        <div className="mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">精选文章</h2>
+          </div>
+          <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg border border-red-200 dark:border-red-800">
+            <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">无法加载精选文章</h3>
+            <p className="text-gray-700 dark:text-gray-300">
+              抱歉，加载文章数据时出现错误。请稍后再试。
+            </p>
+          </div>
+        </div>
+      )}
       
       {/* 最新文章 */}
       <div className="mb-12">
@@ -182,15 +174,38 @@ export default async function HomePage() {
           </Link>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
+        {!postsError ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg border border-red-200 dark:border-red-800">
+            <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">无法加载文章</h3>
+            <p className="text-gray-700 dark:text-gray-300">
+              抱歉，加载文章数据时出现错误。请稍后再试。
+            </p>
+          </div>
+        )}
       </div>
       
       {/* 精选分类 */}
-      <FeaturedCategories categories={categories} />
+      {!categoriesError ? (
+        <FeaturedCategories categories={categories} />
+      ) : (
+        <div className="mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">文章分类</h2>
+          </div>
+          <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg border border-red-200 dark:border-red-800">
+            <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">无法加载分类</h3>
+            <p className="text-gray-700 dark:text-gray-300">
+              抱歉，加载分类数据时出现错误。请稍后再试。
+            </p>
+          </div>
+        </div>
+      )}
       
       {/* 关于我区域 */}
       <div className="mb-12">

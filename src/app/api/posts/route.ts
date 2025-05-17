@@ -20,67 +20,6 @@ interface ApiCache {
 const API_CACHE_TTL = 1000 * 60 * 5; // 5分钟缓存
 const apiCache = new Map<string, ApiCache>();
 
-// 硬编码一些示例文章数据，作为临时解决方案
-const HARDCODED_POSTS: Post[] = [
-  {
-    slug: 'notion-cursor-guide',
-    title: 'Notion + Cursor 使用指南',
-    date: '2023-05-07T13:38:08.166Z',
-    updated: '2023-05-07T13:38:08.166Z',
-    content: '这是关于Notion和Cursor使用指南的内容...',
-    excerpt: 'Notion和Cursor如何结合使用的完整指南',
-    description: 'Notion和Cursor如何结合使用的完整指南',
-    categories: ['技术工具'],
-    tags: ['notion', 'cursor', 'productivity'],
-    published: true,
-    featured: true,
-    coverImage: '/images/notion-cursor.png',
-    readingTime: 10,
-    metadata: {
-      wordCount: 2500,
-      readingTime: 10,
-      originalFile: 'notion-cursor-guide.md'
-    }
-  },
-  {
-    slug: 'blog-requirements',
-    title: '个人博客项目需求说明书',
-    date: '2024-03-20T00:00:00.000Z',
-    content: '这是博客项目需求说明书的内容...',
-    excerpt: '个人博客项目的详细需求说明和设计文档',
-    description: '个人博客项目的详细需求说明和设计文档',
-    categories: ['个人博客'],
-    tags: ['博客', '项目文档'],
-    published: false,
-    featured: false,
-    readingTime: 15,
-    metadata: {
-      wordCount: 3500,
-      readingTime: 15,
-      originalFile: 'blog-requirements.md'
-    }
-  },
-  {
-    slug: 'dingtalk-monitor',
-    title: 'Dingtalk Monitor',
-    date: '2024-03-18T00:00:00.000Z',
-    updated: '2023-05-07T15:19:46.980Z',
-    content: '这是关于钉钉监控工具的内容...',
-    excerpt: '钉钉监控工具的使用说明和最佳实践',
-    description: '钉钉监控工具的使用说明和最佳实践',
-    categories: ['技术工具'],
-    tags: ['钉钉', '监控', '工具'],
-    published: true,
-    featured: false,
-    readingTime: 8,
-    metadata: {
-      wordCount: 1800,
-      readingTime: 8,
-      originalFile: 'dingtalk-monitor.md'
-    }
-  }
-];
-
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -104,60 +43,12 @@ export async function GET(request: Request) {
     
     console.log(`[API] 获取文章列表: 分类=${category}, 标签=${tag}, 管理员=${isAdmin}`);
     
-    // 使用硬编码的数据作为临时解决方案
-    
-    // 过滤数据
-    let filteredPosts = [...HARDCODED_POSTS];
-    
-    // 是否包含未发布文章取决于是否是管理员模式
-    if (!isAdmin) {
-      filteredPosts = filteredPosts.filter(post => post.published);
-    }
-    
-    // 按分类筛选
-    if (category) {
-      filteredPosts = filteredPosts.filter(post => post.categories.includes(category));
-    }
-    
-    // 按标签筛选
-    if (tag) {
-      filteredPosts = filteredPosts.filter(post => post.tags.includes(tag));
-    }
-    
-    // 计算总数和分页
-    const total = filteredPosts.length;
-    const totalPages = Math.ceil(total / limit);
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
-    
-    const response = {
-      total,
-      page,
-      limit,
-      totalPages,
-      data: paginatedPosts,
-    };
-    
-    // 更新缓存
-    apiCache.set(cacheKey, {
-      data: response,
-      timestamp: now
-    });
-    
-    console.log(`[API] 查询返回文章数: ${paginatedPosts.length}, 总数: ${total}`);
-    
-    return Response.json(response);
-    
-    /*
-    // 注释掉有问题的数据库代码，等待修复
-    
     // 如果是按分类或标签筛选，且不是管理员模式，则只返回已发布的文章
     const includeUnpublished = isAdmin;
     console.log(`[API] 是否包含未发布文章: ${includeUnpublished}`);
     
     // 缓存未命中，从数据库获取数据
-    const result = getAllPosts({ 
+    const result = await getAllPosts({ 
       limit, 
       offset: (page - 1) * limit,
       category,
@@ -184,18 +75,12 @@ export async function GET(request: Request) {
     });
     
     return Response.json(response);
-    */
   } catch (error) {
     console.error('Error fetching posts:', error);
-    // 出错时也返回硬编码数据的第一页
-    const response = {
-      total: HARDCODED_POSTS.length,
-      page: 1,
-      limit: 10,
-      totalPages: Math.ceil(HARDCODED_POSTS.length / 10),
-      data: HARDCODED_POSTS.slice(0, 10),
-    };
-    return Response.json(response);
+    return Response.json(
+      { error: '获取文章失败', message: error instanceof Error ? error.message : '未知错误' },
+      { status: 500 }
+    );
   }
 }
 
@@ -229,11 +114,12 @@ export async function POST(request: Request) {
     const postId = savePostSafe(data as Post);
     
     // 获取完整的文章数据
-    const post = getPostBySlug(data.slug);
+    const post = await getPostBySlug(data.slug);
     
     // 添加文章到同步队列
-    const { queuePostChange } = await import('@/lib/sync-service');
-    await queuePostChange('create', post as Post);
+    if (post) {
+      await queuePostChange('create', post);
+    }
     
     return Response.json({
       success: true,

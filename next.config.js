@@ -19,7 +19,19 @@ const nextConfig = {
     return [];
   },
   async rewrites() {
-    return [];
+    return [
+      {
+        source: '/:path*',
+        destination: '/404.html',
+        has: [
+          {
+            type: 'header',
+            key: 'x-vercel-skip-404',
+            value: 'true',
+          },
+        ],
+      },
+    ];
   },
   async headers() {
     return [

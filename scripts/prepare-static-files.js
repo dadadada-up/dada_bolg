@@ -161,7 +161,7 @@ async function main() {
   }
   
   console.log('⚠️ 未检测到Turso数据库配置，将使用静态部署备选方案');
-
+  
   // 创建静态HTML页面
   console.log('正在生成静态HTML页面...');
 

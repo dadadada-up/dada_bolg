@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getAllPosts as getFallbackPosts } from '@/lib/fallback-data';
 import { Post } from '@/types/post';
 import { getAllPosts } from '@/lib/services/data';
 

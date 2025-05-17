@@ -29,12 +29,12 @@ export default function CategoriesPage() {
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      // 使用 db-categories 接口获取数据库中的最新分类数据
-      const response = await fetch('/api/categories-new/db-categories');
+      // 使用新的categories-new接口获取分类数据
+      const response = await fetch('/api/categories-new');
       if (!response.ok) throw new Error('获取分类失败');
       const data = await response.json();
       
-      // 直接使用API返回的数据，不再需要合并
+      // 直接使用API返回的数据
       setCategories(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : '获取分类失败');
@@ -173,15 +173,7 @@ export default function CategoriesPage() {
     try {
       setRefreshing(true);
       
-      // 清除缓存
-      const response = await fetch('/api/categories-new/clear-cache');
-      
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || '刷新分类失败');
-      }
-      
-      // 重新获取分类
+      // 直接重新获取分类，不再调用clear-cache接口
       await fetchCategories();
       
       setSuccess('分类列表已刷新！');

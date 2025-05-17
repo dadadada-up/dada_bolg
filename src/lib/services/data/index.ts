@@ -23,6 +23,9 @@ export function getDataService(): DataService {
   return dataServiceInstance;
 }
 
+// 查询操作
+// ----------------------------
+
 // 为了便于使用，直接导出常用的数据访问方法
 export async function getAllPosts(options?: {
   includeUnpublished?: boolean;
@@ -72,6 +75,72 @@ export async function searchPosts(query: string, options?: {
 }> {
   const service = getDataService();
   return service.searchPosts(query, options);
+}
+
+// 修改操作
+// ----------------------------
+
+// 创建或更新文章
+export async function savePost(post: Post): Promise<{ id: number; slug: string }> {
+  const service = getDataService();
+  return service.savePost(post);
+}
+
+// 更新文章发布状态
+export async function updatePostStatus(id: number, isPublished: boolean): Promise<boolean> {
+  const service = getDataService();
+  return service.updatePostStatus(id, isPublished);
+}
+
+// 更新文章特色状态
+export async function updatePostFeatured(id: number, isFeatured: boolean): Promise<boolean> {
+  const service = getDataService();
+  return service.updatePostFeatured(id, isFeatured);
+}
+
+// 删除文章
+export async function deletePost(id: number): Promise<boolean> {
+  const service = getDataService();
+  return service.deletePost(id);
+}
+
+// 创建或更新分类
+export async function saveCategory(category: {
+  id?: string | number;
+  name: string;
+  slug: string;
+  description?: string;
+}): Promise<{ id: number; slug: string }> {
+  const service = getDataService();
+  return service.saveCategory(category);
+}
+
+// 删除分类
+export async function deleteCategory(id: number): Promise<boolean> {
+  const service = getDataService();
+  return service.deleteCategory(id);
+}
+
+// 创建或更新标签
+export async function saveTag(tag: {
+  id?: string | number;
+  name: string;
+  slug: string;
+}): Promise<{ id: number; slug: string }> {
+  const service = getDataService();
+  return service.saveTag(tag);
+}
+
+// 删除标签
+export async function deleteTag(id: number): Promise<boolean> {
+  const service = getDataService();
+  return service.deleteTag(id);
+}
+
+// 同步数据
+export async function syncToSQLite(): Promise<boolean> {
+  const service = getDataService();
+  return service.syncToSQLite();
 }
 
 // 重新导出数据服务类型

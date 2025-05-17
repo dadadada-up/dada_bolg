@@ -8,7 +8,13 @@ import { slugify, enhancedSlugify } from '@/lib/utils';
 import initializeDatabase from '@/lib/db';
 
 // 确保数据库初始化
-initializeDatabase();
+console.log('[API] 初始化数据库连接...');
+try {
+  initializeDatabase();
+  console.log('[API] 数据库初始化成功');
+} catch (error) {
+  console.error('[API] 数据库初始化失败:', error);
+}
 
 // 内存缓存，用于服务器端缓存
 interface ApiCache {
@@ -41,42 +47,49 @@ export async function GET(request: Request) {
       return Response.json(cached.data);
     }
     
-    console.log(`[API] 获取文章列表: 分类=${category}, 标签=${tag}, 管理员=${isAdmin}`);
+    console.log(`[API] 获取文章列表: 请求URL=${request.url}, 分类=${category}, 标签=${tag}, 管理员=${isAdmin}`);
     
     // 如果是按分类或标签筛选，且不是管理员模式，则只返回已发布的文章
     const includeUnpublished = isAdmin;
     console.log(`[API] 是否包含未发布文章: ${includeUnpublished}`);
     
     // 缓存未命中，从数据库获取数据
-    const result = await getAllPosts({ 
-      limit, 
-      offset: (page - 1) * limit,
-      category,
-      tag,
-      sortBy,
-      sortOrder,
-      includeUnpublished // 只有管理员可以看到未发布文章
-    });
-    
-    console.log(`[API] 查询返回文章数: ${result.posts.length}, 总数: ${result.total}`);
-    
-    const response = {
-      total: result.total,
-      page,
-      limit,
-      totalPages: Math.ceil(result.total / limit),
-      data: result.posts,
-    };
-    
-    // 更新缓存
-    apiCache.set(cacheKey, {
-      data: response,
-      timestamp: now
-    });
-    
-    return Response.json(response);
+    console.log(`[API] 开始从数据库获取文章数据...`);
+    try {
+      const result = await getAllPosts({ 
+        limit, 
+        offset: (page - 1) * limit,
+        category,
+        tag,
+        sortBy,
+        sortOrder,
+        includeUnpublished // 只有管理员可以看到未发布文章
+      });
+      
+      console.log(`[API] 查询返回文章数: ${result.posts.length}, 总数: ${result.total}`);
+      
+      const response = {
+        total: result.total,
+        page,
+        limit,
+        totalPages: Math.ceil(result.total / limit),
+        data: result.posts,
+      };
+      
+      // 更新缓存
+      apiCache.set(cacheKey, {
+        data: response,
+        timestamp: now
+      });
+      
+      return Response.json(response);
+    } catch (dbError) {
+      console.error('[API] 数据库查询失败:', dbError);
+      throw new Error(`数据库查询失败: ${dbError instanceof Error ? dbError.message : '未知错误'}`);
+    }
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('[API] 获取文章失败:', error);
+    console.error('[API] 错误详情:', error instanceof Error ? error.stack : '无堆栈信息');
     return Response.json(
       { error: '获取文章失败', message: error instanceof Error ? error.message : '未知错误' },
       { status: 500 }

@@ -55,11 +55,13 @@ function getBaseUrl() {
   // 回退到请求头获取主机
   try {
     const headersList = headers();
-    const host = headersList.get("host") || "localhost:3001"; // 使用正确的端口
+    const host = headersList.get("host") || "localhost:3001"; 
     const protocol = host.includes("localhost") ? "http" : "https";
+    
+    // 确保使用当前主机和协议
     return `${protocol}://${host}`;
   } catch (error) {
-    // 最终回退到默认值
+    // 最终回退到默认值,使用当前Next.js服务端口
     console.error("获取请求头失败，使用默认值:", error);
     return "http://localhost:3001";
   }

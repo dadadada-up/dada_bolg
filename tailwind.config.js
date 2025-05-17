@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import typographyPlugin from '@tailwindcss/typography';
+import animatePlugin from 'tailwindcss-animate';
+
+export default {
   darkMode: ["class"],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -93,8 +96,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-    require('tailwindcss-animate')
-  ],
+  plugins: [typographyPlugin, animatePlugin],
 } 

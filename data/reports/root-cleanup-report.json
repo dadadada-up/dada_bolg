@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-05-17T15:34:10.865Z",
+  "filesToMove": {
+    "count": 15,
+    "byTarget": {
+      "config/env": [
+        ".env.development",
+        ".env.example",
+        ".env.example.local",
+        ".env.local",
+        ".env.production"
+      ],
+      ".github": [
+        ".github",
+        ".gitignore"
+      ],
+      "scripts": [
+        "next-env.d.ts",
+        "reorganize_project.sh",
+        "test.js"
+      ],
+      "config": [
+        "next.config.mjs",
+        "postcss.config.js",
+        "tailwind.config.js",
+        "tsconfig.json",
+        "vercel.json"
+      ]
+    }
+  },
+  "tempFiles": {
+    "count": 0,
+    "files": []
+  },
+  "unknownFiles": {
+    "count": 11,
+    "files": [
+      ".cache",
+      ".cursorignore",
+      ".vercel",
+      "404.html",
+      "assets",
+      "config",
+      "configs",
+      "data",
+      "docs",
+      "next.fetch.ts",
+      "scripts"
+    ]
+  }
+}

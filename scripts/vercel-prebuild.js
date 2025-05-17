@@ -79,71 +79,12 @@ if (!fs.existsSync(file404)) {
   console.log('✅ 已创建public/404.html文件');
 }
 
-// 确保项目根目录也有404.html（Vercel可能会直接从这里读取）
+// 确保项目根目录也有404.html
 const rootFile404 = path.join(rootDir, '404.html');
 if (!fs.existsSync(rootFile404)) {
   console.log('复制404.html到项目根目录...');
   fs.copyFileSync(file404, rootFile404);
   console.log('✅ 已复制404.html到项目根目录');
 }
-
-// 创建.vercel/output/static目录（如果还不存在）
-const vercelOutputDir = path.join(rootDir, '.vercel', 'output');
-const staticDir = path.join(vercelOutputDir, 'static');
-
-if (!fs.existsSync(staticDir)) {
-  fs.mkdirSync(staticDir, { recursive: true });
-  console.log(`✅ 已创建目录: ${staticDir}`);
-}
-
-// 复制404.html到.vercel/output/static
-const outputFile404 = path.join(staticDir, '404.html');
-fs.copyFileSync(file404, outputFile404);
-console.log(`✅ 已复制404.html到: ${outputFile404}`);
-
-// 创建.vercel/output/config.json
-const configFile = path.join(vercelOutputDir, 'config.json');
-const config = {
-  version: 3,
-  routes: [
-    { handle: "filesystem" },
-    { src: "/(.*)", status: 404, dest: "/404.html" }
-  ],
-  overrides: {
-    '404.html': { path: '/404.html', contentType: 'text/html; charset=utf-8' }
-  }
-};
-
-fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
-console.log(`✅ 已创建Vercel配置文件: ${configFile}`);
-
-// 创建build-output.json告诉Vercel关于404.html
-const buildOutputFile = path.join(vercelOutputDir, 'build-output.json');
-const buildOutput = {
-  routes: [
-    { src: "/(.*)", status: 404, dest: "/404.html" }
-  ],
-  staticFilesOutputPath: "static",
-  publicDirectoryPath: "public",
-  buildOutputs: [
-    {
-      path: "404.html",
-      type: "static"
-    }
-  ]
-};
-
-fs.writeFileSync(buildOutputFile, JSON.stringify(buildOutput, null, 2));
-console.log(`✅ 已创建构建输出清单: ${buildOutputFile}`);
-
-// 创建.vercel/output/static/404.html
-const outputStaticFile404 = path.join(staticDir, '404.html');
-fs.copyFileSync(file404, outputStaticFile404);
-console.log(`✅ 已复制404.html到静态输出目录: ${outputStaticFile404}`);
-
-// 直接在.vercel/output目录也放置一个404.html
-const outputRootFile404 = path.join(vercelOutputDir, '404.html');
-fs.copyFileSync(file404, outputRootFile404);
-console.log(`✅ 已复制404.html到Vercel输出根目录: ${outputRootFile404}`);
 
 console.log('✅ Vercel预构建脚本执行完成'); 

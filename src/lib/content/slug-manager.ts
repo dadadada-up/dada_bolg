@@ -1,15 +1,13 @@
-import { getDb } from './db';
-import { getAllPosts } from './db-posts';
-import { enhancedSlugify } from './utils';
+import { Post } from '@/types/post';
+import { getAllFallbackPosts } from '@/lib/fallback-data';
+import { isTursoEnabled } from '@/lib/db/turso-client-new';
+import { query, queryOne, execute } from '@/lib/db/database';
 import limax from 'limax';
 
 /**
- * Slug管理器 - 整合多个Slug清理和优化功能
+ * Slug管理器 - 支持Turso数据库和备用数据
  * 
- * 整合功能:
- * - 修复随机ID后缀的slug (来自fix-slugs)
- * - 将中文slug转换为拼音 (来自clean-slugs.js)
- * - 优化slug格式，提高可读性
+ * 优先尝试使用Turso数据库，失败时回退到备用数据
  */
 
 // 检测slug是否包含中文
@@ -27,193 +25,106 @@ export function generatePinyinSlug(title: string): string {
   return limax(title, { tone: false, separator: '-' });
 }
 
-// 确保slug的唯一性
+// 确保slug的唯一性 (优先使用数据库，失败时使用备用数据)
 export async function ensureUniqueSlug(slug: string, postId?: string): Promise<string> {
-  const db = await getDb();
-  let uniqueSlug = slug;
-  let counter = 1;
-  
-  while (true) {
-    let query = 'SELECT id FROM posts WHERE slug = ?';
-    let params: any[] = [uniqueSlug];
-    
-    if (postId) {
-      query += ' AND id != ?';
-      params.push(postId);
+  try {
+    if (isTursoEnabled()) {
+      console.log(`[Turso] 确保slug唯一: ${slug}`);
+      
+      let uniqueSlug = slug;
+      let counter = 1;
+      
+      while (true) {
+        // 检查是否存在相同的slug
+        const params = [uniqueSlug];
+        let sql = `SELECT COUNT(*) as count FROM posts WHERE slug = ?`;
+        
+        // 如果提供了postId，排除当前文章
+        if (postId) {
+          sql += ` AND id != ?`;
+          params.push(postId);
+        }
+        
+        const result = await queryOne(sql, params);
+        const count = result ? result.count : 0;
+        
+        // 如果没有找到相同的slug，可以使用当前slug
+        if (count === 0) {
+          return uniqueSlug;
+        }
+        
+        // 添加数字后缀
+        uniqueSlug = `${slug}-${counter}`;
+        counter++;
+      }
     }
     
-    const existingPost = await db.get(query, params);
-    if (!existingPost) break;
+    // 如果Turso未启用或查询失败，使用备用数据
+    console.log(`[文章管理] 从Turso确保slug唯一失败，使用备用数据: ${slug}`);
+    const posts = getAllFallbackPosts();
+    let uniqueSlug = slug;
+    let counter = 1;
     
-    // 如果已存在，添加数字后缀
-    uniqueSlug = `${slug}-${counter}`;
-    counter++;
+    while (true) {
+      const existingPost = posts.find(p => p.slug === uniqueSlug && p.id?.toString() !== postId);
+      if (!existingPost) break;
+      
+      // 如果已存在，添加数字后缀
+      uniqueSlug = `${slug}-${counter}`;
+      counter++;
+    }
+    
+    return uniqueSlug;
+  } catch (error) {
+    console.error(`[文章管理] 确保slug唯一失败:`, error);
+    
+    // 失败时使用备用数据
+    const posts = getAllFallbackPosts();
+    let uniqueSlug = slug;
+    let counter = 1;
+    
+    while (true) {
+      const existingPost = posts.find(p => p.slug === uniqueSlug && p.id?.toString() !== postId);
+      if (!existingPost) break;
+      
+      // 如果已存在，添加数字后缀
+      uniqueSlug = `${slug}-${counter}`;
+      counter++;
+    }
+    
+    return uniqueSlug;
   }
-  
-  return uniqueSlug;
 }
 
-// 修复随机后缀的slug
+// 修复随机后缀的slug (Vercel环境中禁用)
 export async function fixRandomSuffixSlugs(): Promise<{
   processed: number;
   fixed: number;
   errors: string[];
 }> {
-  const db = await getDb();
-  const results = {
+  console.log('[Vercel环境] 修复随机后缀的slug功能被禁用');
+  return {
     processed: 0,
     fixed: 0,
-    errors: [] as string[]
+    errors: []
   };
-  
-  // 获取所有文章
-  const { posts } = await getAllPosts({includeUnpublished: true, limit: 1000});
-  results.processed = posts.length;
-  
-  console.log(`[Slug管理] 开始处理 ${posts.length} 篇文章的随机后缀...`);
-  
-  // 开始事务
-  await db.exec('BEGIN TRANSACTION');
-  
-  try {
-    for (const post of posts) {
-      // 检查slug是否包含随机ID
-      if (hasRandomSuffix(post.slug)) {
-        // 从标题生成规范化的slug
-        let newSlug = enhancedSlugify(post.title, { maxLength: 80 });
-        
-        console.log(`[Slug管理] 文章: "${post.title}"`);
-        console.log(`[Slug管理] 旧slug: ${post.slug}`);
-        console.log(`[Slug管理] 新slug: ${newSlug}`);
-        
-        // 确保新slug的唯一性
-        newSlug = await ensureUniqueSlug(newSlug, post.id?.toString());
-        
-        // 获取文章ID
-        let postId: string;
-        if (post.id) {
-          postId = post.id.toString();
-        } else {
-          const postIdQuery = await db.get('SELECT post_id FROM slug_mapping WHERE slug = ? AND is_primary = 1', [post.slug]) as { post_id: string } | undefined;
-          
-          if (!postIdQuery) {
-            console.log(`[Slug管理] 未找到slug的主键映射: ${post.slug}`);
-            results.errors.push(`未找到Slug映射: ${post.slug}`);
-            continue;
-          }
-          
-          postId = postIdQuery.post_id;
-        }
-        
-        // 更新posts表中的slug
-        await db.run('UPDATE posts SET slug = ? WHERE id = ?', [newSlug, postId]);
-        
-        // 更新主slug映射
-        await db.run('UPDATE slug_mapping SET slug = ?, is_primary = 1 WHERE post_id = ? AND is_primary = 1', [newSlug, postId]);
-        
-        // 添加旧slug作为映射（防止链接失效）
-        try {
-          await db.run('INSERT INTO slug_mapping (slug, post_id, is_primary) VALUES (?, ?, 0)', [post.slug, postId, 0]);
-        } catch (e) {
-          // 可能已存在，忽略错误
-        }
-        
-        results.fixed++;
-      }
-    }
-    
-    await db.exec('COMMIT');
-    console.log(`[Slug管理] 成功修复 ${results.fixed} 篇文章的随机后缀`);
-  } catch (error) {
-    await db.exec('ROLLBACK');
-    console.error('[Slug管理] 事务失败，已回滚:', error);
-    throw error;
-  }
-  
-  return results;
 }
 
-// 将中文slug转换为拼音
+// 将中文slug转换为拼音 (Vercel环境中禁用)
 export async function convertChineseSlugs(): Promise<{
   processed: number;
   converted: number;
   errors: string[];
 }> {
-  const db = await getDb();
-  const results = {
+  console.log('[Vercel环境] 将中文slug转换为拼音功能被禁用');
+  return {
     processed: 0,
     converted: 0,
-    errors: [] as string[]
+    errors: []
   };
-  
-  // 获取所有文章
-  const { posts } = await getAllPosts({includeUnpublished: true, limit: 1000});
-  results.processed = posts.length;
-  
-  console.log(`[Slug管理] 开始处理 ${posts.length} 篇文章的中文slug...`);
-  
-  // 开始事务
-  await db.exec('BEGIN TRANSACTION');
-  
-  try {
-    for (const post of posts) {
-      // 如果slug包含中文，则重新生成
-      if (containsChinese(post.slug)) {
-        // 从标题生成拼音slug
-        let newSlug = generatePinyinSlug(post.title);
-        
-        console.log(`[Slug管理] 文章: "${post.title}"`);
-        console.log(`[Slug管理] 旧slug(中文): ${post.slug}`);
-        console.log(`[Slug管理] 新slug(拼音): ${newSlug}`);
-        
-        // 确保新slug的唯一性
-        newSlug = await ensureUniqueSlug(newSlug, post.id?.toString());
-        
-        // 获取文章ID
-        let postId: string;
-        if (post.id) {
-          postId = post.id.toString();
-        } else {
-          const postIdQuery = await db.get('SELECT post_id FROM slug_mapping WHERE slug = ? AND is_primary = 1', [post.slug]) as { post_id: string } | undefined;
-          
-          if (!postIdQuery) {
-            console.log(`[Slug管理] 未找到slug的主键映射: ${post.slug}`);
-            results.errors.push(`未找到Slug映射: ${post.slug}`);
-            continue;
-          }
-          
-          postId = postIdQuery.post_id;
-        }
-        
-        // 更新posts表中的slug
-        await db.run('UPDATE posts SET slug = ? WHERE id = ?', [newSlug, postId]);
-        
-        // 更新主slug映射
-        await db.run('UPDATE slug_mapping SET slug = ?, is_primary = 1 WHERE post_id = ? AND is_primary = 1', [newSlug, postId]);
-        
-        // 添加旧slug作为映射（防止链接失效）
-        try {
-          await db.run('INSERT INTO slug_mapping (slug, post_id, is_primary) VALUES (?, ?, 0)', [post.slug, postId, 0]);
-        } catch (e) {
-          // 可能已存在，忽略错误
-        }
-        
-        results.converted++;
-      }
-    }
-    
-    await db.exec('COMMIT');
-    console.log(`[Slug管理] 成功转换 ${results.converted} 篇文章的中文slug`);
-  } catch (error) {
-    await db.exec('ROLLBACK');
-    console.error('[Slug管理] 事务失败，已回滚:', error);
-    throw error;
-  }
-  
-  return results;
 }
 
-// 分析slug状态
+// 分析slug状态 (优先使用数据库，失败时使用备用数据)
 export async function analyzeSlugs(): Promise<{
   total: number;
   chineseCount: number;
@@ -222,58 +133,132 @@ export async function analyzeSlugs(): Promise<{
   chineseSlugs: Array<{slug: string, title: string}>;
   randomSuffixSlugs: Array<{slug: string, title: string}>;
 }> {
-  // 获取所有文章
-  const { posts } = await getAllPosts({includeUnpublished: true, limit: 1000});
-  
-  const chineseSlugs: Array<{slug: string, title: string}> = [];
-  const randomSuffixSlugs: Array<{slug: string, title: string}> = [];
-  
-  // 分析每篇文章的slug
-  for (const post of posts) {
-    if (containsChinese(post.slug)) {
-      chineseSlugs.push({
-        slug: post.slug,
-        title: post.title
-      });
+  try {
+    if (isTursoEnabled()) {
+      console.log(`[Turso] 尝试分析slug状态`);
+      
+      // 从数据库获取所有文章的slug和title
+      const sql = `SELECT slug, title FROM posts`;
+      const dbSlugs = await query(sql);
+      
+      if (dbSlugs && dbSlugs.length > 0) {
+        console.log(`[Turso] 从数据库获取到 ${dbSlugs.length} 个slug`);
+        
+        const chineseSlugs: Array<{slug: string, title: string}> = [];
+        const randomSuffixSlugs: Array<{slug: string, title: string}> = [];
+        
+        // 分析每个slug
+        for (const item of dbSlugs) {
+          if (containsChinese(item.slug)) {
+            chineseSlugs.push({
+              slug: item.slug,
+              title: item.title
+            });
+          }
+          
+          if (hasRandomSuffix(item.slug)) {
+            randomSuffixSlugs.push({
+              slug: item.slug,
+              title: item.title
+            });
+          }
+        }
+        
+        // 计算统计结果
+        return {
+          total: dbSlugs.length,
+          chineseCount: chineseSlugs.length,
+          randomSuffixCount: randomSuffixSlugs.length,
+          cleanCount: dbSlugs.length - chineseSlugs.length - randomSuffixSlugs.length,
+          chineseSlugs,
+          randomSuffixSlugs
+        };
+      }
     }
     
-    if (hasRandomSuffix(post.slug)) {
-      randomSuffixSlugs.push({
-        slug: post.slug,
-        title: post.title
-      });
+    // 如果Turso未启用或查询失败，使用备用数据
+    console.log('[文章管理] 从Turso分析slug状态失败，使用备用数据');
+    const posts = getAllFallbackPosts();
+    
+    const chineseSlugs: Array<{slug: string, title: string}> = [];
+    const randomSuffixSlugs: Array<{slug: string, title: string}> = [];
+    
+    // 分析每篇文章的slug
+    for (const post of posts) {
+      if (containsChinese(post.slug)) {
+        chineseSlugs.push({
+          slug: post.slug,
+          title: post.title
+        });
+      }
+      
+      if (hasRandomSuffix(post.slug)) {
+        randomSuffixSlugs.push({
+          slug: post.slug,
+          title: post.title
+        });
+      }
     }
+    
+    // 计算统计结果
+    return {
+      total: posts.length,
+      chineseCount: chineseSlugs.length,
+      randomSuffixCount: randomSuffixSlugs.length,
+      cleanCount: posts.length - chineseSlugs.length - randomSuffixSlugs.length,
+      chineseSlugs,
+      randomSuffixSlugs
+    };
+  } catch (error) {
+    console.error('[文章管理] 分析slug状态失败:', error);
+    
+    // 失败时使用备用数据
+    const posts = getAllFallbackPosts();
+    
+    const chineseSlugs: Array<{slug: string, title: string}> = [];
+    const randomSuffixSlugs: Array<{slug: string, title: string}> = [];
+    
+    // 分析每篇文章的slug
+    for (const post of posts) {
+      if (containsChinese(post.slug)) {
+        chineseSlugs.push({
+          slug: post.slug,
+          title: post.title
+        });
+      }
+      
+      if (hasRandomSuffix(post.slug)) {
+        randomSuffixSlugs.push({
+          slug: post.slug,
+          title: post.title
+        });
+      }
+    }
+    
+    // 计算统计结果
+    return {
+      total: posts.length,
+      chineseCount: chineseSlugs.length,
+      randomSuffixCount: randomSuffixSlugs.length,
+      cleanCount: posts.length - chineseSlugs.length - randomSuffixSlugs.length,
+      chineseSlugs,
+      randomSuffixSlugs
+    };
   }
-  
-  // 计算统计结果
-  return {
-    total: posts.length,
-    chineseCount: chineseSlugs.length,
-    randomSuffixCount: randomSuffixSlugs.length,
-    cleanCount: posts.length - chineseSlugs.length - randomSuffixSlugs.length,
-    chineseSlugs,
-    randomSuffixSlugs
-  };
 }
 
-// 执行全面的slug优化
+// 优化所有slug (Vercel环境中禁用)
 export async function optimizeAllSlugs(): Promise<{
   total: number;
   randomSuffixFixed: number;
   chineseConverted: number;
   errors: string[];
 }> {
-  // 处理随机后缀
-  const randomSuffixResults = await fixRandomSuffixSlugs();
-  
-  // 处理中文slug
-  const chineseResults = await convertChineseSlugs();
-  
-  // 汇总结果
+  console.log('[Vercel环境] 优化所有slug功能被禁用');
   return {
-    total: randomSuffixResults.processed, // 总文章数应相同
-    randomSuffixFixed: randomSuffixResults.fixed,
-    chineseConverted: chineseResults.converted,
-    errors: [...randomSuffixResults.errors, ...chineseResults.errors]
+    total: 0,
+    randomSuffixFixed: 0,
+    chineseConverted: 0,
+    errors: []
   };
 } 

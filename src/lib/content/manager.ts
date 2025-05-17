@@ -1,10 +1,12 @@
 import { Post } from '@/types/post';
 import { fallbackPosts, getAllFallbackPosts, getFallbackPostBySlug } from '@/lib/fallback-data';
+import { isTursoEnabled } from '@/lib/db/turso-client-new';
+import { query, queryOne, execute } from '@/lib/db/database';
 
 /**
- * 内容管理器 - 在Vercel环境中的简化版本
+ * 内容管理器 - 支持Turso数据库和备用数据
  * 
- * 使用备用数据而不是数据库连接
+ * 优先尝试使用Turso数据库，失败时回退到备用数据
  */
 
 // 文章类型定义
@@ -137,7 +139,7 @@ export function generateCleanSlug(post: Post): string {
     .replace(/^-|-$/g, '');
 }
 
-// Vercel环境中使用备用数据实现
+// 获取所有文章 - 优先使用数据库，失败时使用备用数据
 export async function getAllPosts({
   includeUnpublished = false,
   limit = 100
@@ -145,26 +147,194 @@ export async function getAllPosts({
   posts: Post[];
   total: number;
 }> {
-  const posts = getAllFallbackPosts();
-  const filteredPosts = includeUnpublished 
-    ? posts 
-    : posts.filter(post => post.is_published);
-  
-  const limitedPosts = filteredPosts.slice(0, limit);
-  
-  return {
-    posts: limitedPosts,
-    total: filteredPosts.length
-  };
+  try {
+    // 检查是否启用了Turso
+    if (isTursoEnabled()) {
+      console.log('[Turso] 尝试从Turso数据库获取文章');
+      
+      // 从数据库获取文章
+      const sql = `
+        SELECT 
+          p.id, p.slug, p.title, p.content, p.excerpt, p.description,
+          p.published as is_published, p.featured as is_featured, 
+          p.cover_image as imageUrl, p.reading_time,
+          p.created_at, p.updated_at,
+          COALESCE(
+            (SELECT json_group_array(c.name) FROM post_categories pc 
+             JOIN categories c ON pc.category_id = c.id 
+             WHERE pc.post_id = p.id),
+            '[]'
+          ) as categories_json,
+          COALESCE(
+            (SELECT json_group_array(t.name) FROM post_tags pt 
+             JOIN tags t ON pt.tag_id = t.id 
+             WHERE pt.post_id = p.id),
+            '[]'
+          ) as tags_json,
+          substr(p.created_at, 1, 10) as date
+        FROM posts p
+        WHERE ${includeUnpublished ? '1=1' : 'p.published = 1'}
+        ORDER BY p.created_at DESC
+        ${limit ? `LIMIT ${limit}` : ''}
+      `;
+      
+      const dbPosts = await query(sql);
+      
+      if (dbPosts && dbPosts.length > 0) {
+        console.log(`[Turso] 从数据库成功获取 ${dbPosts.length} 篇文章`);
+        
+        // 处理数据库结果
+        const posts = dbPosts.map((post: any) => ({
+          id: post.id,
+          slug: post.slug,
+          title: post.title,
+          content: post.content,
+          excerpt: post.excerpt || post.description,
+          description: post.description,
+          is_published: !!post.is_published,
+          is_featured: !!post.is_featured,
+          imageUrl: post.imageUrl,
+          date: post.date,
+          created_at: post.created_at,
+          updated_at: post.updated_at,
+          categories: JSON.parse(post.categories_json || '[]'),
+          tags: JSON.parse(post.tags_json || '[]')
+        }));
+        
+        return {
+          posts,
+          total: posts.length
+        };
+      }
+    }
+    
+    // 如果Turso未启用或查询失败，使用备用数据
+    console.log('[文章管理] 从Turso获取文章失败，使用备用数据');
+    const posts = getAllFallbackPosts();
+    const filteredPosts = includeUnpublished 
+      ? posts 
+      : posts.filter(post => post.is_published);
+    
+    const limitedPosts = filteredPosts.slice(0, limit);
+    
+    return {
+      posts: limitedPosts,
+      total: filteredPosts.length
+    };
+  } catch (error) {
+    console.error('[文章管理] 获取文章失败:', error);
+    
+    // 失败时使用备用数据
+    const posts = getAllFallbackPosts();
+    const filteredPosts = includeUnpublished 
+      ? posts 
+      : posts.filter(post => post.is_published);
+    
+    const limitedPosts = filteredPosts.slice(0, limit);
+    
+    return {
+      posts: limitedPosts,
+      total: filteredPosts.length
+    };
+  }
 }
 
+// 根据slug获取单篇文章 - 优先使用数据库，失败时使用备用数据
 export async function getPostBySlug(
   slug: string
 ): Promise<Post | null> {
-  const post = getFallbackPostBySlug(slug);
-  return post || null;
+  try {
+    // 检查是否启用了Turso
+    if (isTursoEnabled()) {
+      console.log(`[Turso] 尝试从Turso数据库获取文章: ${slug}`);
+      
+      // 首先查询slug_mapping表，获取post_id
+      const slugMapping = await queryOne(`
+        SELECT post_id FROM slug_mapping 
+        WHERE slug = ? 
+        ORDER BY is_primary DESC 
+        LIMIT 1
+      `, [slug]);
+      
+      let postId: number | null = null;
+      
+      if (slugMapping && slugMapping.post_id) {
+        postId = slugMapping.post_id;
+        console.log(`[Turso] 找到slug映射: ${slug} -> post_id: ${postId}`);
+      } else {
+        // 如果在映射表中找不到，直接在posts表中查找
+        const postIdQuery = await queryOne(`
+          SELECT id FROM posts WHERE slug = ? LIMIT 1
+        `, [slug]);
+        
+        if (postIdQuery && postIdQuery.id) {
+          postId = postIdQuery.id;
+          console.log(`[Turso] 在posts表中直接找到文章: ${slug}, id: ${postId}`);
+        }
+      }
+      
+      // 如果找到了post_id，获取完整文章信息
+      if (postId) {
+        const postSql = `
+          SELECT 
+            p.id, p.slug, p.title, p.content, p.excerpt, p.description,
+            p.published as is_published, p.featured as is_featured, 
+            p.cover_image as imageUrl, p.reading_time,
+            p.created_at, p.updated_at,
+            COALESCE(
+              (SELECT json_group_array(c.name) FROM post_categories pc 
+               JOIN categories c ON pc.category_id = c.id 
+               WHERE pc.post_id = p.id),
+              '[]'
+            ) as categories_json,
+            COALESCE(
+              (SELECT json_group_array(t.name) FROM post_tags pt 
+               JOIN tags t ON pt.tag_id = t.id 
+               WHERE pt.post_id = p.id),
+              '[]'
+            ) as tags_json,
+            substr(p.created_at, 1, 10) as date
+          FROM posts p
+          WHERE p.id = ?
+        `;
+        
+        const dbPost = await queryOne(postSql, [postId]);
+        
+        if (dbPost) {
+          console.log(`[Turso] 成功获取文章: ${dbPost.title}`);
+          
+          return {
+            id: dbPost.id,
+            slug: dbPost.slug,
+            title: dbPost.title,
+            content: dbPost.content,
+            excerpt: dbPost.excerpt || dbPost.description,
+            description: dbPost.description,
+            is_published: !!dbPost.is_published,
+            is_featured: !!dbPost.is_featured,
+            imageUrl: dbPost.imageUrl,
+            date: dbPost.date,
+            created_at: dbPost.created_at,
+            updated_at: dbPost.updated_at,
+            categories: JSON.parse(dbPost.categories_json || '[]'),
+            tags: JSON.parse(dbPost.tags_json || '[]')
+          };
+        }
+      }
+    }
+    
+    // 如果Turso未启用或查询失败，使用备用数据
+    console.log(`[文章管理] 从Turso获取文章${slug}失败，使用备用数据`);
+    return getFallbackPostBySlug(slug) || null;
+  } catch (error) {
+    console.error(`[文章管理] 获取文章${slug}失败:`, error);
+    
+    // 失败时使用备用数据
+    return getFallbackPostBySlug(slug) || null;
+  }
 }
 
+// 删除文章 (Vercel环境中禁用)
 export async function deletePost(
   slug: string
 ): Promise<boolean> {

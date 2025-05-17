@@ -1,13 +1,18 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel:build",
-  "outputDirectory": ".next",
+  "buildCommand": "next build",
   "installCommand": "npm install --ignore-scripts",
+  "outputDirectory": ".next",
   "framework": "nextjs",
+  "regions": ["iad1"],
   "env": {
-    "VERCEL_FORCE_NO_BUILD_CACHE": "1",
-    "NODE_OPTIONS": "--max-old-space-size=4096",
-    "NEXT_PUBLIC_DATABASE_MODE": "turso",
-    "NEXT_PUBLIC_IS_VERCEL": "1"
+    "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
+    "VERCEL": "1"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
+      "VERCEL": "1"
+    }
   }
 } 

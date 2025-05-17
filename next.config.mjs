@@ -2,7 +2,21 @@
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-  output: 'standalone',
+  output: process.env.NEXT_PUBLIC_OUTPUT || 'standalone',
+  
+  // 环境变量
+  env: {
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://dada-blog.vercel.app',
+    VERCEL: '1', // 确保在Vercel环境中被正确标记
+    
+    // 在Vercel环境中启用备用数据
+    NEXT_PUBLIC_USE_FALLBACK_DATA: process.env.VERCEL === '1' ? 'true' : 'false',
+    
+    // 确保Turso配置被正确传递
+    TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
+    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN
+  },
+  
   images: {
     remotePatterns: [
       {
@@ -10,16 +24,21 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+    unoptimized: process.env.NODE_ENV === 'production',
   },
+  
   eslint: {
     ignoreDuringBuilds: true,
   },
+  
   typescript: {
     ignoreBuildErrors: true,
   },
+  
   async redirects() {
     return [];
   },
+  
   async rewrites() {
     return [
       {
@@ -35,6 +54,7 @@ const nextConfig = {
       },
     ];
   },
+  
   async headers() {
     return [
       {
@@ -48,6 +68,7 @@ const nextConfig = {
       },
     ];
   },
+  
   webpack: (config, { isServer }) => {
     // 针对Vercel环境的特殊处理
     if (!isServer) {
@@ -76,6 +97,9 @@ const nextConfig = {
 
     return config;
   },
+  
+  // React严格模式
+  reactStrictMode: true,
 };
 
 export default nextConfig; 

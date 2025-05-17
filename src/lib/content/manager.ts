@@ -1,18 +1,10 @@
-import { getDb } from './db';
-import { getAllPosts, getPostBySlug, deletePost } from './db-posts';
 import { Post } from '@/types/post';
-import { enhancedSlugify } from './utils';
-import { clearAllGithubCache } from './fs-cache';
-import * as github from './github';
+import { fallbackPosts, getAllFallbackPosts, getFallbackPostBySlug } from '@/lib/fallback-data';
 
 /**
- * 内容管理器 - 整合多个清理和修复功能的统一模块
+ * 内容管理器 - 在Vercel环境中的简化版本
  * 
- * 整合了以下原有功能:
- * - clean-db: 基础清理功能
- * - clean-duplicates: 特定文章的重复处理
- * - fix-duplicates: 高级重复处理
- * - clean-db-advanced: 高级数据库清理功能
+ * 使用备用数据而不是数据库连接
  */
 
 // 文章类型定义
@@ -45,10 +37,10 @@ export function calculateSimilarity(title1: string, title2: string): number {
   const words2 = new Set(normTitle2.split(' '));
   
   // 计算交集大小
-  const intersection = new Set([...words1].filter(x => words2.has(x)));
+  const intersection = new Set(Array.from(words1).filter(x => words2.has(x)));
   
   // 计算Jaccard相似度
-  const union = new Set([...words1, ...words2]);
+  const union = new Set([...Array.from(words1), ...Array.from(words2)]);
   
   return intersection.size / union.size;
 }
@@ -86,18 +78,6 @@ export function areDuplicateArticles(post1: Post, post2: Post): boolean {
     if (contentSimilarity > 0.9) return true;
   }
 
-  // 特定文章处理 - Notion+Cursor相关
-  if ((post1.title.includes('Notion') && post1.title.includes('Cursor')) && 
-      (post2.title.includes('Notion') && post2.title.includes('Cursor'))) {
-    return true;
-  }
-  
-  // 特定文章处理 - 投资前必知必会相关
-  if ((post1.title.includes('投资前必知必会') || post1.title.includes('tou zi qian')) && 
-      (post2.title.includes('投资前必知必会') || post2.title.includes('tou zi qian'))) {
-    return true;
-  }
-  
   return false;
 }
 
@@ -148,193 +128,95 @@ export function selectBestVersion(posts: Post[]): Post {
 
 // 生成更规范的slug
 export function generateCleanSlug(post: Post): string {
-  // 从标题生成干净的slug
-  return enhancedSlugify(post.title, { maxLength: 80 });
+  // 简化的slugify函数
+  return post.title
+    .toLowerCase()
+    .replace(/[^\w\s\u4e00-\u9fa5]/g, '')
+    .replace(/[\s\u4e00-\u9fa5]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+// Vercel环境中使用备用数据实现
+export async function getAllPosts({
+  includeUnpublished = false,
+  limit = 100
+} = {}): Promise<{
+  posts: Post[];
+  total: number;
+}> {
+  const posts = getAllFallbackPosts();
+  const filteredPosts = includeUnpublished 
+    ? posts 
+    : posts.filter(post => post.is_published);
+  
+  const limitedPosts = filteredPosts.slice(0, limit);
+  
+  return {
+    posts: limitedPosts,
+    total: filteredPosts.length
+  };
+}
+
+export async function getPostBySlug(
+  slug: string
+): Promise<Post | null> {
+  const post = getFallbackPostBySlug(slug);
+  return post || null;
+}
+
+export async function deletePost(
+  slug: string
+): Promise<boolean> {
+  console.log(`[Vercel环境] 删除文章功能被禁用: ${slug}`);
+  return false;
 }
 
 // 清理孤立的slug映射
 export async function cleanOrphanedSlugMappings(): Promise<number> {
-  const db = await getDb();
-  const result = await db.run(`
-    DELETE FROM slug_mapping 
-    WHERE post_id NOT IN (SELECT id FROM posts)
-  `);
-  
-  return result.changes || 0;
+  console.log('[Vercel环境] 清理孤立引用功能被禁用');
+  return 0;
 }
 
 // 分析并查找所有重复文章组
 export async function findDuplicateGroups(): Promise<DuplicateGroup[]> {
-  const { posts } = await getAllPosts({includeUnpublished: true, limit: 1000});
-  const groups: DuplicateGroup[] = [];
-  const processedSlugs = new Set<string>();
-  
-  for (const post of posts) {
-    // 跳过已处理的文章
-    if (processedSlugs.has(post.slug)) continue;
-    
-    const currentGroup: Post[] = [post];
-    processedSlugs.add(post.slug);
-    
-    // 找出与当前文章相似的所有其他文章
-    for (const otherPost of posts) {
-      if (processedSlugs.has(otherPost.slug)) continue;
-      if (areDuplicateArticles(post, otherPost)) {
-        currentGroup.push(otherPost);
-        processedSlugs.add(otherPost.slug);
-      }
-    }
-    
-    // 如果找到多于一篇相似文章，将它们作为一个组
-    if (currentGroup.length > 1) {
-      const bestPost = selectBestVersion(currentGroup);
-      const duplicates = currentGroup.filter(p => p.slug !== bestPost.slug);
-      
-      groups.push({
-        original: bestPost,
-        duplicates
-      });
-    }
-  }
-  
-  return groups;
+  console.log('[Vercel环境] 查找重复文章功能被禁用');
+  return [];
 }
 
 // 处理重复文章，保留最佳版本并删除其他
-export async function processDuplicateGroups(groups: DuplicateGroup[]): Promise<{
+export async function processDuplicateGroups(): Promise<{
   keptCount: number;
   deletedCount: number;
   slugsFixed: number;
   errors: string[];
 }> {
-  const results = {
+  console.log('[Vercel环境] 处理重复文章功能被禁用');
+  return {
     keptCount: 0,
     deletedCount: 0,
     slugsFixed: 0,
-    errors: [] as string[]
+    errors: []
   };
-  
-  const db = await getDb();
-
-  for (const group of groups) {
-    try {
-      results.keptCount++;
-      
-      // 优化保留文章的slug
-      let cleanSlug = generateCleanSlug(group.original);
-      const originalSlug = group.original.slug;
-      
-      // 如果当前slug不规范，生成新的
-      if (hasRandomSuffix(group.original.slug)) {
-        // 检查生成的slug是否已存在
-        const slugExists = await db.get('SELECT COUNT(*) as count FROM slug_mapping WHERE slug = ? AND post_id != (SELECT post_id FROM slug_mapping WHERE slug = ? AND is_primary = 1)', [cleanSlug, group.original.slug]) as { count: number };
-        
-        if (slugExists.count > 0) {
-          // 如果存在，添加时间戳使其唯一
-          const timestamp = new Date().getTime().toString(36).substring(0, 4);
-          cleanSlug = `${cleanSlug}-${timestamp}`;
-        }
-        
-        // 获取文章ID
-        const postIdQuery = await db.get('SELECT post_id FROM slug_mapping WHERE slug = ? AND is_primary = 1', [group.original.slug]) as { post_id: string } | undefined;
-        
-        if (postIdQuery) {
-          // 开始事务
-          await db.exec('BEGIN TRANSACTION');
-          
-          try {
-            // 更新posts表
-            await db.run('UPDATE posts SET slug = ? WHERE id = ?', [cleanSlug, postIdQuery.post_id]);
-            
-            // 更新主要slug映射
-            await db.run('UPDATE slug_mapping SET slug = ? WHERE post_id = ? AND is_primary = 1', [cleanSlug, postIdQuery.post_id]);
-            
-            // 添加原始slug作为映射，确保旧链接仍然有效
-            try {
-              await db.run('INSERT INTO slug_mapping (slug, post_id, is_primary) VALUES (?, ?, 0)', [group.original.slug, postIdQuery.post_id]);
-            } catch (e) {
-              // 可能已存在，忽略
-            }
-            
-            await db.exec('COMMIT');
-            results.slugsFixed++;
-          } catch (error) {
-            await db.exec('ROLLBACK');
-            throw error;
-          }
-        }
-      }
-      
-      // 删除重复的文章
-      for (const duplicate of group.duplicates) {
-        try {
-          await deletePost(duplicate.slug);
-          results.deletedCount++;
-        } catch (error) {
-          const errorMsg = `删除重复文章失败: ${duplicate.slug} - ${error instanceof Error ? error.message : '未知错误'}`;
-          console.error(errorMsg);
-          results.errors.push(errorMsg);
-        }
-      }
-    } catch (error) {
-      const errorMsg = `处理重复文章组失败: ${error instanceof Error ? error.message : '未知错误'}`;
-      console.error(errorMsg);
-      results.errors.push(errorMsg);
-    }
-  }
-
-  // 清理孤立的slug映射
-  await cleanOrphanedSlugMappings();
-  
-  return results;
 }
 
-// 删除指定的脏数据文章
+// 删除特定文章
 export async function removeSpecificArticles(slugs: string[]): Promise<{
   attempted: number;
   successful: number;
   failed: number;
   errors: string[];
 }> {
-  const results = {
+  console.log('[Vercel环境] 删除特定文章功能被禁用');
+  return {
     attempted: 0,
     successful: 0,
     failed: 0,
-    errors: [] as string[]
+    errors: []
   };
-  
-  // 清除GitHub缓存
-  try {
-    await clearAllGithubCache();
-  } catch (error) {
-    results.errors.push(`清除GitHub缓存失败: ${error instanceof Error ? error.message : String(error)}`);
-  }
-  
-  // 删除指定的文章
-  for (const slug of slugs) {
-    results.attempted++;
-    
-    try {
-      await deletePost(slug);
-      results.successful++;
-    } catch (error) {
-      results.failed++;
-      results.errors.push(`删除文章失败: ${slug} - ${error instanceof Error ? error.message : String(error)}`);
-    }
-  }
-  
-  // 再次清除缓存，确保前端获取不到已删除的文章
-  try {
-    await clearAllGithubCache();
-    await github.forceRefreshAllData();
-  } catch (error) {
-    results.errors.push(`最终清除缓存失败: ${error instanceof Error ? error.message : String(error)}`);
-  }
-  
-  return results;
 }
 
-// 执行数据库完整清理和优化
+// 数据库清理
 export async function performDatabaseCleanup(): Promise<{
   duplicateGroups: DuplicateGroup[];
   orphanedMappings: number;
@@ -345,19 +227,20 @@ export async function performDatabaseCleanup(): Promise<{
     errors: string[];
   };
 }> {
-  // 1. 查找所有重复文章组
-  const duplicateGroups = await findDuplicateGroups();
-  
-  // 2. 清理孤立的slug映射
-  const orphanedMappings = await cleanOrphanedSlugMappings();
-  
+  console.log('[Vercel环境] 数据库清理功能被禁用');
   return {
-    duplicateGroups,
-    orphanedMappings
+    duplicateGroups: [],
+    orphanedMappings: 0,
+    processingResults: {
+      keptCount: 0,
+      deletedCount: 0,
+      slugsFixed: 0,
+      errors: []
+    }
   };
 }
 
-// 执行完整的内容处理 (分析+清理)
+// 处理所有内容
 export async function processAllContent(): Promise<{
   duplicateGroups: number;
   processedResults: {
@@ -368,15 +251,20 @@ export async function processAllContent(): Promise<{
   };
   orphanedMappings: number;
 }> {
-  // 1. 分析内容
-  const { duplicateGroups, orphanedMappings } = await performDatabaseCleanup();
-  
-  // 2. 处理重复内容
-  const processedResults = await processDuplicateGroups(duplicateGroups);
-  
+  console.log('[Vercel环境] 内容处理功能被禁用');
   return {
-    duplicateGroups: duplicateGroups.length,
-    processedResults,
-    orphanedMappings
+    duplicateGroups: 0,
+    processedResults: {
+      keptCount: 0,
+      deletedCount: 0,
+      slugsFixed: 0,
+      errors: []
+    },
+    orphanedMappings: 0
   };
+}
+
+// 清除GitHub缓存 (空实现)
+export async function clearAllGithubCache(): Promise<void> {
+  console.log('[Vercel环境] 清除GitHub缓存功能被禁用');
 } 

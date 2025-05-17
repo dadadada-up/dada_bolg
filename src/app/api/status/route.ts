@@ -3,7 +3,7 @@
  * 路径: /api/status
  */
 import { initializeDatabase, getDatabase } from '@/lib/db/database';
-import { isTursoEnabled } from '@/lib/db/turso-client';
+import { isTursoEnabled } from '@/lib/db/turso-client-new';
 
 // 系统信息
 const systemInfo = {

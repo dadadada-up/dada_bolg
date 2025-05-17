@@ -7,16 +7,16 @@ import path from 'path';
 import fs from 'fs';
 import { Database } from 'sqlite';
 import { TursoDatabase } from './turso-adapter';
-import { useTurso } from './turso-client';
+import { isTursoEnabled } from './turso-client-new';
 
 // 检测是否在Vercel环境中
 const isVercel = process.env.VERCEL === '1';
 
 // 在Vercel环境中强制使用Turso
-const forceTurso = isVercel || useTurso();
+const forceTurso = isVercel || isTursoEnabled();
 
 // 数据库文件路径（本地开发用）
-const DB_PATH = process.env.DB_PATH || path.resolve(process.cwd(), 'data', 'blog.db');
+const DB_PATH = process.env.DB_PATH || path.resolve(process.cwd(), 'data', 'storage', 'blog.db');
 
 // 记录数据库配置信息
 if (forceTurso) {
@@ -26,8 +26,14 @@ if (forceTurso) {
   console.log(`[数据库] 使用本地SQLite数据库: ${DB_PATH}`);
 }
 
+// 使用通用数据库类型，兼容SQLite和Turso适配器
+// 由于两个实现的get方法返回类型略有不同，使用更通用的类型
+type GenericDatabase = Omit<Database, 'get'> & {
+  get<T = any>(sql: string, ...params: any[]): Promise<T | undefined>;
+};
+
 // 单例数据库实例
-let dbInstance: Database | null = null;
+let dbInstance: GenericDatabase | null = null;
 
 // 动态导入sqlite3，避免在Vercel环境中直接导入
 async function getSqliteDriver() {
@@ -72,7 +78,7 @@ async function getSqliteOpen() {
 /**
  * 获取数据库连接
  */
-export async function getDatabase(): Promise<Database> {
+export async function getDatabase(): Promise<GenericDatabase> {
   if (!dbInstance) {
     await initializeDatabase();
   }
@@ -82,7 +88,7 @@ export async function getDatabase(): Promise<Database> {
 /**
  * 初始化数据库连接
  */
-export async function initializeDatabase(): Promise<Database> {
+export async function initializeDatabase(): Promise<GenericDatabase> {
   if (dbInstance) {
     return dbInstance;
   }
@@ -98,7 +104,7 @@ export async function initializeDatabase(): Promise<Database> {
         throw new Error('Turso配置缺失');
       }
       
-      dbInstance = new TursoDatabase();
+      dbInstance = new TursoDatabase() as GenericDatabase;
       console.log('[数据库] Turso数据库初始化成功');
     } else {
       // 使用本地SQLite
@@ -119,7 +125,7 @@ export async function initializeDatabase(): Promise<Database> {
         
         // 如果SQLite加载失败但配置了Turso，则使用Turso
         if (process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN) {
-          dbInstance = new TursoDatabase();
+          dbInstance = new TursoDatabase() as GenericDatabase;
           console.log('[数据库] 回退到Turso数据库');
           return dbInstance;
         }
@@ -131,7 +137,7 @@ export async function initializeDatabase(): Promise<Database> {
       dbInstance = await open({
         filename: DB_PATH,
         driver: sqlite3.Database,
-      });
+      }) as GenericDatabase;
       
       // 启用外键约束
       await dbInstance.exec('PRAGMA foreign_keys = ON');

@@ -70,8 +70,8 @@ export default async function HomePage() {
   const baseUrl = getBaseUrl();
   console.log("基础URL:", baseUrl);
   
-  // 通过API获取文章
-  const apiUrl = `${baseUrl}/api/posts-new?limit=6`;
+  // 通过API获取文章 - 使用posts路由而非posts-new
+  const apiUrl = `${baseUrl}/api/posts?limit=6`;
   console.log("文章API URL:", apiUrl);
   
   let posts: Post[] = [];
@@ -112,8 +112,8 @@ export default async function HomePage() {
     useBackupData = true;
   }
 
-  // 获取所有分类
-  const categoriesApiUrl = `${baseUrl}/api/categories-new`;
+  // 获取所有分类 - 使用categories路由而非categories-new
+  const categoriesApiUrl = `${baseUrl}/api/categories`;
   console.log("分类API URL:", categoriesApiUrl);
   
   let categories: Category[] = [];

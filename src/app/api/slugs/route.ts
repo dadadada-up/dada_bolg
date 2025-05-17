@@ -34,42 +34,11 @@ export async function GET(request: Request) {
 // 执行slug优化
 export async function POST(request: Request) {
   try {
-    // 解析请求参数
-    const body = await request.json();
-    const mode = body.mode || 'all';
-    
-    console.log(`[Slug管理] 开始优化slug (模式: ${mode})`);
-    
-    let results;
-    
-    // 根据模式选择处理方法
-    switch (mode) {
-      case 'random_suffix':
-        // 仅处理随机后缀
-        results = await SlugManager.fixRandomSuffixSlugs();
-        break;
-        
-      case 'chinese':
-        // 仅处理中文slug
-        results = await SlugManager.convertChineseSlugs();
-        break;
-        
-      case 'all':
-      default:
-        // 全面优化
-        results = await SlugManager.optimizeAllSlugs();
-        break;
-    }
-    
-    // 清除缓存，确保前端获取最新数据
-    revalidatePath('/posts');
-    revalidatePath('/admin/posts');
-    
+    // 在Vercel环境中不允许执行slug优化
     return Response.json({
-      success: true,
-      mode,
-      results
-    });
+      success: false,
+      message: 'Vercel环境中不支持slug优化，请在本地开发环境中执行此操作'
+    }, { status: 403 });
   } catch (error) {
     console.error('[Slug管理] 优化失败:', error);
     return Response.json({ 

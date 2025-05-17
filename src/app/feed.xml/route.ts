@@ -1,8 +1,9 @@
-import { getPosts } from '@/lib/github';
+import { getAllPosts } from '@/lib/content/manager';
 
 export async function GET() {
   try {
-    const posts = await getPosts();
+    const result = await getAllPosts({ limit: 20 });
+    const posts = result.posts;
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dada-blog.vercel.app';
     const siteName = 'Dada Blog';
     const siteDescription = 'Dada的个人博客，分享技术文章和生活随笔';
@@ -33,13 +34,13 @@ export async function GET() {
       <link>${baseUrl}</link>
     </image>
     ${posts
-      .filter(post => post.published !== false)
+      .filter(post => post.published !== false && post.is_published !== false)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 20)
       .map(post => {
         // 提取文章中的第一张图片作为封面
-        const imageMatch = post.content.match(/<img.*?src=["'](.*?)["']/i);
-        const coverImage = post.coverImage || (imageMatch ? imageMatch[1] : null);
+        const imageMatch = (post.content || '').match(/<img.*?src=["'](.*?)["']/i);
+        const coverImage = post.imageUrl || (imageMatch ? imageMatch[1] : null);
         
         return `
     <item>
@@ -47,11 +48,11 @@ export async function GET() {
       <link>${baseUrl}/posts/${post.slug}</link>
       <guid isPermaLink="true">${baseUrl}/posts/${post.slug}</guid>
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
-      <description><![CDATA[${post.excerpt}]]></description>
-      ${post.categories.map(category => `<category><![CDATA[${category}]]></category>`).join('')}
-      ${post.tags.map(tag => `<category><![CDATA[${tag}]]></category>`).join('')}
+      <description><![CDATA[${post.excerpt || post.description || ''}]]></description>
+      ${post.categories && post.categories.map ? post.categories.map(category => `<category><![CDATA[${category}]]></category>`).join('') : ''}
+      ${post.tags && post.tags.map ? post.tags.map(tag => `<category><![CDATA[${tag}]]></category>`).join('') : ''}
       ${coverImage ? `<enclosure url="${coverImage}" type="image/jpeg" />` : ''}
-      <content:encoded><![CDATA[${post.content}]]></content:encoded>
+      <content:encoded><![CDATA[${post.content || ''}]]></content:encoded>
       <dc:creator><![CDATA[Dada]]></dc:creator>
     </item>`;
       }).join('')}

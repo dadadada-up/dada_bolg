@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { enhancedSyncFromGitHub } from '@/lib/sync-enhancer';
+import { enhancedSyncFromGitHub } from '@/lib/sync/enhancer';
 import { clearContentCache } from '@/lib/github';
 import { getDb } from '@/lib/db';
 

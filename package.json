@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/vercel-prebuild.mjs && next build && node scripts/next-adapter.mjs",
+    "build": "node scripts/deploy/vercel/vercel-prebuild.mjs && next build && node scripts/deploy/vercel/next-adapter.mjs",
     "start": "next start",
     "lint": "next lint",
     "install:no-sqlite": "npm install --ignore-scripts",
-    "vercel:build": "node scripts/vercel-prebuild.mjs && next build && node scripts/next-adapter.mjs",
-    "migrate-to-turso": "ts-node scripts/migrate-to-turso.ts",
-    "migrate-to-turso:dry": "ts-node scripts/migrate-to-turso.ts --dry-run",
-    "migrate-to-turso:schema": "ts-node scripts/migrate-to-turso.ts --schema-only"
+    "vercel:build": "node scripts/deploy/vercel/vercel-prebuild.mjs && next build && node scripts/deploy/vercel/next-adapter.mjs",
+    "migrate-to-turso": "ts-node scripts/db/migrate-to-turso.ts",
+    "migrate-to-turso:dry": "ts-node scripts/db/migrate-to-turso.ts --dry-run",
+    "migrate-to-turso:schema": "ts-node scripts/db/migrate-to-turso.ts --schema-only"
   },
   "dependencies": {
     "@libsql/client": "0.15.6",

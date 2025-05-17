@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getPosts, clearContentCache } from '@/lib/github';
-import { getAllPosts as getDbPosts } from '@/lib/db-posts';
-import { savePostSafe } from '@/lib/db-posts.patch';
+import { getAllPosts as getDbPosts } from '@/lib/db/posts';
+import { savePostSafe } from '@/lib/db/posts-patch';
 import { Post } from '@/types/post';
 
 export async function GET(request: Request) {

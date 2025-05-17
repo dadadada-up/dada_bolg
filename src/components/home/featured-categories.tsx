@@ -6,6 +6,12 @@ interface FeaturedCategoriesProps {
 }
 
 export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
+  // 确保所有分类都有postCount字段
+  const normalizedCategories = categories.map(cat => ({
+    ...cat,
+    postCount: cat.postCount ?? 0 // 如果postCount不存在，默认为0
+  }));
+  
   return (
     <div className="mb-12">
       <div className="flex justify-between items-center mb-6">
@@ -17,7 +23,7 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
       
       {/* 使用自动调整的网格布局 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {categories.map((category) => (
+        {normalizedCategories.map((category) => (
           <Link 
             key={category.slug} 
             href={`/categories/${category.slug}`}

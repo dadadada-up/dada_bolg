@@ -1,6 +1,7 @@
 import { Category } from '@/types/post';
 import * as db from '../database';
 import { slugify } from '@/lib/utils';
+import { query, queryOne, execute } from '../database';
 
 // 数据库中Category对象的类型
 interface DbCategory {
@@ -18,38 +19,91 @@ interface DbCategory {
  * 获取所有分类
  */
 export async function getAllCategories(): Promise<Category[]> {
-  const query = `
-    SELECT 
-      c.id, c.name, c.slug, c.description, c.parent_id, 
-      c.post_count, c.created_at, c.updated_at
-    FROM categories c
-    ORDER BY c.name ASC
-  `;
-  
-  const categories = await db.query<DbCategory>(query);
-  
-  return categories.map(mapDbCategoryToCategory);
+  try {
+    // 检查表是否存在
+    const tableCheck = await query("SELECT name FROM sqlite_master WHERE type='table' AND name='categories'");
+    
+    if (!tableCheck || tableCheck.length === 0) {
+      console.log('[DB] 分类表不存在');
+      return [];
+    }
+    
+    // 获取所有表字段
+    const columnsQuery = await query("PRAGMA table_info(categories)");
+    const columns = columnsQuery.map(col => col.name);
+    
+    // 动态构建SQL查询，根据表中实际存在的字段
+    let sql = 'SELECT ';
+    const selectFields = ['id', 'name', 'slug', 'description'];
+    
+    // 如果post_count字段存在，也选择它
+    if (columns.includes('post_count')) {
+      selectFields.push('post_count');
+    }
+    
+    // 添加字段到SQL
+    sql += selectFields.join(', ');
+    sql += ' FROM categories';
+    
+    // 查询所有分类
+    const categories = await query<any>(sql);
+    
+    // 转换为Category对象
+    return categories.map(c => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      description: c.description || '',
+      postCount: c.post_count || 0
+    }));
+  } catch (error) {
+    console.error('[DB] 获取分类失败:', error);
+    throw error;
+  }
 }
 
 /**
- * 根据slug获取分类
+ * 获取指定slug的分类
  */
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  const query = `
-    SELECT 
-      c.id, c.name, c.slug, c.description, c.parent_id, 
-      c.post_count, c.created_at, c.updated_at
-    FROM categories c
-    WHERE c.slug = ?
-  `;
-  
-  const category = await db.queryOne<DbCategory>(query, [slug]);
-  
-  if (!category) {
+  try {
+    const category = await queryOne<any>(`
+      SELECT id, name, slug, description, post_count 
+      FROM categories 
+      WHERE slug = ?
+    `, [slug]);
+    
+    if (!category) {
+      return null;
+    }
+    
+    return {
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      description: category.description || '',
+      postCount: category.post_count || 0
+    };
+  } catch (error) {
+    console.error(`[DB] 获取分类失败: ${slug}`, error);
     return null;
   }
-  
-  return mapDbCategoryToCategory(category);
+}
+
+/**
+ * 获取分类数量
+ */
+export async function getCategoryCount(): Promise<number> {
+  try {
+    const result = await queryOne<{count: number}>(`
+      SELECT COUNT(*) as count FROM categories
+    `);
+    
+    return result?.count || 0;
+  } catch (error) {
+    console.error('[DB] 获取分类数量失败:', error);
+    return 0;
+  }
 }
 
 /**

@@ -47,98 +47,88 @@ export const metadata: Metadata = {
 
 // 获取当前主机URL
 function getBaseUrl() {
-  // 优先使用环境变量
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
-  }
+  // 在服务器端，从请求头获取主机信息
+  const headersList = headers();
+  const host = headersList.get('host') || 'localhost:3000';
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
   
-  // 回退到请求头获取主机
-  try {
-    const headersList = headers();
-    const host = headersList.get("host") || "localhost:3001"; 
-    const protocol = host.includes("localhost") ? "http" : "https";
-    
-    // 确保使用当前主机和协议
-    return `${protocol}://${host}`;
-  } catch (error) {
-    // 最终回退到默认值,使用当前Next.js服务端口
-    console.error("获取请求头失败，使用默认值:", error);
-    return "http://localhost:3001";
-  }
+  return `${protocol}://${host}`;
 }
 
 export default async function HomePage() {
-  // 获取基础URL
+  // 使用绝对URL路径进行API请求
   const baseUrl = getBaseUrl();
-  console.log("基础URL:", baseUrl);
+  const postsApiPath = `${baseUrl}/api/posts?limit=6`;
+  console.log("文章API路径:", postsApiPath);
   
-  // 通过API获取文章 - 使用posts路由而非posts-new
-  const apiUrl = `${baseUrl}/api/posts?limit=6`;
-  console.log("文章API URL:", apiUrl);
-  
-  let posts: Post[] = [];
-  let postsError = false;
+  // 准备默认数据
+  let posts: Post[] = getAllFallbackPosts().slice(0, 6);
+  let categories: Category[] = fallbackCategories;
   
   try {
-    const response = await fetch(apiUrl, { 
-      cache: 'no-store' // 确保获取最新内容
+    const response = await fetch(postsApiPath, { 
+      cache: 'no-store', // 确保获取最新内容
+      next: { revalidate: 60 } // 每60秒重新验证一次
     });
     
     if (!response.ok) {
       console.error("获取文章失败:", response.status, response.statusText);
-      throw new Error('获取文章失败');
+      throw new Error(`获取文章失败: ${response.status} ${response.statusText}`);
     }
     
     const data = await response.json();
-    posts = data.data || [];
     
-    // 如果没有文章数据，设置错误状态
-    if (!posts || posts.length === 0) {
-      console.log("API返回空数据");
-      postsError = true;
+    // 检查API返回的数据格式
+    if (!data || typeof data !== 'object') {
+      console.error("API返回的数据格式不正确:", data);
+      throw new Error('API返回的数据格式不正确');
+    }
+    
+    // 根据API返回的数据结构获取文章列表
+    if (data.data && data.data.length > 0) {
+      posts = data.data;
+    } else {
+      console.log("API返回空数据，使用备用数据");
     }
   } catch (error) {
-    console.error("获取文章出错:", error);
-    postsError = true;
+    console.error("获取文章出错，使用备用数据:", error);
   }
 
-  // 获取所有分类 - 使用categories路由
-  const categoriesApiUrl = `${baseUrl}/api/categories`;
-  console.log("分类API URL:", categoriesApiUrl);
-  
-  let categories: Category[] = [];
-  let categoriesError = false;
+  // 获取所有分类 - 使用绝对URL路径
+  const categoriesApiPath = `${baseUrl}/api/categories`;
+  console.log("分类API路径:", categoriesApiPath);
   
   try {
-    const categoriesResponse = await fetch(categoriesApiUrl, { 
-      cache: 'no-store' // 确保获取最新内容
+    const categoriesResponse = await fetch(categoriesApiPath, { 
+      cache: 'no-store', // 确保获取最新内容
+      next: { revalidate: 60 } // 每60秒重新验证一次
     });
+      
+    if (!categoriesResponse.ok) {
+      console.error("获取分类失败:", categoriesResponse.status, categoriesResponse.statusText);
+      throw new Error(`获取分类失败: ${categoriesResponse.status} ${categoriesResponse.statusText}`);
+    }
     
-    if (categoriesResponse.ok) {
-      const categoriesData = await categoriesResponse.json();
+    const categoriesData = await categoriesResponse.json();
+    
+    // 检查API返回的数据格式
+    if (!categoriesData) {
+      console.error("分类API返回的数据格式不正确:", categoriesData);
+      throw new Error('分类API返回的数据格式不正确');
+    }
       
-      // 根据API返回的格式取出分类数据
-      if (Array.isArray(categoriesData)) {
-        // API直接返回数组
-        categories = categoriesData;
-      } else if (categoriesData && categoriesData.data && Array.isArray(categoriesData.data)) {
-        // API返回包含data字段的对象
-        categories = categoriesData.data;
-      }
-      
-      // 筛选有文章的分类展示
-      categories = categories
-        .filter(category => category.postCount > 0);
-        
-      if (categories.length === 0) {
-        categoriesError = true;
-      }
+    // 根据API返回的格式取出分类数据
+    if (Array.isArray(categoriesData) && categoriesData.length > 0) {
+      // API直接返回数组
+      categories = categoriesData;
+    } else if (categoriesData && categoriesData.data && Array.isArray(categoriesData.data) && categoriesData.data.length > 0) {
+      // API返回包含data字段的对象
+      categories = categoriesData.data;
     } else {
-      throw new Error('获取分类失败');
+      console.log("分类API返回空数据，使用备用数据");
     }
   } catch (error) {
-    console.error('获取分类失败:', error);
-    categoriesError = true;
+    console.error('获取分类失败，使用备用数据:', error);
   }
 
   // 精选文章（手动指定的文章slug列表）
@@ -151,9 +141,7 @@ export default async function HomePage() {
       <HeroSection />
       
       {/* 精选文章 */}
-      {!postsError ? (
-        <FeaturedPosts postSlugs={featuredPostSlugs} posts={posts} />
-      ) : (
+      {!posts.length ? (
         <div className="mb-12">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">精选文章</h2>
@@ -165,6 +153,8 @@ export default async function HomePage() {
             </p>
           </div>
         </div>
+      ) : (
+        <FeaturedPosts postSlugs={featuredPostSlugs} posts={posts} />
       )}
       
       {/* 最新文章 */}
@@ -176,26 +166,24 @@ export default async function HomePage() {
           </Link>
         </div>
         
-        {!postsError ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <PostCard key={post.slug} post={post} />
-            ))}
-          </div>
-        ) : (
+        {!posts.length ? (
           <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg border border-red-200 dark:border-red-800">
             <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">无法加载文章</h3>
             <p className="text-gray-700 dark:text-gray-300">
               抱歉，加载文章数据时出现错误。请稍后再试。
             </p>
           </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
         )}
       </div>
       
       {/* 精选分类 */}
-      {!categoriesError ? (
-        <FeaturedCategories categories={categories} />
-      ) : (
+      {!categories.length ? (
         <div className="mb-12">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">文章分类</h2>
@@ -207,6 +195,8 @@ export default async function HomePage() {
             </p>
           </div>
         </div>
+      ) : (
+        <FeaturedCategories categories={categories} />
       )}
       
       {/* 关于我区域 */}

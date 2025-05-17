@@ -2,6 +2,8 @@ import { Database } from 'sqlite';
 import path from 'path';
 import fs from 'fs';
 import { Post } from '@/types/post';
+import { initializeDatabase as initDb, getDatabase, closeDatabase, query, queryOne, execute } from './database';
+import { initializeSchema } from './init-schema';
 
 // 检测是否在Vercel环境中
 const isVercel = process.env.VERCEL === '1';
@@ -9,7 +11,7 @@ const isVercel = process.env.VERCEL === '1';
 let db: Database | null = null;
 
 // 获取数据库连接
-export async function getDb(): Promise<Database> {
+export async function getLocalDb(): Promise<Database> {
   if (db) {
     return db;
   }
@@ -57,7 +59,7 @@ async function tablesExist(): Promise<boolean> {
     return true;
   }
   
-  const db = await getDb();
+  const db = await getLocalDb();
   const result = await db.get(`
     SELECT name FROM sqlite_master 
     WHERE type='table' AND name='posts'
@@ -66,14 +68,14 @@ async function tablesExist(): Promise<boolean> {
 }
 
 // 创建数据库表
-export async function initializeDatabase() {
+export async function setupLocalDatabase() {
   // 在Vercel环境中，跳过初始化
   if (isVercel) {
     console.log('[DB] 在Vercel环境中跳过SQLite数据库初始化');
     return;
   }
   
-  const db = await getDb();
+  const db = await getLocalDb();
   
   // 创建文章表
   await db.exec(`
@@ -174,30 +176,42 @@ export async function initializeDatabase() {
 }
 
 // 初始化数据库
-export default async function initDb() {
-  // 在Vercel环境中，跳过初始化
-  if (isVercel) {
-    console.log('[DB] 在Vercel环境中跳过SQLite数据库初始化');
-    return;
-  }
-  
-  if (!(await tablesExist())) {
-    await initializeDatabase();
-  } else {
-    await getDb(); // 确保数据库连接已建立
+export default async function initializeDb() {
+  try {
+    console.log('[数据库] 开始初始化数据库...');
+    
+    // 初始化数据库连接
+    await initDb();
+    
+    // 初始化表结构
+    await initializeSchema();
+    
+    console.log('[数据库] 初始化完成');
+    return true;
+  } catch (error) {
+    console.error('[数据库] 初始化失败:', error);
+    throw error;
   }
 }
 
-// 生成唯一ID
-export function generateId(): string {
-  return Math.random().toString(36).substring(2, 10) + 
-         Date.now().toString(36);
-}
+// 导出数据库函数
+export {
+  initDb as initializeDatabase,
+  getDatabase,
+  closeDatabase,
+  query,
+  queryOne,
+  execute
+};
 
-// 获取当前时间戳
-export function getTimestamp(): number {
+// 导出替代别名
+export const getDb = getDatabase;
+export const generateId = () => {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+};
+export const getTimestamp = () => {
   return Math.floor(Date.now() / 1000);
-}
+};
 
 // 获取数据库状态信息
 export async function getDbStatus() {
@@ -215,7 +229,7 @@ export async function getDbStatus() {
     };
   }
   
-  const db = await getDb();
+  const db = await getLocalDb();
   
   const postCount = await db.get('SELECT COUNT(*) as count FROM posts');
   const categoryCount = await db.get('SELECT COUNT(*) as count FROM categories');

@@ -15,8 +15,33 @@ const isVercel = process.env.VERCEL === '1';
 // 在Vercel环境中强制使用Turso
 const forceTurso = isVercel || isTursoEnabled();
 
-// 数据库文件路径（本地开发用）
-const DB_PATH = process.env.DB_PATH || path.resolve(process.cwd(), 'data', 'storage', 'blog.db');
+// 尝试多个数据库文件路径（本地开发用）
+const DB_PATH_OPTIONS = [
+  process.env.DB_PATH,
+  path.resolve(process.cwd(), 'data', 'storage', 'backups', 'sqlite-backup-2025-05-16T05-29-38-486Z.db'),
+  path.resolve(process.cwd(), 'data', 'storage', 'backups', 'sqlite-backup-2025-05-16T05-28-37-207Z.db'),
+  path.resolve(process.cwd(), 'data', 'storage', 'blog.db'),
+  path.resolve(process.cwd(), 'data', 'blog.db')
+];
+
+// 选择第一个存在的数据库文件路径
+let DB_PATH = DB_PATH_OPTIONS[0]; // 默认使用环境变量中的路径
+
+// 如果环境变量未设置，检查其他可能的路径
+if (!DB_PATH || !fs.existsSync(DB_PATH)) {
+  for (let i = 1; i < DB_PATH_OPTIONS.length; i++) {
+    const dbPath = DB_PATH_OPTIONS[i];
+    if (dbPath && fs.existsSync(dbPath)) {
+      DB_PATH = dbPath;
+      break;
+    }
+  }
+}
+
+// 如果所有路径都不存在，使用data/blog.db作为默认值
+if (!DB_PATH || !fs.existsSync(DB_PATH)) {
+  DB_PATH = path.resolve(process.cwd(), 'data', 'blog.db');
+}
 
 // 记录数据库配置信息
 if (forceTurso) {
@@ -24,6 +49,9 @@ if (forceTurso) {
   if (isVercel) console.log('[数据库] 在Vercel环境中强制使用Turso');
 } else {
   console.log(`[数据库] 使用本地SQLite数据库: ${DB_PATH}`);
+  console.log(`[数据库] 文件是否存在: ${fs.existsSync(DB_PATH) ? '是' : '否'}`);
+  const fileSize = fs.existsSync(DB_PATH) ? fs.statSync(DB_PATH).size : 0;
+  console.log(`[数据库] 文件大小: ${fileSize} 字节`);
 }
 
 // 使用通用数据库类型，兼容SQLite和Turso适配器

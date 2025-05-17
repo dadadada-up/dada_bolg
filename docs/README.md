@@ -8,6 +8,7 @@
 - **setup/** - 安装配置指南
 - **development/** - 开发者指南和最佳实践
 - **architecture/** - 系统架构和设计文档
+- **optimization/** - 项目优化和清理文档
 
 ## 主要文档
 
@@ -24,6 +25,11 @@
 ### API相关
 
 - [API文档](./api/README.md) - 系统提供的所有API接口说明
+
+### 优化相关
+
+- [代码清理总结](./optimization/code-cleanup-summary.md) - 冗余代码清理工作的总结
+- [清理报告](./optimization/cleanup-report.md) - 详细的清理操作报告
 
 ## 相关链接
 
@@ -44,8 +50,13 @@
 
 ### 开发指南
 
-- [快速上手指南](./development/quick-start.md) - 开发环境搭建和项目开发
+- [快速上手指南](./development/quick-start.md) - 开发环境搭建和项目启动步骤
 
 ### 架构文档
 
-- [项目结构](./architecture/project_structure.md) - 项目目录结构说明 
+- [项目结构](./architecture/project_structure.md) - 项目目录结构和设计说明
+
+### 优化文档
+
+- [代码清理总结](./optimization/code-cleanup-summary.md) - 代码清理工作总结
+- [清理报告](./optimization/cleanup-report.md) - 详细的清理操作报告 

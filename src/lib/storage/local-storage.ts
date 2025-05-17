@@ -84,10 +84,10 @@ export class LocalStorageService implements StorageService {
 
       if (this.isImage(file.mimeType) && this.compressImages && !isVercel && sharpModule) {
         try {
-          const processedImage = await this.processImage(file.buffer);
-          buffer = processedImage.buffer;
-          width = processedImage.width;
-          height = processedImage.height;
+        const processedImage = await this.processImage(file.buffer);
+        buffer = processedImage.buffer;
+        width = processedImage.width;
+        height = processedImage.height;
         } catch (error) {
           console.warn('图片处理失败，使用原始图片:', (error as Error).message);
           // 使用原始图片

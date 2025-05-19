@@ -9,24 +9,26 @@ export async function initializeSchema() {
   console.log('[数据库] 开始初始化基本表结构...');
   
   try {
+    // 检查现有表结构
+    const existingTables = await db.all("SELECT name FROM sqlite_master WHERE type='table'");
+    const tableNames = existingTables.map((t: any) => t.name);
+    console.log('[数据库] 现有表:', tableNames.join(', '));
+    
     // 创建文章表
     await db.exec(`
       CREATE TABLE IF NOT EXISTS posts (
-        id TEXT PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         slug TEXT UNIQUE NOT NULL,
         title TEXT NOT NULL,
-        date TEXT NOT NULL,
-        updated TEXT,
         content TEXT NOT NULL,
         excerpt TEXT,
         description TEXT,
-        published INTEGER DEFAULT 1,
-        featured INTEGER DEFAULT 0,
-        cover_image TEXT,
+        is_published INTEGER DEFAULT 1,
+        is_featured INTEGER DEFAULT 0,
+        image_url TEXT,
         reading_time INTEGER,
-        original_file TEXT,
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
       )
     `);
     
@@ -38,7 +40,6 @@ export async function initializeSchema() {
         slug TEXT UNIQUE NOT NULL,
         description TEXT,
         parent_id INTEGER,
-        post_count INTEGER DEFAULT 0,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
@@ -52,7 +53,6 @@ export async function initializeSchema() {
         name TEXT NOT NULL,
         slug TEXT UNIQUE NOT NULL,
         description TEXT,
-        post_count INTEGER DEFAULT 0,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
       )
@@ -61,7 +61,7 @@ export async function initializeSchema() {
     // 创建文章-分类关联表
     await db.exec(`
       CREATE TABLE IF NOT EXISTS post_categories (
-        post_id TEXT NOT NULL,
+        post_id INTEGER NOT NULL,
         category_id INTEGER NOT NULL,
         PRIMARY KEY (post_id, category_id),
         FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
@@ -72,7 +72,7 @@ export async function initializeSchema() {
     // 创建文章-标签关联表
     await db.exec(`
       CREATE TABLE IF NOT EXISTS post_tags (
-        post_id TEXT NOT NULL,
+        post_id INTEGER NOT NULL,
         tag_id INTEGER NOT NULL,
         PRIMARY KEY (post_id, tag_id),
         FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
@@ -84,13 +84,16 @@ export async function initializeSchema() {
     await db.exec(`
       CREATE TABLE IF NOT EXISTS slug_mapping (
         slug TEXT PRIMARY KEY,
-        post_id TEXT NOT NULL,
+        post_id INTEGER NOT NULL,
         is_primary INTEGER DEFAULT 0,
         FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
       )
     `);
     
     console.log('[数据库] 表结构初始化完成');
+    
+    // 检查表结构是否需要修复
+    await checkAndFixTableStructure(db, tableNames);
     
     // 检查是否为空数据库（没有任何记录）
     const postCount = await db.get<{count: number}>('SELECT COUNT(*) as count FROM posts');
@@ -145,5 +148,96 @@ export async function initializeSchema() {
   } catch (error) {
     console.error('[数据库] 初始化表结构失败:', error);
     throw error;
+  }
+}
+
+// 检查并修复表结构
+async function checkAndFixTableStructure(db: any, existingTables: string[]) {
+  try {
+    console.log('[数据库] 开始检查表结构...');
+    
+    // 检查posts表结构
+    if (existingTables.includes('posts')) {
+      // 检查是否有published列（旧版本）但没有is_published列（新版本）
+      const postsColumns = await db.all("PRAGMA table_info(posts)");
+      const columnNames = postsColumns.map((col: any) => col.name);
+      
+      console.log('[数据库] posts表列:', columnNames.join(', '));
+      
+      // 检查并修复published -> is_published
+      if (columnNames.includes('published') && !columnNames.includes('is_published')) {
+        console.log('[数据库] 检测到旧版列名published，添加is_published列并同步数据');
+        
+        await db.exec(`
+          ALTER TABLE posts ADD COLUMN is_published INTEGER DEFAULT 1;
+          UPDATE posts SET is_published = published;
+        `);
+        
+        console.log('[数据库] 成功添加is_published列并同步数据');
+      }
+      
+      // 检查并修复featured -> is_featured
+      if (columnNames.includes('featured') && !columnNames.includes('is_featured')) {
+        console.log('[数据库] 检测到旧版列名featured，添加is_featured列并同步数据');
+        
+        await db.exec(`
+          ALTER TABLE posts ADD COLUMN is_featured INTEGER DEFAULT 0;
+          UPDATE posts SET is_featured = featured;
+        `);
+        
+        console.log('[数据库] 成功添加is_featured列并同步数据');
+      }
+      
+      // 检查并修复cover_image -> image_url
+      if (columnNames.includes('cover_image') && !columnNames.includes('image_url')) {
+        console.log('[数据库] 检测到旧版列名cover_image，添加image_url列并同步数据');
+        
+        await db.exec(`
+          ALTER TABLE posts ADD COLUMN image_url TEXT;
+          UPDATE posts SET image_url = cover_image;
+        `);
+        
+        console.log('[数据库] 成功添加image_url列并同步数据');
+      }
+    }
+    
+    // 检查是否需要更新slug_mapping表的外键类型
+    if (existingTables.includes('slug_mapping')) {
+      try {
+        // 检查post_id列类型
+        const slugMappingInfo = await db.all("PRAGMA table_info(slug_mapping)");
+        const postIdColumn = slugMappingInfo.find((col: any) => col.name === 'post_id');
+        
+        if (postIdColumn && postIdColumn.type === 'TEXT') {
+          console.log('[数据库] 检测到slug_mapping表的post_id列类型为TEXT，需要修复为INTEGER');
+          
+          // 创建临时表
+          await db.exec(`
+            CREATE TABLE slug_mapping_temp (
+              slug TEXT PRIMARY KEY,
+              post_id INTEGER NOT NULL,
+              is_primary INTEGER DEFAULT 0,
+              FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+            );
+            
+            INSERT INTO slug_mapping_temp (slug, post_id, is_primary)
+            SELECT slug, CAST(post_id AS INTEGER), is_primary FROM slug_mapping;
+            
+            DROP TABLE slug_mapping;
+            
+            ALTER TABLE slug_mapping_temp RENAME TO slug_mapping;
+          `);
+          
+          console.log('[数据库] 成功修复slug_mapping表的post_id列类型');
+        }
+      } catch (error) {
+        console.error('[数据库] 检查slug_mapping表结构失败:', error);
+      }
+    }
+    
+    console.log('[数据库] 表结构检查和修复完成');
+  } catch (error) {
+    console.error('[数据库] 检查和修复表结构失败:', error);
+    // 不抛出错误，让初始化过程继续
   }
 } 

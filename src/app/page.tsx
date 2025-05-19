@@ -6,7 +6,6 @@ import { Post, Category } from "@/types/post";
 import { HeroSection } from "@/components/home/hero-section";
 import { FeaturedCategories } from "@/components/home/featured-categories";
 import { FeaturedPosts } from "@/components/home/featured-posts";
-import { categoryMappings } from "@/lib/github";
 import { headers } from "next/headers";
 import { getAllFallbackPosts, fallbackCategories } from "@/lib/fallback-data";
 
@@ -48,22 +47,26 @@ export const metadata: Metadata = {
 // 获取当前主机URL
 function getBaseUrl() {
   // 在服务器端，从请求头获取主机信息
-  const headersList = headers();
+    const headersList = headers();
   const host = headersList.get('host') || 'localhost:3000';
   const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
   
-  return `${protocol}://${host}`;
+    return `${protocol}://${host}`;
 }
 
 export default async function HomePage() {
   // 使用绝对URL路径进行API请求
   const baseUrl = getBaseUrl();
-  const postsApiPath = `${baseUrl}/api/posts?limit=6`;
-  console.log("文章API路径:", postsApiPath);
   
   // 准备默认数据
-  let posts: Post[] = getAllFallbackPosts().slice(0, 6);
-  let categories: Category[] = fallbackCategories;
+  let posts: Post[] = [];
+  let categories: Category[] = [];
+  let postsError: string | null = null;
+  let categoriesError: string | null = null;
+  
+  // 获取文章数据
+  const postsApiPath = `${baseUrl}/api/posts?limit=6`;
+  console.log("文章API路径:", postsApiPath);
   
   try {
     const response = await fetch(postsApiPath, { 
@@ -87,11 +90,16 @@ export default async function HomePage() {
     // 根据API返回的数据结构获取文章列表
     if (data.data && data.data.length > 0) {
       posts = data.data;
+    } else if (Array.isArray(data) && data.length > 0) {
+      posts = data;
     } else {
       console.log("API返回空数据，使用备用数据");
+      posts = getAllFallbackPosts().slice(0, 6);
     }
   } catch (error) {
-    console.error("获取文章出错，使用备用数据:", error);
+    console.error("获取文章出错:", error);
+    postsError = error instanceof Error ? error.message : '未知错误';
+    posts = getAllFallbackPosts().slice(0, 6);
   }
 
   // 获取所有分类 - 使用绝对URL路径
@@ -109,26 +117,29 @@ export default async function HomePage() {
       throw new Error(`获取分类失败: ${categoriesResponse.status} ${categoriesResponse.statusText}`);
     }
     
-    const categoriesData = await categoriesResponse.json();
+        const categoriesData = await categoriesResponse.json();
     
     // 检查API返回的数据格式
     if (!categoriesData) {
       console.error("分类API返回的数据格式不正确:", categoriesData);
       throw new Error('分类API返回的数据格式不正确');
     }
-      
-    // 根据API返回的格式取出分类数据
+        
+        // 根据API返回的格式取出分类数据
     if (Array.isArray(categoriesData) && categoriesData.length > 0) {
-      // API直接返回数组
-      categories = categoriesData;
+          // API直接返回数组
+          categories = categoriesData;
     } else if (categoriesData && categoriesData.data && Array.isArray(categoriesData.data) && categoriesData.data.length > 0) {
-      // API返回包含data字段的对象
-      categories = categoriesData.data;
-    } else {
+          // API返回包含data字段的对象
+          categories = categoriesData.data;
+      } else {
       console.log("分类API返回空数据，使用备用数据");
+      categories = fallbackCategories;
     }
   } catch (error) {
-    console.error('获取分类失败，使用备用数据:', error);
+    console.error('获取分类失败:', error);
+    categoriesError = error instanceof Error ? error.message : '未知错误';
+    categories = fallbackCategories;
   }
 
   // 精选文章（手动指定的文章slug列表）
@@ -149,12 +160,12 @@ export default async function HomePage() {
           <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg border border-red-200 dark:border-red-800">
             <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">无法加载精选文章</h3>
             <p className="text-gray-700 dark:text-gray-300">
-              抱歉，加载文章数据时出现错误。请稍后再试。
+              {postsError ? `错误: ${postsError}` : "抱歉，加载文章数据时出现错误。请稍后再试。"}
             </p>
           </div>
         </div>
       ) : (
-        <FeaturedPosts postSlugs={featuredPostSlugs} posts={posts} />
+      <FeaturedPosts postSlugs={featuredPostSlugs} posts={posts} />
       )}
       
       {/* 最新文章 */}
@@ -170,15 +181,15 @@ export default async function HomePage() {
           <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg border border-red-200 dark:border-red-800">
             <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">无法加载文章</h3>
             <p className="text-gray-700 dark:text-gray-300">
-              抱歉，加载文章数据时出现错误。请稍后再试。
+              {postsError ? `错误: ${postsError}` : "抱歉，加载文章数据时出现错误。请稍后再试。"}
             </p>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <PostCard key={post.slug} post={post} />
-            ))}
-          </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <PostCard key={post.slug} post={post} />
+          ))}
+        </div>
         )}
       </div>
       
@@ -191,12 +202,12 @@ export default async function HomePage() {
           <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg border border-red-200 dark:border-red-800">
             <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">无法加载分类</h3>
             <p className="text-gray-700 dark:text-gray-300">
-              抱歉，加载分类数据时出现错误。请稍后再试。
+              {categoriesError ? `错误: ${categoriesError}` : "抱歉，加载分类数据时出现错误。请稍后再试。"}
             </p>
           </div>
         </div>
       ) : (
-        <FeaturedCategories categories={categories} />
+      <FeaturedCategories categories={categories} />
       )}
       
       {/* 关于我区域 */}

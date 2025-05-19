@@ -20,6 +20,7 @@ export default function CategoriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [activeView, setActiveView] = useState<'list' | 'maintenance'>('list');
+  const [dataSource, setDataSource] = useState<'primary' | 'backup'>('primary');
   const router = useRouter();
 
   useEffect(() => {
@@ -29,15 +30,32 @@ export default function CategoriesPage() {
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      // 使用新的categories-new接口获取分类数据
+      // 首先尝试使用主API获取分类数据
       const response = await fetch('/api/categories-new');
       if (!response.ok) throw new Error('获取分类失败');
       const data = await response.json();
       
       // 直接使用API返回的数据
       setCategories(data);
+      setDataSource('primary');
     } catch (err) {
-      setError(err instanceof Error ? err.message : '获取分类失败');
+      console.error('主API获取分类失败:', err);
+      
+      try {
+        // 尝试从备用API获取数据
+        console.log('尝试从备用API获取分类数据...');
+        const backupResponse = await fetch('/api/categories-new-fixed');
+        if (!backupResponse.ok) throw new Error('备用API获取分类失败');
+        const backupData = await backupResponse.json();
+        
+        setCategories(backupData);
+        setDataSource('backup');
+        setSuccess('已从备用数据源获取分类数据');
+        setTimeout(() => setSuccess(null), 3000);
+      } catch (backupErr) {
+        // 两个API都失败
+        setError(backupErr instanceof Error ? backupErr.message : '获取分类失败');
+      }
     } finally {
       setLoading(false);
     }
@@ -59,7 +77,11 @@ export default function CategoriesPage() {
     if (!editingCategory) return;
     
     try {
-      const response = await fetch(`/api/categories-new/${editingCategory.slug}`, {
+      const apiUrl = dataSource === 'primary' 
+        ? `/api/categories-new/${editingCategory.slug}`
+        : `/api/categories-new-fixed/${editingCategory.slug}`;
+        
+      const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -94,7 +116,11 @@ export default function CategoriesPage() {
     }
     
     try {
-      const response = await fetch(`/api/categories-new/${slug}`, {
+      const apiUrl = dataSource === 'primary' 
+        ? `/api/categories-new/${slug}`
+        : `/api/categories-new-fixed/${slug}`;
+        
+      const response = await fetch(apiUrl, {
         method: 'DELETE'
       });
       
@@ -125,7 +151,11 @@ export default function CategoriesPage() {
 
   const handleSubmitCreate = async () => {
     try {
-      const response = await fetch('/api/categories-new', {
+      const apiUrl = dataSource === 'primary' 
+        ? '/api/categories-new'
+        : '/api/categories-new-fixed';
+        
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -222,6 +252,12 @@ export default function CategoriesPage() {
               </button>
           </div>
         </div>
+
+        {dataSource === 'backup' && (
+          <div className="p-3 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded mb-4 text-sm">
+            使用本地备用数据源获取分类数据
+          </div>
+        )}
 
         {/* 错误或成功提示 */}
         {error && (

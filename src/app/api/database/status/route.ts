@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getDatabase } from "@/lib/db/database";
-import initializeDb from "@/lib/db";
+import { getDatabase, initializeDatabase } from "@/lib/db/database";
+import { initializeSchema } from "@/lib/db/init-schema";
 import fs from 'fs';
 import path from 'path';
 import { getDbStatus } from '@/lib/db';
@@ -47,12 +47,26 @@ interface DbStatusResponse {
     platform: string;
     cwd: string;
   };
+  schemaInitialized?: boolean;
+  schemaError?: string;
+  hasRequiredTables: boolean;
+  missingTables?: string[];
+  recordCounts?: {
+    posts: number;
+    categories: number;
+    tags: number;
+  };
+  countError?: string;
   [key: string]: any; // 允许添加其他属性
 }
 
 // 检查数据库连接状态
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // 解析查询参数，检查是否需要初始化
+    const { searchParams } = new URL(request.url);
+    const initSchema = searchParams.get('init') === 'true';
+    
     // 初始化数据库
     console.log('[数据库状态API] 尝试初始化数据库连接');
     
@@ -60,7 +74,7 @@ export async function GET() {
     let initError = null;
     
     try {
-      await initializeDb();
+      await initializeDatabase();
       dbInitializationSuccess = true;
     } catch (error) {
       initError = error;
@@ -74,6 +88,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       dbPaths: [],
       tables: [],
+      hasRequiredTables: false, // 默认为false，后面会根据实际情况更新
       environment: {
         isVercel: process.env.VERCEL === '1',
         nodeEnv: process.env.NODE_ENV,
@@ -98,15 +113,56 @@ export async function GET() {
       }
     }
     
-    // 如果数据库初始化成功，获取表信息
+    // 如果数据库初始化成功
     if (dbInitializationSuccess) {
       try {
+        // 获取表信息
         const tables = await query("SELECT name, type FROM sqlite_master WHERE type='table'");
         status.tables = tables;
         
-        // 获取更多数据库状态
-        const dbStatus = await getDbStatus();
-        Object.assign(status, dbStatus);
+        // 如果请求了初始化表结构
+        if (initSchema) {
+          try {
+            console.log('[数据库状态API] 尝试初始化数据库表结构');
+            await initializeSchema();
+            status.schemaInitialized = true;
+            
+            // 重新获取表信息
+            const updatedTables = await query("SELECT name, type FROM sqlite_master WHERE type='table'");
+            status.tables = updatedTables;
+          } catch (schemaError) {
+            console.error('[数据库状态API] 初始化表结构失败:', schemaError);
+            status.schemaInitialized = false;
+            status.schemaError = schemaError instanceof Error ? schemaError.message : String(schemaError);
+          }
+        }
+        
+        // 检查必要的表是否存在
+        const requiredTables = ['posts', 'categories', 'tags', 'post_categories', 'post_tags'];
+        const existingTables = status.tables.map((t: any) => t.name);
+        
+        status.missingTables = requiredTables.filter(t => !existingTables.includes(t));
+        status.hasRequiredTables = status.missingTables.length === 0;
+        
+        // 获取表中的记录数
+        if (status.hasRequiredTables) {
+          try {
+            const [postCount, categoryCount, tagCount] = await Promise.all([
+              query("SELECT COUNT(*) as count FROM posts"),
+              query("SELECT COUNT(*) as count FROM categories"),
+              query("SELECT COUNT(*) as count FROM tags")
+            ]);
+            
+            status.recordCounts = {
+              posts: postCount[0]?.count || 0,
+              categories: categoryCount[0]?.count || 0,
+              tags: tagCount[0]?.count || 0
+            };
+          } catch (countError) {
+            console.error('[数据库状态API] 获取记录数失败:', countError);
+            status.countError = countError instanceof Error ? countError.message : String(countError);
+          }
+        }
       } catch (tableError) {
         console.error('[数据库状态API] 获取表结构失败:', tableError);
         status.tableError = tableError instanceof Error ? tableError.message : String(tableError);

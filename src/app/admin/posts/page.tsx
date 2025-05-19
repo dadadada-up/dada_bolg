@@ -43,11 +43,12 @@ export default function PostsPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [categories, setCategories] = useState<Category[]>([]);
+  const [dataSource, setDataSource] = useState<'primary' | 'backup'>('primary');
   
   const router = useRouter();
   
   // 获取文章数据
-  const { data, error, isLoading, mutate } = useSWR<{
+  const { data: primaryData, error: primaryError, isLoading: isPrimaryLoading, mutate: mutatePrimary } = useSWR<{
     data: Post[];
     total: number;
     page: number;
@@ -76,12 +77,19 @@ export default function PostsPage() {
       url += `&sort=${sortField === 'date' ? 'created_at' : 'updated_at'}&order=${sortOrder}`;
     }
     
-    console.log('构建API URL:', url);
+    console.log('构建主API URL:', url);
     return url;
   }, async (url: string) => {
+    try {
     const response = await fetch(url);
     if (!response.ok) throw new Error('获取文章失败');
+      setDataSource('primary');
     return response.json();
+    } catch (error) {
+      console.error('主API获取文章失败:', error);
+      setDataSource('backup');
+      throw error;
+    }
   }, {
     revalidateOnFocus: false, // 避免频繁刷新
     dedupingInterval: 2000, // 减少短时间内的重复请求
@@ -90,6 +98,62 @@ export default function PostsPage() {
     revalidateIfStale: true,
     refreshInterval: 0
   });
+  
+  // 备用API获取数据
+  const { data: backupData, error: backupError, isLoading: isBackupLoading, mutate: mutateBackup } = useSWR<{
+    data: Post[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }>(primaryError ? () => {
+    let url = `/api/posts-new-fixed?page=${currentPage}&limit=${pageSize}&admin=true`;
+    
+    // 添加搜索参数（仅搜索标题）
+    if (searchQuery) {
+      url += `&search=${encodeURIComponent(searchQuery)}&searchField=title`;
+    }
+    
+    // 添加分类筛选
+    if (categoryFilter && categoryFilter !== 'all') {
+      url += `&category=${encodeURIComponent(categoryFilter)}`;
+    }
+    
+    // 添加状态筛选
+    if (statusFilter && statusFilter !== 'all') {
+      url += `&status=${statusFilter}`;
+    }
+    
+    // 添加排序参数
+    if (sortField) {
+      url += `&sort=${sortField === 'date' ? 'created_at' : 'updated_at'}&order=${sortOrder}`;
+    }
+    
+    console.log('构建备用API URL:', url);
+    return url;
+  } : null, async (url: string) => {
+    try {
+      console.log('尝试从备用API获取数据...');
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('从备用API获取文章失败');
+      return response.json();
+    } catch (error) {
+      console.error('备用API获取文章失败:', error);
+      throw error;
+    }
+  }, {
+    revalidateOnFocus: false,
+    dedupingInterval: 2000,
+    refreshWhenHidden: false,
+    revalidateIfStale: true,
+    refreshInterval: 0
+  });
+  
+  // 合并数据，优先使用主API的数据，如果主API失败则使用备用API的数据
+  const data = primaryError ? backupData : primaryData;
+  const error = primaryError && backupError;
+  const isLoading = dataSource === 'primary' ? isPrimaryLoading : isBackupLoading;
+  const mutate = dataSource === 'primary' ? mutatePrimary : mutateBackup;
   
   // 监听筛选条件变化
   useEffect(() => {
@@ -139,13 +203,30 @@ export default function PostsPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
+        // 尝试从主API获取分类
         const response = await fetch('/api/categories-new');
         if (response.ok) {
           const data = await response.json();
           setCategories(data);
+        } else {
+          throw new Error('获取分类失败');
         }
       } catch (error) {
-        console.error('获取分类失败:', error);
+        console.error('主API获取分类失败:', error);
+        
+        try {
+          // 尝试从备用API获取分类
+          console.log('尝试从备用API获取分类...');
+          const backupResponse = await fetch('/api/categories-new-fixed');
+          if (backupResponse.ok) {
+            const backupData = await backupResponse.json();
+            setCategories(backupData);
+          } else {
+            console.error('备用API获取分类失败');
+          }
+        } catch (backupError) {
+          console.error('备用API获取分类失败:', backupError);
+        }
       }
     };
     

@@ -30,13 +30,66 @@ interface DashboardData {
 }
 
 export default function DashboardPage() {
-  const { data, isLoading, error } = useSWR<DashboardData>('/api/dashboard-new', async (url: string) => {
+  const [dataSource, setDataSource] = useState<string>('primary');
+  
+  // 尝试从主API获取数据
+  const { data: primaryData, isLoading: isPrimaryLoading, error: primaryError } = useSWR<DashboardData>(
+    '/api/dashboard-new', 
+    async (url: string) => {
+      try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error('获取仪表盘数据失败');
     }
     return response.json();
-  });
+      } catch (error) {
+        console.error('主API获取仪表盘数据失败:', error);
+        // 标记使用备用API
+        setDataSource('backup');
+        throw error;
+      }
+    },
+    { 
+      revalidateOnFocus: false,
+      dedupingInterval: 10000
+    }
+  );
+  
+  // 如果主API失败，尝试从备用API获取数据
+  const { data: backupData, isLoading: isBackupLoading, error: backupError } = useSWR<DashboardData>(
+    primaryError ? '/api/dashboard-new-fixed' : null,
+    async (url: string) => {
+      try {
+        console.log('尝试从备用API获取数据...');
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('从备用API获取仪表盘数据失败');
+        }
+        return response.json();
+      } catch (error) {
+        console.error('备用API获取仪表盘数据失败:', error);
+        throw error;
+      }
+    },
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 10000
+    }
+  );
+  
+  // 合并数据，优先使用主API的数据，如果主API失败则使用备用API的数据
+  const data = primaryError ? backupData : primaryData;
+  const isLoading = dataSource === 'primary' ? isPrimaryLoading : isBackupLoading;
+  const error = primaryError && backupError;
+  
+  // 数据来源提示
+  useEffect(() => {
+    if (primaryError && backupData) {
+      console.log('使用备用API数据源');
+    } else if (primaryData) {
+      console.log('使用主API数据源');
+    }
+  }, [primaryData, backupData, primaryError]);
   
   // 假设这些数据会从API中获取
   const stats = {
@@ -52,6 +105,18 @@ export default function DashboardPage() {
         title="仪表盘" 
         subtitle="博客数据概览和统计信息"
       />
+      
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded">
+          无法获取仪表盘数据，请检查数据库连接或网络状态
+        </div>
+      )}
+      
+      {dataSource === 'backup' && backupData && (
+        <div className="mb-4 p-2 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded text-sm">
+          使用本地备用数据源
+        </div>
+      )}
       
       {/* 数据统计卡片 */}
       {isLoading ? (

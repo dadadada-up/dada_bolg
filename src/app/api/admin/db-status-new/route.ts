@@ -35,8 +35,8 @@ export async function GET() {
     try {
       const db = await getDatabase();
       console.log('[API] 数据库初始化成功');
-      
-      // 检查数据库连接
+    
+    // 检查数据库连接
       await db.exec('SELECT 1 as test');
       console.log('[API] 数据库连接测试成功');
     } catch (error) {

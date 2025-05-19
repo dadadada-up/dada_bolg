@@ -26,7 +26,7 @@ export async function GET() {
         COUNT(DISTINCT pc.post_id) as post_count
       FROM categories c
       LEFT JOIN post_categories pc ON c.id = pc.category_id
-      LEFT JOIN posts p ON pc.post_id = p.id AND p.published = 1
+      LEFT JOIN posts p ON pc.post_id = p.id AND p.is_published = 1
       GROUP BY c.id
       ORDER BY c.name
     `;

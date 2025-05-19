@@ -6,7 +6,7 @@
  * 2. 本地SQLite数据库
  */
 
-import { Post } from '@/types/post';
+import { Post, Category, Tag } from '@/types/post';
 import { isTursoEnabled } from '@/lib/db/turso-client-new';
 import { 
   query as dbQuery, 
@@ -19,6 +19,9 @@ import {
   withTransaction,
   getCurrentTimestamp
 } from '@/lib/db/database';
+import { TursoDatabase } from '@/lib/db/turso-adapter';
+import { SQLiteDatabase } from '@/lib/db/sqlite-adapter';
+import { Database } from '@/lib/db/types';
 
 // 数据服务接口定义
 export interface DataService {
@@ -105,81 +108,30 @@ export interface DataService {
 }
 
 // 实际数据服务实现
-class DataServiceImpl implements DataService {
-  private dbInitialized: boolean = false;
+export class DataServiceImpl implements DataService {
+  private tursoDb: TursoDatabase;
+  private sqliteDb: SQLiteDatabase;
+  private currentDb: Database;
+  private isTursoEnabled: boolean;
 
-  // 初始化数据库连接
-  private async ensureDbInitialized(): Promise<void> {
-    if (!this.dbInitialized) {
-      try {
-        await initializeDatabase();
-        this.dbInitialized = true;
-      } catch (error) {
-        console.error(`[DataService] 数据库初始化失败:`, error);
-        
-        // 检查是否缺少Turso配置
-        if (error instanceof Error && (
-          error.message.includes('Turso配置缺失') || 
-          error.message.includes('Turso客户端未初始化') || 
-          error.message.includes('TURSO_DATABASE_URL')
-        )) {
-          // 尝试使用本地SQLite
-          console.log('[DataService] 尝试使用本地SQLite作为兜底');
-          
-          try {
-            // 直接使用本地SQLite连接（绕过配置检查）
-            const { open } = await import('sqlite');
-            const sqlite3 = await import('sqlite3');
-            const path = await import('path');
-            const fs = await import('fs');
-            
-            // 按优先级尝试不同的数据库路径
-            const dbPathOptions = [
-              path.default.resolve(process.cwd(), 'data', 'storage', 'blog.db'),
-              path.default.resolve(process.cwd(), 'data', 'blog.db')
-            ];
-            
-            let dbPath = '';
-            for (const pathOption of dbPathOptions) {
-              if (fs.default.existsSync(pathOption)) {
-                dbPath = pathOption;
-                break;
-              }
-            }
-            
-            if (!dbPath) {
-              dbPath = path.default.resolve(process.cwd(), 'data', 'blog.db');
-            }
-            
-            console.log(`[DataService] 尝试连接本地SQLite: ${dbPath}`);
-            
-            if (fs.default.existsSync(dbPath)) {
-              const db = await open({
-                filename: dbPath,
-                driver: sqlite3.default.Database
-              });
-              
-              // 这里可以添加一些全局设置
-              await db.exec('PRAGMA foreign_keys = ON');
-              
-              // 设置全局SQLite连接
-              // @ts-ignore - 强制覆盖全局变量
-              global.__db_instance = db;
-              
-              console.log('[DataService] 成功连接到本地SQLite数据库');
-              this.dbInitialized = true;
-              return;
-            } else {
-              console.error(`[DataService] 本地SQLite数据库文件不存在: ${dbPath}`);
-            }
-          } catch (sqliteError) {
-            console.error('[DataService] 本地SQLite连接失败:', sqliteError);
-          }
-        }
-        
-        // 如果所有尝试都失败，重新抛出原始错误
-        throw error;
-      }
+  constructor() {
+    this.tursoDb = new TursoDatabase();
+    this.sqliteDb = new SQLiteDatabase();
+    this.isTursoEnabled = process.env.TURSO_DATABASE_URL !== undefined && 
+                         process.env.TURSO_AUTH_TOKEN !== undefined;
+    this.currentDb = this.isTursoEnabled ? this.tursoDb : this.sqliteDb;
+  }
+
+  private async tryWithTurso<T>(operation: (db: Database) => Promise<T>): Promise<T> {
+    if (!this.isTursoEnabled) {
+      return operation(this.sqliteDb);
+    }
+
+    try {
+      return await operation(this.tursoDb);
+    } catch (error) {
+      console.error('[DataService] Turso操作失败，切换到SQLite:', error);
+      return operation(this.sqliteDb);
     }
   }
 
@@ -215,111 +167,156 @@ class DataServiceImpl implements DataService {
     total: number;
   }> {
     try {
-      // 确保数据库已初始化
-      await this.ensureDbInitialized();
+      return await this.tryWithTurso(async (db) => {
+        // 确保数据库已初始化
+        await this.ensureDbInitialized();
 
-      // 构建SQL查询
-      let sql = `
-        SELECT 
-          p.id, p.title, p.slug, p.content, p.excerpt, p.description, 
-          p.published as is_published, p.featured as is_featured, 
-          p.cover_image as imageUrl, p.created_at, p.updated_at,
-          GROUP_CONCAT(DISTINCT c.name) as categories_str,
-          GROUP_CONCAT(DISTINCT t.name) as tags_str
-        FROM posts p
-        LEFT JOIN post_categories pc ON p.id = pc.post_id
-        LEFT JOIN categories c ON pc.category_id = c.id
-        LEFT JOIN post_tags pt ON p.id = pt.post_id
-        LEFT JOIN tags t ON pt.tag_id = t.id
-      `;
+        console.log(`[DataService] 开始获取文章列表: ${JSON.stringify(options)}`);
 
-      const whereConditions = [];
-      const params: any[] = [];
+        // 构建SQL查询
+        let sql = `
+          SELECT 
+            p.id, p.title, p.slug, p.content, p.excerpt, p.description, 
+            p.is_published, p.is_featured, 
+            p.image_url as imageUrl, p.created_at, p.updated_at,
+            GROUP_CONCAT(DISTINCT c.name) as categories_str,
+            GROUP_CONCAT(DISTINCT t.name) as tags_str
+          FROM posts p
+          LEFT JOIN post_categories pc ON p.id = pc.post_id
+          LEFT JOIN categories c ON pc.category_id = c.id
+          LEFT JOIN post_tags pt ON p.id = pt.post_id
+          LEFT JOIN tags t ON pt.tag_id = t.id
+        `;
 
-      // 是否包含未发布文章
-      if (!options?.includeUnpublished) {
-        whereConditions.push('p.published = 1');
-      }
+        const whereConditions = [];
+        const params: any[] = [];
 
-      // 分类筛选
-      if (options?.category) {
-        whereConditions.push('c.slug = ?');
-        params.push(options.category);
-      }
-
-      // 标签筛选
-      if (options?.tag) {
-        whereConditions.push('t.slug = ?');
-        params.push(options.tag);
-      }
-
-      // 添加WHERE条件
-      if (whereConditions.length > 0) {
-        sql += ` WHERE ${whereConditions.join(' AND ')}`;
-      }
-
-      // 分组和排序
-      sql += `
-        GROUP BY p.id
-        ORDER BY p.created_at DESC
-      `;
-
-      // 分页
-      if (options?.limit) {
-        sql += ' LIMIT ?';
-        params.push(options.limit);
-
-        if (options?.offset !== undefined) {
-          sql += ' OFFSET ?';
-          params.push(options.offset);
+        // 尝试检测表结构
+        try {
+          // 检查是否使用旧列名
+          const postsColumns = await dbQuery("PRAGMA table_info(posts)");
+          const columnNames = postsColumns.map((col: any) => col.name);
+          console.log(`[DataService] 文章表列名: ${columnNames.join(', ')}`);
+          
+          // 根据表结构调整查询条件
+          if (columnNames.includes('is_published')) {
+            // 使用新列名is_published
+            if (!options?.includeUnpublished) {
+              whereConditions.push('p.is_published = 1');
+            }
+          } else if (columnNames.includes('published')) {
+            // 使用旧列名published
+            console.log('[DataService] 使用旧列名published');
+            sql = sql.replace('p.is_published', 'p.published as is_published');
+            if (!options?.includeUnpublished) {
+              whereConditions.push('p.published = 1');
+            }
+          } else {
+            // 如果两者都不存在，使用默认条件
+            console.log('[DataService] 文章表缺少发布状态列，使用默认条件');
+            if (!options?.includeUnpublished) {
+              whereConditions.push('1=1'); // 始终为真的条件
+            }
+          }
+          
+          // 检查图片URL列名
+          if (columnNames.includes('image_url')) {
+            // 使用新列名image_url
+          } else if (columnNames.includes('cover_image')) {
+            // 使用旧列名cover_image
+            console.log('[DataService] 使用旧列名cover_image');
+            sql = sql.replace('p.image_url as imageUrl', 'p.cover_image as imageUrl');
+          }
+        } catch (columnError) {
+          console.error('[DataService] 检查表结构失败:', columnError);
+          // 使用默认查询
+          if (!options?.includeUnpublished) {
+            whereConditions.push('p.is_published = 1');
+          }
         }
-      }
 
-      // 执行查询
-      const posts = await dbQuery(sql, params);
+        // 分类筛选
+        if (options?.category) {
+          whereConditions.push('c.slug = ?');
+          params.push(options.category);
+        }
 
-      // 获取总数
-      let countSql = `
-        SELECT COUNT(DISTINCT p.id) as total
-        FROM posts p
-        LEFT JOIN post_categories pc ON p.id = pc.post_id
-        LEFT JOIN categories c ON pc.category_id = c.id
-        LEFT JOIN post_tags pt ON p.id = pt.post_id
-        LEFT JOIN tags t ON pt.tag_id = t.id
-      `;
+        // 标签筛选
+        if (options?.tag) {
+          whereConditions.push('t.slug = ?');
+          params.push(options.tag);
+        }
 
-      if (whereConditions.length > 0) {
-        countSql += ` WHERE ${whereConditions.join(' AND ')}`;
-      }
+        // 添加WHERE条件
+        if (whereConditions.length > 0) {
+          sql += ` WHERE ${whereConditions.join(' AND ')}`;
+        }
 
-      // 执行总数查询
-      const countResult = await dbQueryOne(countSql, params.slice(0, params.length - (options?.limit ? (options?.offset !== undefined ? 2 : 1) : 0)));
-      const total = countResult?.total || 0;
+        // 分组和排序
+        sql += `
+          GROUP BY p.id
+          ORDER BY p.created_at DESC
+        `;
 
-      // 处理查询结果
-      const formattedPosts = posts.map((post: any) => ({
-        ...post,
-        categories: post.categories_str ? post.categories_str.split(',') : [],
-        tags: post.tags_str ? post.tags_str.split(',') : [],
-        date: post.created_at ? new Date(post.created_at * 1000).toISOString() : undefined,
-        updated: post.updated_at ? new Date(post.updated_at * 1000).toISOString() : undefined,
-      }));
+        // 分页
+        if (options?.limit) {
+          sql += ' LIMIT ?';
+          params.push(options.limit);
 
-      // 移除categories_str和tags_str字段
-      formattedPosts.forEach((post: any) => {
-        delete post.categories_str;
-        delete post.tags_str;
+          if (options?.offset !== undefined) {
+            sql += ' OFFSET ?';
+            params.push(options.offset);
+          }
+        }
+
+        console.log(`[DataService] 执行SQL查询: ${sql}`);
+        console.log(`[DataService] 参数: ${params.join(', ')}`);
+
+        // 执行查询
+        const posts = await dbQuery(sql, params);
+        console.log(`[DataService] 查询到 ${posts.length} 篇文章`);
+
+        // 获取总数
+        let countSql = `
+          SELECT COUNT(DISTINCT p.id) as total
+          FROM posts p
+          LEFT JOIN post_categories pc ON p.id = pc.post_id
+          LEFT JOIN categories c ON pc.category_id = c.id
+          LEFT JOIN post_tags pt ON p.id = pt.post_id
+          LEFT JOIN tags t ON pt.tag_id = t.id
+        `;
+
+        if (whereConditions.length > 0) {
+          countSql += ` WHERE ${whereConditions.join(' AND ')}`;
+        }
+
+        // 执行总数查询
+        const countResult = await dbQueryOne(countSql, params.slice(0, params.length - (options?.limit ? (options?.offset !== undefined ? 2 : 1) : 0)));
+        const total = countResult?.total || 0;
+        console.log(`[DataService] 文章总数: ${total}`);
+
+        // 处理查询结果
+        const formattedPosts = posts.map((post: any) => ({
+          ...post,
+          categories: post.categories_str ? post.categories_str.split(',') : [],
+          tags: post.tags_str ? post.tags_str.split(',') : [],
+          date: post.created_at ? new Date(parseInt(post.created_at) * 1000).toISOString() : undefined,
+          updated: post.updated_at ? new Date(parseInt(post.updated_at) * 1000).toISOString() : undefined,
+        }));
+
+        // 移除categories_str和tags_str字段
+        formattedPosts.forEach((post: any) => {
+          delete post.categories_str;
+          delete post.tags_str;
+        });
+
+        return {
+          posts: formattedPosts,
+          total,
+        };
       });
-
-      return {
-        posts: formattedPosts,
-        total,
-      };
     } catch (error) {
       console.error(`[DataService] 获取文章列表失败:`, error);
-      
-      // 注意：这里我们不再使用备用数据，而是将错误向上传递
-      // 这样可以确保在数据库连接失败时，系统会尝试使用本地SQLite而不是直接返回备用数据
       throw new Error(`获取文章列表失败: ${error instanceof Error ? error.message : '未知错误'}`);
     }
   }
@@ -402,14 +399,10 @@ class DataServiceImpl implements DataService {
     description?: string;
   }>> {
     try {
-      // 确保数据库已初始化
-      await this.ensureDbInitialized();
-
-      // 从数据库获取分类
-      const sql = `SELECT id, name, slug, description FROM categories ORDER BY name`;
-      const dbCategories = await dbQuery(sql);
-
-      return dbCategories;
+      return await this.tryWithTurso(async (db) => {
+        const sql = `SELECT id, name, slug, description FROM categories ORDER BY name`;
+        return await db.all(sql);
+      });
     } catch (error) {
       console.error(`[DataService] 获取分类失败:`, error);
       throw new Error(`获取分类失败: ${error instanceof Error ? error.message : '未知错误'}`);
@@ -423,14 +416,10 @@ class DataServiceImpl implements DataService {
     slug: string;
   }>> {
     try {
-      // 确保数据库已初始化
-      await this.ensureDbInitialized();
-
-      // 从数据库获取标签
-      const sql = `SELECT id, name, slug FROM tags ORDER BY name`;
-      const dbTags = await dbQuery(sql);
-
-      return dbTags;
+      return await this.tryWithTurso(async (db) => {
+        const sql = `SELECT id, name, slug FROM tags ORDER BY name`;
+        return await db.all(sql);
+      });
     } catch (error) {
       console.error(`[DataService] 获取标签失败:`, error);
       throw new Error(`获取标签失败: ${error instanceof Error ? error.message : '未知错误'}`);
@@ -900,6 +889,78 @@ class DataServiceImpl implements DataService {
     } catch (error) {
       console.error('[DataService] 同步数据失败:', error);
       return false;
+    }
+  }
+
+  private async ensureDbInitialized(): Promise<void> {
+    if (!this.isTursoEnabled) {
+      try {
+        await initializeDatabase();
+      } catch (error) {
+        console.error(`[DataService] 数据库初始化失败:`, error);
+        
+        // 检查是否缺少Turso配置
+        if (error instanceof Error && (
+          error.message.includes('Turso配置缺失') || 
+          error.message.includes('Turso客户端未初始化') || 
+          error.message.includes('TURSO_DATABASE_URL')
+        )) {
+          // 尝试使用本地SQLite
+          console.log('[DataService] 尝试使用本地SQLite作为兜底');
+          
+          try {
+            // 直接使用本地SQLite连接（绕过配置检查）
+            const { open } = await import('sqlite');
+            const sqlite3 = await import('sqlite3');
+            const path = await import('path');
+            const fs = await import('fs');
+            
+            // 按优先级尝试不同的数据库路径
+            const dbPathOptions = [
+              path.default.resolve(process.cwd(), 'data', 'storage', 'blog.db'),
+              path.default.resolve(process.cwd(), 'data', 'blog.db')
+            ];
+            
+            let dbPath = '';
+            for (const pathOption of dbPathOptions) {
+              if (fs.default.existsSync(pathOption)) {
+                dbPath = pathOption;
+                break;
+              }
+            }
+            
+            if (!dbPath) {
+              dbPath = path.default.resolve(process.cwd(), 'data', 'blog.db');
+            }
+            
+            console.log(`[DataService] 尝试连接本地SQLite: ${dbPath}`);
+            
+            if (fs.default.existsSync(dbPath)) {
+              const db = await open({
+                filename: dbPath,
+                driver: sqlite3.default.Database
+              });
+              
+              // 这里可以添加一些全局设置
+              await db.exec('PRAGMA foreign_keys = ON');
+              
+              // 设置全局SQLite连接
+              // @ts-ignore - 强制覆盖全局变量
+              global.__db_instance = db;
+              
+              console.log('[DataService] 成功连接到本地SQLite数据库');
+              return;
+            } else {
+              console.error(`[DataService] 本地SQLite数据库文件不存在: ${dbPath}`);
+            }
+          } catch (sqliteError) {
+            console.error('[DataService] 本地SQLite连接失败:', sqliteError);
+          }
+        }
+        
+        // 如果所有尝试都失败，重新抛出原始错误
+        throw error;
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Post } from '@/types/post';
 import { getAllPosts } from '@/lib/services/data';
+import { initializeSchema } from '@/lib/db/init-schema';
 
 // 内存缓存，用于服务器端缓存
 interface ApiCache {
@@ -14,6 +15,8 @@ const apiCache = new Map<string, ApiCache>();
 
 export async function GET(request: Request) {
   try {
+    console.log('[文章API] 接收到请求:', request.url);
+    
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
@@ -39,13 +42,24 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
     
     try {
+      // 确保数据库表结构已初始化
+      try {
+        await initializeSchema();
+        console.log('[文章API] 数据库表结构初始化成功');
+      } catch (schemaError) {
+        console.warn('[文章API] 数据库表结构初始化失败，但将继续尝试查询:', schemaError);
+      }
+      
       // 使用统一数据服务查询
+      console.log('[文章API] 开始查询数据库');
       const result = await getAllPosts({
         limit,
         offset,
         category,
         tag
       });
+      
+      console.log(`[文章API] 查询成功，获取到 ${result.posts.length} 篇文章，总数 ${result.total}`);
       
       const response = {
         total: result.total,
@@ -72,10 +86,23 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('[文章API] 获取文章失败:', error);
     
+    // 获取更详细的错误信息
+    let errorMessage = '未知错误';
+    let errorDetails = null;
+    
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      errorDetails = {
+        name: error.name,
+        stack: error.stack,
+      };
+    }
+    
     return Response.json(
       { 
         error: '获取文章失败', 
-        message: error instanceof Error ? error.message : '未知错误',
+        message: errorMessage,
+        details: errorDetails,
         timestamp: new Date().toISOString()
       },
       { status: 500 }

@@ -365,4 +365,84 @@ export class PostRepository {
       },
     };
   }
+}
+
+/**
+ * 获取所有文章
+ * @param options 查询选项
+ * @returns 文章数组和总数
+ */
+export async function getAllPosts(options: {
+  includeUnpublished?: boolean;
+  limit?: number;
+  offset?: number;
+  category?: string;
+  tag?: string;
+} = {}): Promise<{
+  posts: Post[];
+  total: number;
+}> {
+  try {
+    const repo = new PostRepository();
+    const result = await repo.getPosts({
+      limit: options.limit,
+      page: options.offset ? Math.floor(options.offset / (options.limit || 10)) + 1 : 1,
+      is_published: options.includeUnpublished ? undefined : true,
+      category: options.category,
+      tag: options.tag
+    });
+    
+    // 转换为Post格式
+    const posts: Post[] = [];
+    for (const model of result.posts) {
+      const post = await repo.convertModelToPost(model);
+      posts.push(post);
+    }
+    
+    return {
+      posts,
+      total: result.total
+    };
+  } catch (error) {
+    console.error('[DB] 获取所有文章失败:', error);
+    return { posts: [], total: 0 };
+  }
+}
+
+/**
+ * 根据slug获取单篇文章
+ * @param slug 文章slug
+ * @returns 文章对象或null
+ */
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  try {
+    const repo = new PostRepository();
+    const model = await repo.getPostBySlug(slug);
+    
+    if (!model) return null;
+    
+    return await repo.convertModelToPost(model);
+  } catch (error) {
+    console.error(`[DB] 获取文章失败: ${slug}`, error);
+    return null;
+  }
+}
+
+/**
+ * 删除文章
+ * @param slug 文章slug
+ * @returns 是否成功
+ */
+export async function deletePost(slug: string): Promise<boolean> {
+  try {
+    const repo = new PostRepository();
+    const post = await repo.getPostBySlug(slug);
+    
+    if (!post) return false;
+    
+    return await repo.deletePost(post.id);
+  } catch (error) {
+    console.error(`[DB] 删除文章失败: ${slug}`, error);
+    return false;
+  }
 } 

@@ -157,7 +157,7 @@ export async function getAllPosts({
         SELECT 
           p.id, p.slug, p.title, p.content, p.excerpt, p.description,
           p.is_published, p.is_featured, 
-          p.cover_image as imageUrl, p.reading_time,
+          p.image_url as imageUrl, p.reading_time,
           p.created_at, p.updated_at,
           COALESCE(
             (SELECT json_group_array(c.name) FROM post_categories pc 
@@ -279,7 +279,7 @@ export async function getPostBySlug(
           SELECT 
             p.id, p.slug, p.title, p.content, p.excerpt, p.description,
             p.is_published, p.is_featured, 
-            p.cover_image as imageUrl, p.reading_time,
+            p.image_url as imageUrl, p.reading_time,
             p.created_at, p.updated_at,
             COALESCE(
               (SELECT json_group_array(c.name) FROM post_categories pc 

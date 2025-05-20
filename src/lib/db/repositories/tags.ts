@@ -162,4 +162,42 @@ export class TagRepository {
       ), updated_at = ?
     `, [now]);
   }
+}
+
+/**
+ * 获取所有标签
+ */
+export async function getAllTags(): Promise<Array<{id?: number | string; name: string; slug: string;}>> {
+  try {
+    const repo = new TagRepository();
+    const tags = await repo.getAllTags();
+    return tags.map(tag => ({
+      id: tag.id,
+      name: tag.name,
+      slug: tag.slug
+    }));
+  } catch (error) {
+    console.error('[DB] 获取所有标签失败:', error);
+    return [];
+  }
+}
+
+/**
+ * 根据slug获取标签
+ */
+export async function getTagBySlug(slug: string): Promise<{id?: number | string; name: string; slug: string;} | null> {
+  try {
+    const repo = new TagRepository();
+    const tag = await repo.getTagBySlug(slug);
+    if (!tag) return null;
+    
+    return {
+      id: tag.id,
+      name: tag.name,
+      slug: tag.slug
+    };
+  } catch (error) {
+    console.error(`[DB] 获取标签失败: ${slug}`, error);
+    return null;
+  }
 } 

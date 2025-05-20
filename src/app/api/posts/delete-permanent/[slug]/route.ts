@@ -1,15 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getPostBySlug as getGithubPostBySlug, deletePost as deleteGithubPost } from '@/lib/github';
 import { clearAllGithubCache } from '@/lib/cache/fs-cache';
-import { getPostBySlug, deletePost as deleteDbPost } from '@/lib/db/posts';
-import { queuePostChange } from '@/lib/sync/service';
 import { Post } from '@/types/post';
-import initializeDatabase from '@/lib/db';
 import fs from 'fs';
 import path from 'path';
-
-// 确保数据库初始化
-initializeDatabase();
+import { createDataService } from '@/lib/services/data/service';
 
 export async function POST(
   request: Request,
@@ -27,8 +22,11 @@ export async function POST(
       console.warn(`[API] 删除前清除缓存失败: ${cacheError instanceof Error ? cacheError.message : String(cacheError)}`);
     }
     
+    // 初始化DataService
+    const dataService = createDataService();
+    
     // 从数据库中获取文章
-    const post = getPostBySlug(slug);
+    const post = await dataService.getPostBySlug(slug);
     
     // 如果文章不存在
     if (!post) {
@@ -46,13 +44,13 @@ export async function POST(
     
     // 1. 尝试删除文件系统文件
     try {
-      if (post.metadata?.originalFile) {
+      if (post.source_path) {
         // 方法1: 使用GitHub API删除
         await deleteGithubPost(post);
-        console.log(`[API] 成功删除GitHub文件: ${post.metadata.originalFile}`);
+        console.log(`[API] 成功删除GitHub文件: ${post.source_path}`);
         
         // 方法2: 删除本地文件系统文件
-        const localFilePath = post.metadata.originalFile.replace(/^content\//, '');
+        const localFilePath = post.source_path.replace(/^content\//, '');
         const absoluteFilePath = path.join(process.cwd(), 'content', localFilePath);
         
         if (fs.existsSync(absoluteFilePath)) {
@@ -65,7 +63,7 @@ export async function POST(
       } else if (post.categories && post.categories.length > 0 && post.date) {
         // 尝试构建可能的文件路径并删除
         const category = post.categories[0];
-        const dateStr = post.date.split('T')[0];
+        const dateStr = typeof post.date === 'string' ? post.date.split('T')[0] : '';
         const possibleFilename = `${dateStr}-${slug}.md`;
         const possiblePath = path.join(process.cwd(), 'content', 'posts', category, possibleFilename);
         
@@ -83,26 +81,20 @@ export async function POST(
     
     // 2. 尝试从数据库中删除文章
     try {
-      const deleted = deleteDbPost(slug);
-      if (deleted) {
-        console.log(`[API] 从数据库成功删除文章: ${slug}`);
-        databaseDeleted = true;
-      } else {
-        console.log(`[API] 从数据库删除文章失败: ${slug}`);
+      if (post.id) {
+        const deleted = await dataService.deletePost(Number(post.id));
+        if (deleted) {
+          console.log(`[API] 从数据库成功删除文章: ${slug}`);
+          databaseDeleted = true;
+        } else {
+          console.log(`[API] 从数据库删除文章失败: ${slug}`);
+        }
       }
     } catch (dbError) {
       console.error(`[API] 从数据库删除文章时出错:`, dbError);
     }
     
-    // 3. 将删除操作添加到同步队列
-    try {
-      await queuePostChange('delete', post);
-      console.log(`[API] 已将删除操作添加到同步队列`);
-    } catch (queueError) {
-      console.error(`[API] 添加删除操作到同步队列失败:`, queueError);
-    }
-    
-    // 4. 再次清除所有缓存，确保前端获取不到已删除的文章
+    // 3. 再次清除所有缓存，确保前端获取不到已删除的文章
     await clearAllGithubCache();
     
     return Response.json({

@@ -21,7 +21,7 @@ export async function getPosts(): Promise<Post[]> {
         SELECT 
           p.id, p.slug, p.title, p.content, p.excerpt, p.description,
           p.is_published, p.is_featured, 
-          p.cover_image as imageUrl, p.reading_time,
+          p.image_url as imageUrl, p.reading_time,
           p.created_at, p.updated_at,
           COALESCE(
             (SELECT json_group_array(c.name) FROM post_categories pc 
@@ -116,7 +116,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
           SELECT 
             p.id, p.slug, p.title, p.content, p.excerpt, p.description,
             p.is_published, p.is_featured, 
-            p.cover_image as imageUrl, p.reading_time,
+            p.image_url as imageUrl, p.reading_time,
             p.created_at, p.updated_at,
             COALESCE(
               (SELECT json_group_array(c.name) FROM post_categories pc 
@@ -268,4 +268,16 @@ export async function getAllCategoryMappings(): Promise<Array<{name: string, slu
     { name: '家庭生活', slug: 'family-life' },
     { name: '未分类', slug: 'uncategorized' }
   ];
+}
+
+// 获取目录内容 - 从备用模拟数据
+export async function getContents(path: string): Promise<{
+  name: string;
+  path: string;
+  size: number;
+  type: 'file' | 'dir';
+  content?: string | null;
+}[]> {
+  console.log(`[文章管理] 获取目录内容功能在Vercel环境被禁用: ${path}`);
+  return [];
 }

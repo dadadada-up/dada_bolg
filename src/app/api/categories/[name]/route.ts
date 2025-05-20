@@ -1,11 +1,9 @@
 // 强制更新：使用标准sqlite API，修复Vercel构建错误
 import { NextResponse } from 'next/server';
-import { getPosts, updatePost, getContents } from '@/lib/github';
-import { slugify } from '@/lib/utils';
-import { Category } from '@/types/post';
 import { getDb } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { getChineseCategoryName, getCategoryBySlug } from '@/lib/content/category-service';
+import { createDataService } from '@/lib/services/data/service';
 
 // 定义数据库分类记录的接口
 interface DbCategory {
@@ -24,14 +22,12 @@ export async function GET(
   try {
     const categorySlug = params.name;
     
-    // 获取分类目录
-    const contents = await getContents('content/posts');
-    const directories = contents.filter(item => item.type === 'dir');
+    // 通过DataService获取分类信息
+    const dataService = createDataService();
+    const categories = await dataService.getCategories();
+    const category = categories.find(c => c.slug === categorySlug);
     
-    // 查找匹配的分类
-    const categoryDir = directories.find(dir => dir.name === categorySlug);
-    
-    if (!categoryDir) {
+    if (!category) {
       return Response.json(
         { error: `分类 '${categorySlug}' 不存在` },
         { status: 404 }
@@ -41,15 +37,14 @@ export async function GET(
     // 获取分类的中文名称
     const categoryName = await getChineseCategoryName(categorySlug);
     
-    // 获取分类下的文章数量
-    const posts = await getPosts();
-    const postCount = posts.filter(post => post.categories.includes(categorySlug)).length;
+    // 获取分类下的文章
+    const { posts } = await dataService.getAllPosts({ category: categorySlug });
     
     return Response.json({
-      name: categoryName,
+      name: categoryName || category.name,
       slug: categorySlug,
-      postCount,
-      description: '' // 可以从其他地方获取描述
+      postCount: posts.length,
+      description: category.description || ''
     });
   } catch (error) {
     console.error(`获取分类 '${params.name}' 失败:`, error);
@@ -90,11 +85,12 @@ export async function PUT(
         );
       }
       
-      // 检查新slug是否已存在
-      const contents = await getContents('content/posts');
-      const existingDirs = contents.filter(item => item.type === 'dir').map(dir => dir.name);
+      // 获取DataService实例
+      const dataService = createDataService();
+      const categories = await dataService.getCategories();
       
-      if (existingDirs.includes(newSlug)) {
+      // 检查新slug是否已存在
+      if (categories.some(c => c.slug === newSlug)) {
         return Response.json(
           { error: `分类标识 '${newSlug}' 已存在` },
           { status: 400 }
@@ -195,18 +191,16 @@ export async function PUT(
     
     // 如果slug变了，我们需要更新所有该分类下的文章
     if (newSlug !== oldSlug) {
-      const posts = await getPosts();
-      const postsToUpdate = posts.filter(post => post.categories.includes(oldSlug));
+      const dataService = createDataService();
+      const { posts } = await dataService.getAllPosts({ category: oldSlug, includeUnpublished: true });
       
       // 这里可以添加文章更新的逻辑
-      // 比如替换旧的分类名称为新的分类名称
-      
-      for (const post of postsToUpdate) {
+      for (const post of posts) {
         // 更新分类
         post.categories = post.categories.map(cat => cat === oldSlug ? newSlug : cat);
         
         // 更新文章
-        await updatePost(post);
+        await dataService.savePost(post);
       }
     }
     
@@ -237,12 +231,12 @@ export async function DELETE(
     const categorySlug = params.name;
     
     // 检查该分类下是否有文章
-    const posts = await getPosts();
-    const categoryPosts = posts.filter(post => post.categories.includes(categorySlug));
+    const dataService = createDataService();
+    const { posts, total } = await dataService.getAllPosts({ category: categorySlug, includeUnpublished: true });
     
-    if (categoryPosts.length > 0) {
+    if (total > 0) {
       return Response.json(
-        { error: `无法删除分类 '${categorySlug}'，该分类下有 ${categoryPosts.length} 篇文章` },
+        { error: `无法删除分类 '${categorySlug}'，该分类下有 ${total} 篇文章` },
         { status: 400 }
       );
     }

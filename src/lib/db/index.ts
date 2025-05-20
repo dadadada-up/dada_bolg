@@ -213,6 +213,11 @@ export const getTimestamp = () => {
   return Math.floor(Date.now() / 1000);
 };
 
+// 获取当前时间戳格式化为数据库日期时间
+export const getCurrentTimestamp = () => {
+  return new Date().toISOString().replace('T', ' ').substring(0, 19);
+};
+
 // 获取数据库状态信息
 export async function getDbStatus() {
   // 在Vercel环境中，返回占位信息

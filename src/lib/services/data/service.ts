@@ -300,8 +300,9 @@ export class DataServiceImpl implements DataService {
           ...post,
           categories: post.categories_str ? post.categories_str.split(',') : [],
           tags: post.tags_str ? post.tags_str.split(',') : [],
-          date: post.created_at ? new Date(parseInt(post.created_at) * 1000).toISOString() : undefined,
-          updated: post.updated_at ? new Date(parseInt(post.updated_at) * 1000).toISOString() : undefined,
+          is_published: post.is_published === 1 || !!post.is_published,
+          date: post.created_at,
+          updated: post.updated_at,
         }));
 
         // 移除categories_str和tags_str字段

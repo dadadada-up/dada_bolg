@@ -410,25 +410,71 @@ export default function PostsPage() {
       : 'bg-gray-100 text-gray-800';
   };
   
-  // 修改日期格式化函数，使其显示年月日时分
-  const formatCompactDate = (dateString: string | undefined): string => {
+  // 修改日期格式化函数，使其显示年月日时分，正确处理时间戳和ISO日期字符串
+  const formatCompactDate = (dateString: string | number | undefined): string => {
     if (!dateString) return '未知日期';
     
     try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return '日期无效';
+      let date: Date;
       
+      // 判断是否是ISO日期字符串 (例如 "2025-05-09T04:48:21.522Z")
+      if (typeof dateString === 'string' && dateString.includes('T') && dateString.includes('Z')) {
+        date = new Date(dateString);
+      } 
+      // 尝试解析为数字时间戳
+      else if (typeof dateString === 'number' || !isNaN(Number(dateString))) {
+        const timestamp = typeof dateString === 'number' ? dateString : Number(dateString);
+        
+        // 根据时间戳长度判断是秒级还是毫秒级
+        date = timestamp > 9999999999 
+          ? new Date(timestamp) // 毫秒级时间戳
+          : new Date(timestamp * 1000); // 秒级时间戳
+      }
+      // 当作普通日期字符串处理
+      else {
+        date = new Date(dateString);
+      }
+      
+      // 检查日期是否有效
+      if (isNaN(date.getTime())) {
+        console.warn('无法解析的日期:', dateString);
+        return '日期解析错误';
+      }
+      
+      // 获取年月日时分
       const year = date.getFullYear();
-      const month = date.getMonth() + 1; // getMonth() 返回 0-11
+      const month = date.getMonth() + 1;
       const day = date.getDate();
       const hours = date.getHours();
       const minutes = date.getMinutes();
       
+      // 检查年份是否合理
+      if (year < 2000 || year > 2100) {
+        console.warn(`年份超出合理范围 (${year}), 可能是时间戳解析错误:`, dateString);
+        
+        // 尝试将字符串当成ISO日期解析
+        if (typeof dateString === 'string') {
+          try {
+            const newDate = new Date(dateString);
+            if (!isNaN(newDate.getTime()) && newDate.getFullYear() >= 2000 && newDate.getFullYear() <= 2100) {
+              return `${newDate.getFullYear()}/${(newDate.getMonth() + 1).toString().padStart(2, '0')}/${newDate.getDate().toString().padStart(2, '0')} ${newDate.getHours().toString().padStart(2, '0')}:${newDate.getMinutes().toString().padStart(2, '0')}`;
+            }
+          } catch (e) {
+            // 忽略错误，继续使用原始日期或返回错误
+          }
+        }
+        
+        // 如果当前时间是1970年，说明可能是时间戳解析错误
+        if (year === 1970) {
+          return '无效日期';
+        }
+      }
+      
       // 使用年/月/日 时:分格式，确保月、日、时、分都是两位数
       return `${year}/${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     } catch (e) {
-      console.error('日期格式化错误:', e);
-      return '日期错误';
+      console.error('日期格式化错误:', e, dateString);
+      return '日期格式错误';
     }
   };
   
@@ -740,8 +786,8 @@ export default function PostsPage() {
                       <div className={tableStyles.slug}>{post.slug}</div>
                     </td>
                     <td className={tableStyles.cell + ' text-center'}>
-                      <span className={`inline-block px-2 py-1 text-xs rounded-full ${getStatusClass(post.published || false)}`}>
-                        {post.published ? '已发布' : '草稿'}
+                      <span className={`inline-block px-2 py-1 text-xs rounded-full ${getStatusClass(post.is_published || false)}`}>
+                        {post.is_published ? '已发布' : '草稿'}
                       </span>
                     </td>
                     <td className={tableStyles.cell}>

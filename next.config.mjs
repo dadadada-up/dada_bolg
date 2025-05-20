@@ -95,6 +95,12 @@ const nextConfig = {
       ];
     }
 
+    // 添加路径别名解析
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+
     return config;
   },
   

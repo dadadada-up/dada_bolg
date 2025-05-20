@@ -5,7 +5,6 @@
  * 使系统其余部分可以无缝切换使用Turso或本地SQLite
  */
 
-import { Database } from 'sqlite';
 import tursoClient from './turso-client-new';
 
 // 自定义Statement类型，避免从sqlite导入
@@ -26,9 +25,9 @@ interface TursoRunResult {
 }
 
 /**
- * Turso数据库适配器，实现Database接口
+ * Turso数据库适配器，实现通用数据库接口
  */
-export class TursoDatabase implements Omit<Database, 'get'> {
+export class TursoDatabase {
   /**
    * 检查Turso客户端是否可用
    */

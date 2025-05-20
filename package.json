@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "install:no-sqlite": "npm install --ignore-scripts",
-    "vercel:build": "next build"
+    "vercel:build": "npm install --ignore-scripts && next build"
   },
   "dependencies": {
     "@libsql/client": "0.15.6",
@@ -47,11 +46,6 @@
     "swr": "^2.2.0",
     "tailwind-merge": "^2.1.0",
     "unified": "^11.0.4"
-  },
-  "optionalDependencies": {
-    "better-sqlite3": "^9.2.2",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",

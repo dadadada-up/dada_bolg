@@ -5,7 +5,6 @@
 
 import path from 'path';
 import fs from 'fs';
-import { Database } from 'sqlite';
 import { TursoDatabase } from './turso-adapter';
 import { isTursoEnabled } from './turso-client-new';
 
@@ -56,9 +55,12 @@ if (forceTurso) {
 }
 
 // 使用通用数据库类型，兼容SQLite和Turso适配器
-// 由于两个实现的get方法返回类型略有不同，使用更通用的类型
-type GenericDatabase = Omit<Database, 'get'> & {
+type GenericDatabase = {
   get<T = any>(sql: string, ...params: any[]): Promise<T | undefined>;
+  all<T = any>(sql: string, ...params: any[]): Promise<T[]>;
+  run(sql: string, ...params: any[]): Promise<{ lastID: number; changes: number }>;
+  exec(sql: string): Promise<void>;
+  close(): Promise<void>;
 };
 
 // 单例数据库实例
@@ -68,46 +70,6 @@ let dbInstance: GenericDatabase | null = null;
 function getGlobalDbInstance(): GenericDatabase | null {
   // @ts-ignore - 访问全局变量
   return global.__db_instance || null;
-}
-
-// 动态导入sqlite3，避免在Vercel环境中直接导入
-async function getSqliteDriver() {
-  if (forceTurso) {
-    console.log('[DB] 在Vercel环境中跳过SQLite数据库初始化');
-    return null;
-  }
-  
-  try {
-    // 使用动态导入，确保在Vercel环境中不会尝试加载
-    const sqlite3Module = await import('sqlite3').catch(err => {
-      console.warn('[数据库] 导入sqlite3失败，尝试使用Turso替代:', err);
-      return null;
-    });
-    return sqlite3Module?.default;
-  } catch (error) {
-    console.error('[数据库] 导入sqlite3失败:', error);
-    return null;
-  }
-}
-
-// 动态导入sqlite，避免在Vercel环境中直接导入
-async function getSqliteOpen() {
-  if (forceTurso) {
-    console.log('[DB] 在Vercel环境中跳过SQLite数据库初始化');
-    return null;
-  }
-  
-  try {
-    // 使用动态导入，确保在Vercel环境中不会尝试加载
-    const sqliteModule = await import('sqlite').catch(err => {
-      console.warn('[数据库] 导入sqlite失败，尝试使用Turso替代:', err);
-      return null;
-    });
-    return sqliteModule?.open;
-  } catch (error) {
-    console.error('[数据库] 导入sqlite失败:', error);
-    return null;
-  }
 }
 
 /**
@@ -191,35 +153,23 @@ export async function initializeDatabase(): Promise<GenericDatabase> {
     }
     
     // 动态导入sqlite和sqlite3
-    const sqlite3 = await getSqliteDriver();
-    const sqliteOpen = await getSqliteOpen();
+    const { open } = await import('sqlite');
+    const sqlite3 = await import('sqlite3');
     
-    if (!sqlite3 || !sqliteOpen) {
-      console.error('[数据库] 导入SQLite模块失败，无法初始化本地数据库');
-      throw new Error('SQLite模块加载失败，请确保sqlite3依赖已正确安装');
+    try {
+      dbInstance = await open({
+        filename: DB_PATH,
+        driver: sqlite3.default.Database
+      }) as GenericDatabase;
+      
+      console.log('[数据库] SQLite数据库初始化成功');
+      return dbInstance;
+    } catch (sqliteError) {
+      console.error('[数据库] SQLite连接失败:', sqliteError);
+      throw new Error(`SQLite连接失败: ${sqliteError instanceof Error ? sqliteError.message : String(sqliteError)}`);
     }
-    
-    // 打开或创建本地数据库
-    // 确保数据目录存在
-    const dbDir = path.dirname(DB_PATH);
-    if (!fs.existsSync(dbDir)) {
-      fs.mkdirSync(dbDir, { recursive: true });
-    }
-    
-    // 打开数据库连接
-    dbInstance = await sqliteOpen({
-      filename: DB_PATH,
-      driver: sqlite3.Database,
-    }) as GenericDatabase;
-    
-    // 启用外键约束
-    await dbInstance.exec('PRAGMA foreign_keys = ON');
-    
-    console.log('[数据库] SQLite数据库初始化成功');
-    
-    return dbInstance;
   } catch (error) {
-    console.error('[数据库] 初始化失败:', error);
+    console.error('[数据库] 数据库初始化失败:', error);
     throw error;
   }
 }
@@ -229,96 +179,63 @@ export async function initializeDatabase(): Promise<GenericDatabase> {
  */
 export async function closeDatabase(): Promise<void> {
   if (dbInstance) {
-    if (!forceTurso) {
-      // 只对本地SQLite连接执行关闭
-      await dbInstance.close();
-    }
+    await dbInstance.close();
     dbInstance = null;
-    console.log('[数据库] 连接已关闭');
   }
 }
 
 /**
  * 执行查询并返回所有结果
- * @param sql SQL查询语句
- * @param params 查询参数
- * @returns 查询结果数组
  */
 export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> {
-  try {
-    const db = await getDatabase();
-    return db.all<T>(sql, ...(params || []));
-  } catch (error) {
-    console.error('[数据库] 查询失败:', error);
-    throw error;
-  }
+  const db = await getDatabase();
+  return db.all<T>(sql, ...(params || []));
 }
 
 /**
  * 执行查询并返回第一个结果
- * @param sql SQL查询语句
- * @param params 查询参数
- * @returns 查询结果或undefined
  */
 export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T | undefined> {
-  try {
-    const db = await getDatabase();
-    return db.get<T>(sql, ...(params || []));
-  } catch (error) {
-    console.error('[数据库] 查询单条失败:', error);
-    throw error;
-  }
+  const db = await getDatabase();
+  return db.get<T>(sql, ...(params || []));
 }
 
 /**
- * 执行更新操作
- * @param sql SQL更新语句
- * @param params 更新参数
- * @returns 受影响的行数
+ * 执行更新操作并返回受影响的行数
  */
 export async function execute(sql: string, params?: any[]): Promise<number> {
-  try {
-    const db = await getDatabase();
-    const result = await db.run(sql, ...(params || []));
-    return result.changes || 0;
-  } catch (error) {
-    console.error('[数据库] 执行失败:', error);
-    throw error;
-  }
+  const db = await getDatabase();
+  const result = await db.run(sql, ...(params || []));
+  return result.changes;
 }
 
 /**
- * 开始一个事务
+ * 开始事务
  */
 export async function beginTransaction(): Promise<void> {
-  const db = await getDatabase();
-  await db.exec('BEGIN TRANSACTION');
+  await execute('BEGIN TRANSACTION');
 }
 
 /**
- * 提交一个事务
+ * 提交事务
  */
 export async function commitTransaction(): Promise<void> {
-  const db = await getDatabase();
-  await db.exec('COMMIT');
+  await execute('COMMIT');
 }
 
 /**
- * 回滚一个事务
+ * 回滚事务
  */
 export async function rollbackTransaction(): Promise<void> {
-  const db = await getDatabase();
-  await db.exec('ROLLBACK');
+  await execute('ROLLBACK');
 }
 
 /**
- * 在事务中执行一个函数
- * @param fn 要在事务中执行的函数
- * @returns 函数的返回值
+ * 在事务中执行操作
  */
 export async function withTransaction<T>(fn: () => Promise<T>): Promise<T> {
+  await beginTransaction();
   try {
-    await beginTransaction();
     const result = await fn();
     await commitTransaction();
     return result;
@@ -329,8 +246,7 @@ export async function withTransaction<T>(fn: () => Promise<T>): Promise<T> {
 }
 
 /**
- * 获取当前时间的ISO格式字符串
- * @returns ISO格式的当前时间字符串
+ * 获取当前时间戳
  */
 export function getCurrentTimestamp(): string {
   return new Date().toISOString();

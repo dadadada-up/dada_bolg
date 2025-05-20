@@ -137,7 +137,7 @@ export class TagRepository {
         SELECT COUNT(DISTINCT p.id)
         FROM posts p
         JOIN post_tags pt ON p.id = pt.post_id
-        WHERE pt.tag_id = ? AND p.published = 1
+        WHERE pt.tag_id = ? AND p.is_published = 1
       ), updated_at = ?
       WHERE id = ?
     `, [id, getCurrentTimestamp(), id]);
@@ -158,7 +158,7 @@ export class TagRepository {
         SELECT COUNT(DISTINCT p.id)
         FROM posts p
         JOIN post_tags pt ON p.id = pt.post_id
-        WHERE pt.tag_id = tags.id AND p.published = 1
+        WHERE pt.tag_id = tags.id AND p.is_published = 1
       ), updated_at = ?
     `, [now]);
   }

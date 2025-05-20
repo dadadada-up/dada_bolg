@@ -127,7 +127,7 @@ export class CategoryRepository {
         SELECT COUNT(DISTINCT p.id)
         FROM posts p
         JOIN post_categories pc ON p.id = pc.post_id
-        WHERE pc.category_id = ? AND p.published = 1
+        WHERE pc.category_id = ? AND p.is_published = 1
       ), updated_at = ?
       WHERE id = ?
     `, [id, getCurrentTimestamp(), id]);
@@ -148,7 +148,7 @@ export class CategoryRepository {
         SELECT COUNT(DISTINCT p.id)
         FROM posts p
         JOIN post_categories pc ON p.id = pc.post_id
-        WHERE pc.category_id = categories.id AND p.published = 1
+        WHERE pc.category_id = categories.id AND p.is_published = 1
       ), updated_at = ?
     `, [now]);
   }

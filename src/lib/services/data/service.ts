@@ -358,7 +358,7 @@ export class DataServiceImpl implements DataService {
         const postSql = `
           SELECT 
             p.id, p.slug, p.title, p.content, p.excerpt, p.description,
-            p.published as is_published, p.featured as is_featured, 
+            p.is_published, p.is_featured, 
             p.cover_image as imageUrl, p.reading_time,
             p.created_at, p.updated_at,
             COALESCE(
@@ -446,7 +446,7 @@ export class DataServiceImpl implements DataService {
       const searchSql = `
         SELECT 
           p.id, p.slug, p.title, p.content, p.excerpt, p.description,
-          p.published as is_published, p.featured as is_featured, 
+          p.is_published, p.is_featured, 
           p.cover_image as imageUrl, p.reading_time,
           p.created_at, p.updated_at,
           COALESCE(
@@ -463,7 +463,7 @@ export class DataServiceImpl implements DataService {
           ) as tags_json,
           substr(p.created_at, 1, 10) as date
         FROM posts p
-        WHERE p.published = 1
+        WHERE p.is_published = 1
           AND (
             p.title LIKE ? OR
             p.content LIKE ? OR
@@ -477,7 +477,7 @@ export class DataServiceImpl implements DataService {
       const countSql = `
         SELECT COUNT(*) as count
         FROM posts p
-        WHERE p.published = 1
+        WHERE p.is_published = 1
           AND (
             p.title LIKE ? OR
             p.content LIKE ? OR
@@ -534,8 +534,8 @@ export class DataServiceImpl implements DataService {
               content = ?,
               excerpt = ?,
               description = ?,
-              published = ?,
-              featured = ?,
+              is_published = ?,
+              is_featured = ?,
               cover_image = ?,
               updated_at = ?
             WHERE id = ?
@@ -561,7 +561,7 @@ export class DataServiceImpl implements DataService {
           const insertSql = `
             INSERT INTO posts (
               title, slug, content, excerpt, description,
-              published, featured, cover_image,
+              is_published, is_featured, cover_image,
               created_at, updated_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `;
@@ -691,7 +691,7 @@ export class DataServiceImpl implements DataService {
       await this.ensureDbInitialized();
       
       const result = await dbExecute(
-        'UPDATE posts SET published = ?, updated_at = ? WHERE id = ?',
+        'UPDATE posts SET is_published = ?, updated_at = ? WHERE id = ?',
         [isPublished ? 1 : 0, getCurrentTimestamp(), id]
       );
       
@@ -708,7 +708,7 @@ export class DataServiceImpl implements DataService {
       await this.ensureDbInitialized();
       
       const result = await dbExecute(
-        'UPDATE posts SET featured = ?, updated_at = ? WHERE id = ?',
+        'UPDATE posts SET is_featured = ?, updated_at = ? WHERE id = ?',
         [isFeatured ? 1 : 0, getCurrentTimestamp(), id]
       );
       

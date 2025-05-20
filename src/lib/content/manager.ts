@@ -156,7 +156,7 @@ export async function getAllPosts({
       const sql = `
         SELECT 
           p.id, p.slug, p.title, p.content, p.excerpt, p.description,
-          p.published as is_published, p.featured as is_featured, 
+          p.is_published, p.is_featured, 
           p.cover_image as imageUrl, p.reading_time,
           p.created_at, p.updated_at,
           COALESCE(
@@ -173,7 +173,7 @@ export async function getAllPosts({
           ) as tags_json,
           substr(p.created_at, 1, 10) as date
         FROM posts p
-        WHERE ${includeUnpublished ? '1=1' : 'p.published = 1'}
+        WHERE ${includeUnpublished ? '1=1' : 'p.is_published = 1'}
         ORDER BY p.created_at DESC
         ${limit ? `LIMIT ${limit}` : ''}
       `;
@@ -278,7 +278,7 @@ export async function getPostBySlug(
         const postSql = `
           SELECT 
             p.id, p.slug, p.title, p.content, p.excerpt, p.description,
-            p.published as is_published, p.featured as is_featured, 
+            p.is_published, p.is_featured, 
             p.cover_image as imageUrl, p.reading_time,
             p.created_at, p.updated_at,
             COALESCE(

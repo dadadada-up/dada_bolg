@@ -45,7 +45,7 @@ export async function POST() {
           SELECT COUNT(DISTINCT pc.post_id) as count
           FROM post_categories pc
           JOIN posts p ON pc.post_id = p.id
-          WHERE pc.category_id = ? AND p.published = 1
+          WHERE pc.category_id = ? AND p.is_published = 1
         `, [category.id]) as CountResult;
         
         const postCount = result.count || 0;

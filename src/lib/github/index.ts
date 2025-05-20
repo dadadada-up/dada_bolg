@@ -20,7 +20,7 @@ export async function getPosts(): Promise<Post[]> {
       const sql = `
         SELECT 
           p.id, p.slug, p.title, p.content, p.excerpt, p.description,
-          p.published as is_published, p.featured as is_featured, 
+          p.is_published, p.is_featured, 
           p.cover_image as imageUrl, p.reading_time,
           p.created_at, p.updated_at,
           COALESCE(
@@ -115,7 +115,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         const postSql = `
           SELECT 
             p.id, p.slug, p.title, p.content, p.excerpt, p.description,
-            p.published as is_published, p.featured as is_featured, 
+            p.is_published, p.is_featured, 
             p.cover_image as imageUrl, p.reading_time,
             p.created_at, p.updated_at,
             COALESCE(

@@ -4,6 +4,7 @@
  */
 
 import { createClient as createTursoClient, Client } from '@libsql/client';
+import { getDatabaseType, getDatabaseUrl, getDatabaseAuthToken } from './env-config';
 
 // 导出现有接口供兼容性
 export interface TursoClient {
@@ -23,15 +24,14 @@ export interface TursoClientConfig {
  * @returns 如果已配置Turso数据库返回true，否则返回false
  */
 export function isTursoEnabled(): boolean {
-  const hasTursoUrl = !!process.env.TURSO_DATABASE_URL;
-  const hasTursoToken = !!process.env.TURSO_AUTH_TOKEN;
-  const enabled = hasTursoUrl && hasTursoToken;
+  const dbType = getDatabaseType();
+  const isEnabled = dbType === 'turso';
   
-  console.log(`[Turso] 是否启用: ${enabled}`);
-  console.log(`[Turso] 数据库URL: ${hasTursoUrl ? '已设置' : '未设置'}`);
-  console.log(`[Turso] 认证令牌: ${hasTursoToken ? '已设置' : '未设置'}`);
+  console.log(`[Turso] 是否启用: ${isEnabled}`);
+  console.log(`[Turso] 数据库URL: ${getDatabaseUrl() ? '已设置' : '未设置'}`);
+  console.log(`[Turso] 认证令牌: ${getDatabaseAuthToken() ? '已设置' : '未设置'}`);
   
-  return enabled;
+  return isEnabled;
 }
 
 /**
@@ -104,19 +104,19 @@ export function createClient(config: TursoClientConfig): TursoClient {
 const isEnabled = isTursoEnabled();
 const tursoClient = isEnabled 
   ? createClient({
-      url: process.env.TURSO_DATABASE_URL || '',
-      authToken: process.env.TURSO_AUTH_TOKEN,
+      url: getDatabaseUrl() || '',
+      authToken: getDatabaseAuthToken() || undefined,
       syncUrl: process.env.NODE_ENV === 'production' 
-        ? process.env.TURSO_DATABASE_URL 
+        ? getDatabaseUrl() 
         : undefined,
     })
   : null;
 
 // 记录数据库连接信息（仅开发环境）
 if (isEnabled && process.env.NODE_ENV !== 'production') {
-  console.log(`[数据库] 使用Turso数据库: ${process.env.TURSO_DATABASE_URL}`);
+  console.log(`[数据库] 使用Turso数据库: ${getDatabaseUrl()}`);
 } else if (process.env.NODE_ENV !== 'production') {
-  console.log('[数据库] 未配置Turso，将使用本地SQLite数据库');
+  console.log('[数据库] 未配置Turso，将使用备用数据');
 }
 
 // 导出默认客户端

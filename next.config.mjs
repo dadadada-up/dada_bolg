@@ -121,7 +121,7 @@ const nextConfig = {
   experimental: {
     // 启用增量静态再生成
     isrMemoryCacheSize: 50,
-    // 启用服务器组件
+    // 禁用服务器组件
     serverComponents: false,
   }
 };

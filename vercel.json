@@ -8,13 +8,15 @@
   "env": {
     "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
     "VERCEL": "1",
-    "NODE_OPTIONS": "--max_old_space_size=4096"
+    "NODE_OPTIONS": "--max_old_space_size=4096",
+    "NEXT_PUBLIC_USE_FALLBACK_DATA": "true"
   },
   "build": {
     "env": {
       "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
       "VERCEL": "1",
-      "NODE_OPTIONS": "--max_old_space_size=4096"
+      "NODE_OPTIONS": "--max_old_space_size=4096",
+      "NEXT_PUBLIC_USE_FALLBACK_DATA": "true"
     }
   }
 } 

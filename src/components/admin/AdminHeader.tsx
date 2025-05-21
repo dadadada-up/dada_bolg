@@ -1,26 +1,41 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface AdminHeaderProps {
   title: string;
-  subtitle?: string;
-  children?: React.ReactNode;
+  description?: string;
+  className?: string;
 }
 
-export function AdminHeader({ title, subtitle, children }: AdminHeaderProps) {
+export default function AdminHeader({ title, description, className }: AdminHeaderProps) {
   return (
-    <header className="admin-header">
-      <div>
-        <h2 className="page-title">{title}</h2>
-        {subtitle && (
-          <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
-        )}
+    <div className={cn("mb-6", className)}>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">{title}</h1>
+          {description && (
+            <p className="text-sm text-gray-500 mt-1">{description}</p>
+          )}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Link 
+            href="/admin/dashboard" 
+            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+          >
+            仪表盘
+          </Link>
+          <Link 
+            href="/" 
+            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+            target="_blank"
+          >
+            查看网站
+          </Link>
+        </div>
       </div>
-      
-      <div className="header-actions">
-        {children}
-      </div>
-    </header>
+    </div>
   );
 } 

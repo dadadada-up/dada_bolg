@@ -1,18 +1,20 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel:build",
-  "installCommand": "npm install --ignore-scripts",
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["iad1"],
   "env": {
     "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
-    "VERCEL": "1"
+    "VERCEL": "1",
+    "NODE_OPTIONS": "--max_old_space_size=4096"
   },
   "build": {
     "env": {
       "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
-      "VERCEL": "1"
+      "VERCEL": "1",
+      "NODE_OPTIONS": "--max_old_space_size=4096"
     }
   }
 } 

@@ -1,6 +1,13 @@
 /**
  * @type {import('next').NextConfig}
  */
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// ES模块中获取 __dirname 的替代方案
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const nextConfig = {
   output: process.env.NEXT_PUBLIC_OUTPUT || 'standalone',
   
@@ -98,7 +105,7 @@ const nextConfig = {
     // 添加路径别名解析
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': require('path').resolve(__dirname, 'src'),
+      '@': path.resolve(__dirname, 'src'),
     };
 
     return config;
@@ -106,6 +113,17 @@ const nextConfig = {
   
   // React严格模式
   reactStrictMode: true,
+  
+  // 优化构建
+  swcMinify: true,
+  
+  // 增量静态再生成
+  experimental: {
+    // 启用增量静态再生成
+    isrMemoryCacheSize: 50,
+    // 启用服务器组件
+    serverComponents: false,
+  }
 };
 
 export default nextConfig; 

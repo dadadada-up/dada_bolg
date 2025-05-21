@@ -1,17 +1,44 @@
+# 版本控制
 .git
 .github
 .vscode
+
+# 依赖和构建
 node_modules
+.next/cache
+
+# 文档
 README.md
-.gitignore
+*.md
+!README.md
+
+# 环境变量
 .env
 .env.*
 !.env.example
+
+# 数据库文件
 *.db
 *.sqlite
 *.sqlite3
+data/db
+data/backup*
+data/storage
+data/reports
+data/temp
+data/tables
+
+# 备份和缓存
 .backup-code
 .cache
 assets/db
-data/db
-*.log 
+
+# 日志
+*.log
+
+# 脚本和工具
+scripts/cleanup
+scripts/utils/test
+scripts/*.sh
+scripts/restore-backup.js
+scripts/import-test-data.js 

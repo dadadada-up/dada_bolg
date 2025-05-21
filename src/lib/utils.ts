@@ -41,6 +41,24 @@ export function slugify(text: string) {
 }
 
 /**
+ * 增强版 slug 生成
+ * 支持中文和其他非拉丁字符
+ */
+export function enhancedSlugify(text: string) {
+  if (!text) return '';
+  
+  // 处理中文和其他非拉丁字符
+  const slug = text
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '') // 保留字母、数字、空格和连字符
+    .replace(/\s+/g, '-') // 空格替换为连字符
+    .replace(/-+/g, '-') // 多个连字符替换为单个
+    .trim(); // 去除首尾空格
+    
+  return slug || `post-${Date.now().toString(36)}`; // 如果为空，生成一个基于时间的 slug
+}
+
+/**
  * 计算阅读时间
  */
 export function getReadingTime(content: string) {
@@ -73,4 +91,43 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
   } catch (e) {
     return fallback;
   }
-} 
+}
+
+/**
+ * 格式化数字
+ * 添加千位分隔符，可选择保留小数位
+ */
+export function formatNumber(num: number, decimals: number = 0) {
+  if (num === undefined || num === null) return '0';
+  
+  return new Intl.NumberFormat('zh-CN', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(num);
+}
+
+/**
+ * 从 Markdown 内容中提取标题
+ * 返回标题数组，每个标题包含级别、文本和 ID
+ */
+export function extractHeadings(content: string) {
+  if (!content) return [];
+  
+  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+  const headings = [];
+  let match;
+  
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length;
+    const text = match[2].trim();
+    const id = slugify(text);
+    
+    headings.push({
+      level,
+      text,
+      id
+    });
+  }
+  
+  return headings;
+}

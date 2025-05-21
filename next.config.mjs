@@ -117,12 +117,10 @@ const nextConfig = {
   // 优化构建
   swcMinify: true,
   
-  // 增量静态再生成
+  // 缓存配置
   experimental: {
-    // 启用增量静态再生成
-    isrMemoryCacheSize: 50,
-    // 禁用服务器组件
-    serverComponents: false,
+    // 启用内存缓存
+    cacheMaxMemorySize: 50,
   }
 };
 

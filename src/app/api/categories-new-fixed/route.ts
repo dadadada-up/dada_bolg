@@ -1,24 +1,13 @@
 /**
  * 分类API（修复版本）
  * 
- * 直接使用本地SQLite数据库访问分类数据
+ * 使用 Turso 数据库访问分类数据
  */
 
-import { open } from 'sqlite';
-import sqlite3 from 'sqlite3';
-import path from 'path';
+import { query } from '@/lib/db/database';
 
 export async function GET() {
   try {
-    // 连接数据库
-    const dbPath = path.resolve(process.cwd(), 'data', 'blog.db');
-    console.log(`[API修复版] 连接SQLite数据库: ${dbPath}`);
-    
-    const db = await open({
-      filename: dbPath,
-      driver: sqlite3.Database
-    });
-    
     // 查询所有分类
     const sql = `
       SELECT 
@@ -31,10 +20,7 @@ export async function GET() {
       ORDER BY c.name
     `;
     
-    const categories = await db.all(sql);
-    
-    // 关闭数据库连接
-    await db.close();
+    const categories = await query(sql);
     
     return Response.json(categories);
   } catch (error) {

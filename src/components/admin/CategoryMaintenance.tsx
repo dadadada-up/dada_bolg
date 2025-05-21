@@ -37,7 +37,7 @@ const LoadingIcon = () => (
   </svg>
 );
 
-export default function CategoryMaintenance() {
+export function CategoryMaintenance() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,4 +96,5 @@ export default function CategoryMaintenance() {
       </div>
     </div>
   );
-} 
+} // 保持默认导出，同时提供命名导出
+export default CategoryMaintenance;

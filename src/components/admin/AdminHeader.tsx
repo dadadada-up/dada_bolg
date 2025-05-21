@@ -10,7 +10,7 @@ interface AdminHeaderProps {
   className?: string;
 }
 
-export default function AdminHeader({ title, description, className }: AdminHeaderProps) {
+export function AdminHeader({ title, description, className }: AdminHeaderProps) {
   return (
     <div className={cn("mb-6", className)}>
       <div className="flex items-center justify-between">
@@ -38,4 +38,7 @@ export default function AdminHeader({ title, description, className }: AdminHead
       </div>
     </div>
   );
-} 
+}
+
+// 保持默认导出，同时提供命名导出
+export default AdminHeader; 

@@ -1,12 +1,10 @@
 /**
  * 仪表盘API（修复版本）
  * 
- * 直接使用本地SQLite数据库获取统计数据
+ * 使用 Turso 数据库获取统计数据
  */
 
-import { open } from 'sqlite';
-import sqlite3 from 'sqlite3';
-import path from 'path';
+import { query, queryOne } from '@/lib/db/database';
 
 // 生成随机浏览量，用于演示
 function generateRandomViews(): number {
@@ -15,15 +13,6 @@ function generateRandomViews(): number {
 
 export async function GET() {
   try {
-    // 连接数据库
-    const dbPath = path.resolve(process.cwd(), 'data', 'blog.db');
-    console.log(`[API修复版] 连接SQLite数据库: ${dbPath}`);
-    
-    const db = await open({
-      filename: dbPath,
-      driver: sqlite3.Database
-    });
-    
     // 查询统计数据
     const postCountSql = `SELECT COUNT(*) as count FROM posts`;
     const publishedPostCountSql = `SELECT COUNT(*) as count FROM posts WHERE is_published = 1`;
@@ -35,8 +24,7 @@ export async function GET() {
     const recentPostsSql = `
       SELECT 
         id, title, slug, excerpt, is_published, 
-        strftime('%s', created_at) as created_at, 
-        strftime('%s', updated_at) as updated_at
+        created_at, updated_at
       FROM posts 
       WHERE is_published = 1
       ORDER BY created_at DESC 
@@ -78,14 +66,14 @@ export async function GET() {
       categories,
       tags
     ] = await Promise.all([
-      db.get(postCountSql),
-      db.get(publishedPostCountSql),
-      db.get(draftPostCountSql),
-      db.get(categoryCountSql),
-      db.get(tagCountSql),
-      db.all(recentPostsSql),
-      db.all(categoriesSql),
-      db.all(tagsSql)
+      queryOne(postCountSql),
+      queryOne(publishedPostCountSql),
+      queryOne(draftPostCountSql),
+      queryOne(categoryCountSql),
+      queryOne(tagCountSql),
+      query(recentPostsSql),
+      query(categoriesSql),
+      query(tagsSql)
     ]);
     
     // 格式化最近文章数据
@@ -93,7 +81,7 @@ export async function GET() {
       id: post.id,
       title: post.title,
       slug: post.slug,
-      date: post.created_at ? new Date(parseInt(post.created_at) * 1000).toISOString() : undefined,
+      date: post.created_at ? new Date(post.created_at).toISOString() : undefined,
       views: generateRandomViews() // 临时使用随机数
     }));
     
@@ -108,9 +96,6 @@ export async function GET() {
     tags.forEach((tag: any) => {
       tagsMap[tag.name] = tag.post_count;
     });
-    
-    // 关闭数据库连接
-    await db.close();
     
     // 构建响应
     const response = {
@@ -127,7 +112,7 @@ export async function GET() {
         avgReadTime: 4.5 // 临时数据
       },
       recentPosts: formattedRecentPosts,
-      source: 'direct-sqlite-fixed'
+      source: 'turso-db'
     };
     
     return Response.json(response);

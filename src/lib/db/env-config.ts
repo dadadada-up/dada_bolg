@@ -1,6 +1,7 @@
 /**
  * 数据库环境配置
- * 根据环境决定使用哪种数据库
+ * 本地开发环境使用SQLite
+ * Vercel环境使用Turso
  */
 
 // 检查是否在 Vercel 环境中运行
@@ -13,39 +14,20 @@ export const hasTursoConfig = !!(
   process.env.TURSO_DATABASE_URL.length > 0 && 
   process.env.TURSO_AUTH_TOKEN.length > 0
 );
-  
-// 检查是否应该使用备用数据
-export function shouldUseFallbackData() {
-  return process.env.NEXT_PUBLIC_USE_FALLBACK_DATA === 'true' || isVercelEnv;
-}
 
 // 数据库类型
-export type DatabaseType = 'turso' | 'fallback';
+export type DatabaseType = 'turso' | 'sqlite';
 
 /**
  * 获取当前环境应该使用的数据库类型
  */
 export function getDatabaseType(): DatabaseType {
-  // 在 Vercel 环境中，如果没有有效的Turso配置，使用备用数据
-  if (isVercelEnv && !hasTursoConfig) {
-    return 'fallback';
-  }
-
-  // 在开发环境中，如果配置了 Turso 则使用 Turso
-  if (hasTursoConfig) {
+  // Vercel环境使用Turso
+  if (isVercelEnv) {
     return 'turso';
   }
-
-  // 默认使用备用数据
-  return 'fallback';
-}
-
-/**
- * 检查是否应该使用备用数据
- * 当明确设置了使用备用数据或者没有数据库配置时返回 true
- */
-export function shouldUseFallback(): boolean {
-  return shouldUseFallbackData() || !hasTursoConfig;
+  // 本地开发环境使用SQLite
+  return 'sqlite';
 }
 
 /**
@@ -65,5 +47,4 @@ export function getDatabaseAuthToken(): string | null {
 // 记录当前环境配置
 console.log(`[环境配置] Vercel环境: ${isVercelEnv}`);
 console.log(`[环境配置] Turso配置: ${hasTursoConfig}`);
-console.log(`[环境配置] 使用备用数据: ${shouldUseFallbackData()}`);
 console.log(`[环境配置] 数据库类型: ${getDatabaseType()}`); 

@@ -14,10 +14,7 @@ const nextConfig = {
   // 环境变量
   env: {
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://dada-blog.vercel.app',
-    VERCEL: '1', // 确保在Vercel环境中被正确标记
-    
-    // 在Vercel环境中启用备用数据
-    NEXT_PUBLIC_USE_FALLBACK_DATA: process.env.VERCEL === '1' ? 'true' : 'false',
+    VERCEL: process.env.VERCEL === '1' ? '1' : '0', // 确保环境变量正确传递
     
     // 确保Turso配置被正确传递
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
@@ -115,13 +112,7 @@ const nextConfig = {
   reactStrictMode: true,
   
   // 优化构建
-  swcMinify: true,
-  
-  // 缓存配置
-  experimental: {
-    // 启用内存缓存
-    cacheMaxMemorySize: 50,
-  }
+  swcMinify: true
 };
 
 export default nextConfig; 

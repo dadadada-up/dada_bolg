@@ -1,13 +1,12 @@
 /**
  * 统一数据服务实现
  * 
- * 提供对数据库操作的实际实现，按照以下优先级尝试数据库连接：
- * 1. Turso云数据库
- * 2. 本地SQLite数据库
+ * 本地开发环境使用SQLite
+ * Vercel环境使用Turso
  */
 
 import { Post, Category, Tag } from '@/types/post';
-import { isTursoEnabled } from '@/lib/db/turso-client-new';
+import { getDatabaseType, isVercelEnv } from '@/lib/db/env-config';
 import { 
   query as dbQuery, 
   queryOne as dbQueryOne, 
@@ -102,41 +101,20 @@ export interface DataService {
   
   // 删除标签
   deleteTag(id: number): Promise<boolean>;
-  
-  // 同步数据到SQLite
-  syncToSQLite(): Promise<boolean>;
 }
 
 // 实际数据服务实现
 export class DataServiceImpl implements DataService {
-  private tursoDb: TursoDatabase;
-  private sqliteDb: SQLiteDatabase;
-  private currentDb: Database;
-  private isTursoEnabled: boolean;
+  private db: Database;
 
   constructor() {
-    this.tursoDb = new TursoDatabase();
-    this.sqliteDb = new SQLiteDatabase();
-    this.isTursoEnabled = process.env.TURSO_DATABASE_URL !== undefined && 
-                         process.env.TURSO_AUTH_TOKEN !== undefined;
-    this.currentDb = this.isTursoEnabled ? this.tursoDb : this.sqliteDb;
-  }
-
-  private async tryWithTurso<T>(operation: (db: Database) => Promise<T>): Promise<T> {
-    if (!this.isTursoEnabled) {
-      return operation(this.sqliteDb);
-    }
-
-    try {
-      return await operation(this.tursoDb);
-    } catch (error) {
-      console.error('[DataService] Turso操作失败，切换到SQLite:', error);
-      return operation(this.sqliteDb);
-    }
+    // 根据环境选择数据库
+    this.db = isVercelEnv ? new TursoDatabase() : new SQLiteDatabase();
   }
 
   // 将数据库文章结果转换为Post对象
   private mapDbPostToPost(dbPost: any): Post {
+    if (!dbPost) return null;
     return {
       id: dbPost.id,
       slug: dbPost.slug,
@@ -150,8 +128,8 @@ export class DataServiceImpl implements DataService {
       date: dbPost.date,
       created_at: dbPost.created_at,
       updated_at: dbPost.updated_at,
-      categories: JSON.parse(dbPost.categories_json || '[]'),
-      tags: JSON.parse(dbPost.tags_json || '[]')
+      categories: dbPost.categories_json ? JSON.parse(dbPost.categories_json) : [],
+      tags: dbPost.tags_json ? JSON.parse(dbPost.tags_json) : []
     };
   }
 
@@ -167,155 +145,153 @@ export class DataServiceImpl implements DataService {
     total: number;
   }> {
     try {
-      return await this.tryWithTurso(async (db) => {
-        // 确保数据库已初始化
-        await this.ensureDbInitialized();
+      // 确保数据库已初始化
+      await this.ensureDbInitialized();
 
-        console.log(`[DataService] 开始获取文章列表: ${JSON.stringify(options)}`);
+      console.log(`[DataService] 开始获取文章列表: ${JSON.stringify(options)}`);
 
-        // 构建SQL查询
-        let sql = `
-          SELECT 
-            p.id, p.title, p.slug, p.content, p.excerpt, p.description, 
-            p.is_published, p.is_featured, 
-            p.image_url as imageUrl, p.created_at, p.updated_at,
-            GROUP_CONCAT(DISTINCT c.name) as categories_str,
-            GROUP_CONCAT(DISTINCT t.name) as tags_str
-          FROM posts p
-          LEFT JOIN post_categories pc ON p.id = pc.post_id
-          LEFT JOIN categories c ON pc.category_id = c.id
-          LEFT JOIN post_tags pt ON p.id = pt.post_id
-          LEFT JOIN tags t ON pt.tag_id = t.id
-        `;
+      // 构建SQL查询
+      let sql = `
+        SELECT 
+          p.id, p.title, p.slug, p.content, p.excerpt, p.description, 
+          p.is_published, p.is_featured, 
+          p.image_url as imageUrl, p.created_at, p.updated_at,
+          GROUP_CONCAT(DISTINCT c.name) as categories_str,
+          GROUP_CONCAT(DISTINCT t.name) as tags_str
+        FROM posts p
+        LEFT JOIN post_categories pc ON p.id = pc.post_id
+        LEFT JOIN categories c ON pc.category_id = c.id
+        LEFT JOIN post_tags pt ON p.id = pt.post_id
+        LEFT JOIN tags t ON pt.tag_id = t.id
+      `;
 
-        const whereConditions = [];
-        const params: any[] = [];
+      const whereConditions = [];
+      const params: any[] = [];
 
-        // 尝试检测表结构
-        try {
-          // 检查是否使用旧列名
-          const postsColumns = await dbQuery("PRAGMA table_info(posts)");
-          const columnNames = postsColumns.map((col: any) => col.name);
-          console.log(`[DataService] 文章表列名: ${columnNames.join(', ')}`);
-          
-          // 根据表结构调整查询条件
-          if (columnNames.includes('is_published')) {
-            // 使用新列名is_published
-            if (!options?.includeUnpublished) {
-              whereConditions.push('p.is_published = 1');
-            }
-          } else if (columnNames.includes('published')) {
-            // 使用旧列名published
-            console.log('[DataService] 使用旧列名published');
-            sql = sql.replace('p.is_published', 'p.published as is_published');
-            if (!options?.includeUnpublished) {
-              whereConditions.push('p.published = 1');
-            }
-          } else {
-            // 如果两者都不存在，使用默认条件
-            console.log('[DataService] 文章表缺少发布状态列，使用默认条件');
-            if (!options?.includeUnpublished) {
-              whereConditions.push('1=1'); // 始终为真的条件
-            }
-          }
-          
-          // 检查图片URL列名
-          if (columnNames.includes('image_url')) {
-            // 使用新列名image_url
-          } else if (columnNames.includes('cover_image')) {
-            // 使用旧列名cover_image
-            console.log('[DataService] 使用旧列名cover_image');
-            sql = sql.replace('p.image_url as imageUrl', 'p.cover_image as imageUrl');
-          }
-        } catch (columnError) {
-          console.error('[DataService] 检查表结构失败:', columnError);
-          // 使用默认查询
+      // 尝试检测表结构
+      try {
+        // 检查是否使用旧列名
+        const postsColumns = await dbQuery("PRAGMA table_info(posts)");
+        const columnNames = postsColumns.map((col: any) => col.name);
+        console.log(`[DataService] 文章表列名: ${columnNames.join(', ')}`);
+        
+        // 根据表结构调整查询条件
+        if (columnNames.includes('is_published')) {
+          // 使用新列名is_published
           if (!options?.includeUnpublished) {
             whereConditions.push('p.is_published = 1');
           }
-        }
-
-        // 分类筛选
-        if (options?.category) {
-          whereConditions.push('c.slug = ?');
-          params.push(options.category);
-        }
-
-        // 标签筛选
-        if (options?.tag) {
-          whereConditions.push('t.slug = ?');
-          params.push(options.tag);
-        }
-
-        // 添加WHERE条件
-        if (whereConditions.length > 0) {
-          sql += ` WHERE ${whereConditions.join(' AND ')}`;
-        }
-
-        // 分组和排序
-        sql += `
-          GROUP BY p.id
-          ORDER BY p.created_at DESC
-        `;
-
-        // 分页
-        if (options?.limit) {
-          sql += ' LIMIT ?';
-          params.push(options.limit);
-
-          if (options?.offset !== undefined) {
-            sql += ' OFFSET ?';
-            params.push(options.offset);
+        } else if (columnNames.includes('published')) {
+          // 使用旧列名published
+          console.log('[DataService] 使用旧列名published');
+          sql = sql.replace('p.is_published', 'p.published as is_published');
+          if (!options?.includeUnpublished) {
+            whereConditions.push('p.published = 1');
+          }
+        } else {
+          // 如果两者都不存在，使用默认条件
+          console.log('[DataService] 文章表缺少发布状态列，使用默认条件');
+          if (!options?.includeUnpublished) {
+            whereConditions.push('1=1'); // 始终为真的条件
           }
         }
-
-        console.log(`[DataService] 执行SQL查询: ${sql}`);
-        console.log(`[DataService] 参数: ${params.join(', ')}`);
-
-        // 执行查询
-        const posts = await dbQuery(sql, params);
-        console.log(`[DataService] 查询到 ${posts.length} 篇文章`);
-
-        // 获取总数
-        let countSql = `
-          SELECT COUNT(DISTINCT p.id) as total
-          FROM posts p
-          LEFT JOIN post_categories pc ON p.id = pc.post_id
-          LEFT JOIN categories c ON pc.category_id = c.id
-          LEFT JOIN post_tags pt ON p.id = pt.post_id
-          LEFT JOIN tags t ON pt.tag_id = t.id
-        `;
-
-        if (whereConditions.length > 0) {
-          countSql += ` WHERE ${whereConditions.join(' AND ')}`;
+        
+        // 检查图片URL列名
+        if (columnNames.includes('image_url')) {
+          // 使用新列名image_url
+        } else if (columnNames.includes('cover_image')) {
+          // 使用旧列名cover_image
+          console.log('[DataService] 使用旧列名cover_image');
+          sql = sql.replace('p.image_url as imageUrl', 'p.cover_image as imageUrl');
         }
+      } catch (columnError) {
+        console.error('[DataService] 检查表结构失败:', columnError);
+        // 使用默认查询
+        if (!options?.includeUnpublished) {
+          whereConditions.push('p.is_published = 1');
+        }
+      }
 
-        // 执行总数查询
-        const countResult = await dbQueryOne(countSql, params.slice(0, params.length - (options?.limit ? (options?.offset !== undefined ? 2 : 1) : 0)));
-        const total = countResult?.total || 0;
-        console.log(`[DataService] 文章总数: ${total}`);
+      // 分类筛选
+      if (options?.category) {
+        whereConditions.push('c.slug = ?');
+        params.push(options.category);
+      }
 
-        // 处理查询结果
-        const formattedPosts = posts.map((post: any) => ({
-          ...post,
-          categories: post.categories_str ? post.categories_str.split(',') : [],
-          tags: post.tags_str ? post.tags_str.split(',') : [],
-          is_published: post.is_published === 1 || !!post.is_published,
-          date: post.created_at,
-          updated: post.updated_at,
-        }));
+      // 标签筛选
+      if (options?.tag) {
+        whereConditions.push('t.slug = ?');
+        params.push(options.tag);
+      }
 
-        // 移除categories_str和tags_str字段
-        formattedPosts.forEach((post: any) => {
-          delete post.categories_str;
-          delete post.tags_str;
-        });
+      // 添加WHERE条件
+      if (whereConditions.length > 0) {
+        sql += ` WHERE ${whereConditions.join(' AND ')}`;
+      }
 
-        return {
-          posts: formattedPosts,
-          total,
-        };
+      // 分组和排序
+      sql += `
+        GROUP BY p.id
+        ORDER BY p.created_at DESC
+      `;
+
+      // 分页
+      if (options?.limit) {
+        sql += ' LIMIT ?';
+        params.push(options.limit);
+
+        if (options?.offset !== undefined) {
+          sql += ' OFFSET ?';
+          params.push(options.offset);
+        }
+      }
+
+      console.log(`[DataService] 执行SQL查询: ${sql}`);
+      console.log(`[DataService] 参数: ${params.join(', ')}`);
+
+      // 执行查询
+      const posts = await dbQuery(sql, params);
+      console.log(`[DataService] 查询到 ${posts.length} 篇文章`);
+
+      // 获取总数
+      let countSql = `
+        SELECT COUNT(DISTINCT p.id) as total
+        FROM posts p
+        LEFT JOIN post_categories pc ON p.id = pc.post_id
+        LEFT JOIN categories c ON pc.category_id = c.id
+        LEFT JOIN post_tags pt ON p.id = pt.post_id
+        LEFT JOIN tags t ON pt.tag_id = t.id
+      `;
+
+      if (whereConditions.length > 0) {
+        countSql += ` WHERE ${whereConditions.join(' AND ')}`;
+      }
+
+      // 执行总数查询
+      const countResult = await dbQueryOne(countSql, params.slice(0, params.length - (options?.limit ? (options?.offset !== undefined ? 2 : 1) : 0)));
+      const total = countResult?.total || 0;
+      console.log(`[DataService] 文章总数: ${total}`);
+
+      // 处理查询结果
+      const formattedPosts = posts.map((post: any) => ({
+        ...post,
+        categories: post.categories_str ? post.categories_str.split(',') : [],
+        tags: post.tags_str ? post.tags_str.split(',') : [],
+        is_published: post.is_published === 1 || !!post.is_published,
+        date: post.created_at,
+        updated: post.updated_at,
+      }));
+
+      // 移除categories_str和tags_str字段
+      formattedPosts.forEach((post: any) => {
+        delete post.categories_str;
+        delete post.tags_str;
       });
+
+      return {
+        posts: formattedPosts,
+        total,
+      };
     } catch (error) {
       console.error(`[DataService] 获取文章列表失败:`, error);
       throw new Error(`获取文章列表失败: ${error instanceof Error ? error.message : '未知错误'}`);
@@ -400,9 +376,8 @@ export class DataServiceImpl implements DataService {
     description?: string;
   }>> {
     try {
-      return await this.tryWithTurso(async (db) => {
-        const sql = `SELECT id, name, slug, description FROM categories ORDER BY name`;
-        return await db.all(sql);
+      return await this.ensureDbInitialized().then(() => {
+        return this.db.all(`SELECT id, name, slug, description FROM categories ORDER BY name`);
       });
     } catch (error) {
       console.error(`[DataService] 获取分类失败:`, error);
@@ -417,9 +392,8 @@ export class DataServiceImpl implements DataService {
     slug: string;
   }>> {
     try {
-      return await this.tryWithTurso(async (db) => {
-        const sql = `SELECT id, name, slug FROM tags ORDER BY name`;
-        return await db.all(sql);
+      return await this.ensureDbInitialized().then(() => {
+        return this.db.all(`SELECT id, name, slug FROM tags ORDER BY name`);
       });
     } catch (error) {
       console.error(`[DataService] 获取标签失败:`, error);
@@ -853,48 +827,9 @@ export class DataServiceImpl implements DataService {
       throw new Error(`删除标签失败: ${error instanceof Error ? error.message : '未知错误'}`);
     }
   }
-  
-  // 从Turso同步数据到SQLite
-  async syncToSQLite(): Promise<boolean> {
-    // 只在开发环境并且Turso启用时执行同步
-    if (process.env.NODE_ENV === 'production' || !isTursoEnabled()) {
-      console.log('[DataService] 跳过同步，当前环境不需要同步');
-      return false;
-    }
-    
-    try {
-      console.log('[DataService] 开始同步数据从Turso到SQLite');
-      
-      // 调用同步模块执行同步
-      const { syncFromTursoToSQLite } = require('./sync');
-      
-      // 所有选项默认为true
-      const options = {
-        categories: true,
-        tags: true,
-        posts: true,
-        postCategories: true,
-        postTags: true,
-        slugMappings: true
-      };
-      
-      const result = await syncFromTursoToSQLite(options);
-      
-      if (result) {
-        console.log('[DataService] 同步完成');
-      } else {
-        console.log('[DataService] 同步失败');
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('[DataService] 同步数据失败:', error);
-      return false;
-    }
-  }
 
   private async ensureDbInitialized(): Promise<void> {
-    if (!this.isTursoEnabled) {
+    if (!isVercelEnv) {
       try {
         await initializeDatabase();
       } catch (error) {
@@ -968,16 +903,5 @@ export class DataServiceImpl implements DataService {
 
 // 创建数据服务实例
 export function createDataService(): DataService {
-  try {
-    console.log(`[DataService] 创建数据服务实例，Turso数据库${isTursoEnabled() ? '已启用' : '未启用'}`);
-    return new DataServiceImpl();
-  } catch (error) {
-    console.error('[DataService] 创建数据服务实例失败:', error);
-    
-    // 创建一个简单的包装服务，避免完全崩溃
-    console.log('[DataService] 创建兜底数据服务...');
-    
-    // 返回一个最小功能的数据服务
-    return new DataServiceImpl();
-  }
+  return new DataServiceImpl();
 } 

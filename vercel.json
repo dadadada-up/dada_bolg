@@ -9,18 +9,16 @@
     "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
     "VERCEL": "1",
     "NODE_OPTIONS": "--max_old_space_size=4096",
-    "NEXT_PUBLIC_USE_FALLBACK_DATA": "true",
-    "TURSO_DATABASE_URL": "",
-    "TURSO_AUTH_TOKEN": ""
+    "TURSO_DATABASE_URL": "libsql://dada-blog-db-dadadada-up.aws-ap-northeast-1.turso.io",
+    "TURSO_AUTH_TOKEN": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDc0MDQwOTksImlkIjoiODU2YmRjMDMtMjQ0OC00ZDI4LTgyNjctYzA0NjgzMzdkYjQ2IiwicmlkIjoiYTIyZjg1MzMtNmIyMC00YzkxLWE5ZTctMTFkZThmNzI2NzgyIn0.-2bdfioxI_tjUbBNB1b9GGcpdAXdkUKAWKxiTYjKG-2mupabHL6qFtgLTjgueh41AE2IVcjB2U-9eDlL_5-XCA"
   },
   "build": {
     "env": {
       "NEXT_PUBLIC_SITE_URL": "https://dada-blog.vercel.app",
       "VERCEL": "1",
       "NODE_OPTIONS": "--max_old_space_size=4096",
-      "NEXT_PUBLIC_USE_FALLBACK_DATA": "true",
-      "TURSO_DATABASE_URL": "",
-      "TURSO_AUTH_TOKEN": ""
+      "TURSO_DATABASE_URL": "libsql://dada-blog-db-dadadada-up.aws-ap-northeast-1.turso.io",
+      "TURSO_AUTH_TOKEN": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDc0MDQwOTksImlkIjoiODU2YmRjMDMtMjQ0OC00ZDI4LTgyNjctYzA0NjgzMzdkYjQ2IiwicmlkIjoiYTIyZjg1MzMtNmIyMC00YzkxLWE5ZTctMTFkZThmNzI2NzgyIn0.-2bdfioxI_tjUbBNB1b9GGcpdAXdkUKAWKxiTYjKG-2mupabHL6qFtgLTjgueh41AE2IVcjB2U-9eDlL_5-XCA"
     }
   }
 } 

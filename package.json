@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel:build": "npm install --ignore-scripts && next build"
+    "vercel:build": "next build"
   },
   "dependencies": {
     "@libsql/client": "0.15.6",

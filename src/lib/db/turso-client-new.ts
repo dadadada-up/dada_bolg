@@ -25,11 +25,13 @@ export interface TursoClientConfig {
  */
 export function isTursoEnabled(): boolean {
   const dbType = getDatabaseType();
-  const isEnabled = dbType === 'turso';
+  const url = getDatabaseUrl();
+  const token = getDatabaseAuthToken();
+  const isEnabled = dbType === 'turso' && !!url && !!token && url.length > 0 && token.length > 0;
   
   console.log(`[Turso] 是否启用: ${isEnabled}`);
-  console.log(`[Turso] 数据库URL: ${getDatabaseUrl() ? '已设置' : '未设置'}`);
-  console.log(`[Turso] 认证令牌: ${getDatabaseAuthToken() ? '已设置' : '未设置'}`);
+  console.log(`[Turso] 数据库URL: ${url ? '已设置' : '未设置'}`);
+  console.log(`[Turso] 认证令牌: ${token ? '已设置' : '未设置'}`);
   
   return isEnabled;
 }
@@ -45,6 +47,15 @@ export function createClient(config: TursoClientConfig): TursoClient {
   console.log(`[Turso] 同步URL是否存在: ${!!config.syncUrl}`);
   
   try {
+    // 检查配置是否有效
+    if (!config.url || config.url.trim() === '') {
+      throw new Error('Turso URL 未配置');
+    }
+    
+    if (!config.authToken || config.authToken.trim() === '') {
+      throw new Error('Turso 认证令牌未配置');
+    }
+    
     // 使用真实的@libsql/client
     const client: Client = createTursoClient({
       url: config.url,
@@ -102,21 +113,29 @@ export function createClient(config: TursoClientConfig): TursoClient {
 
 // 检查环境变量并创建默认客户端实例
 const isEnabled = isTursoEnabled();
-const tursoClient = isEnabled 
-  ? createClient({
+let tursoClient = null;
+
+// 只有在确认启用Turso时才创建客户端
+if (isEnabled) {
+  try {
+    tursoClient = createClient({
       url: getDatabaseUrl() || '',
-      authToken: getDatabaseAuthToken() || undefined,
+      authToken: getDatabaseAuthToken() || '',
       syncUrl: process.env.NODE_ENV === 'production' 
         ? getDatabaseUrl() 
         : undefined,
-    })
-  : null;
-
-// 记录数据库连接信息（仅开发环境）
-if (isEnabled && process.env.NODE_ENV !== 'production') {
-  console.log(`[数据库] 使用Turso数据库: ${getDatabaseUrl()}`);
+    });
+    
+    // 记录数据库连接信息（仅开发环境）
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[数据库] 使用Turso数据库: ${getDatabaseUrl()}`);
+    }
+  } catch (error) {
+    console.error('[Turso] 创建客户端失败，将使用备用数据:', error);
+    tursoClient = null;
+  }
 } else if (process.env.NODE_ENV !== 'production') {
-  console.log('[数据库] 未配置Turso，将使用备用数据');
+  console.log('[数据库] 未配置Turso或配置无效，将使用备用数据');
 }
 
 // 导出默认客户端

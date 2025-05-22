@@ -4,7 +4,7 @@
  */
 
 import { TursoDatabase } from './turso-adapter';
-import { getDatabaseType, shouldUseFallback } from './env-config';
+import { getDatabaseType, shouldUseFallback, isVercelEnv } from './env-config';
 import * as fallbackData from '../fallback-data';
 
 // 单例数据库实例
@@ -45,6 +45,7 @@ export async function initializeDatabase(): Promise<GenericDatabase> {
   console.log(`[数据库] 环境变量: TURSO_DATABASE_URL=${!!process.env.TURSO_DATABASE_URL}, TURSO_AUTH_TOKEN=${!!process.env.TURSO_AUTH_TOKEN}`);
   console.log(`[数据库] 数据库类型: ${getDatabaseType()}`);
   console.log(`[数据库] 使用备用数据: ${shouldUseFallback()}`);
+  console.log(`[数据库] Vercel环境: ${isVercelEnv}`);
 
   try {
     // 检查是否应该使用备用数据
@@ -56,7 +57,7 @@ export async function initializeDatabase(): Promise<GenericDatabase> {
       console.log('[数据库] 备用数据库初始化成功');
       return dbInstance;
     }
-    
+      
     // 尝试初始化 Turso 数据库
     try {
       dbInstance = new TursoDatabase() as GenericDatabase;
@@ -75,7 +76,7 @@ export async function initializeDatabase(): Promise<GenericDatabase> {
     throw error;
   }
 }
-
+    
 /**
  * 创建备用数据库实例
  */
@@ -83,7 +84,7 @@ function createFallbackDatabase(): GenericDatabase {
   return {
     async get<T>(sql: string, ...params: any[]): Promise<T | undefined> {
       console.log(`[备用数据库] get: ${sql}`);
-      
+    
       // 根据SQL查询返回相应的备用数据
       if (sql.includes('FROM posts') || sql.includes('from posts')) {
         if (sql.includes('WHERE slug =') || sql.includes('where slug =')) {
@@ -117,8 +118,8 @@ function createFallbackDatabase(): GenericDatabase {
       
       if (sql.includes('FROM categories') || sql.includes('from categories')) {
         return fallbackData.fallbackCategories as unknown as T[];
-      }
-      
+    }
+    
       if (sql.includes('FROM tags') || sql.includes('from tags')) {
         return fallbackData.fallbackTags as unknown as T[];
       }
@@ -149,7 +150,7 @@ function createFallbackDatabase(): GenericDatabase {
  */
 export async function closeDatabase(): Promise<void> {
   if (dbInstance) {
-    await dbInstance.close();
+      await dbInstance.close();
     dbInstance = null;
   }
 }
@@ -158,24 +159,24 @@ export async function closeDatabase(): Promise<void> {
  * 执行查询并返回所有结果
  */
 export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> {
-  const db = await getDatabase();
-  return db.all<T>(sql, ...(params || []));
+    const db = await getDatabase();
+    return db.all<T>(sql, ...(params || []));
 }
 
 /**
  * 执行查询并返回第一个结果
  */
 export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T | undefined> {
-  const db = await getDatabase();
-  return db.get<T>(sql, ...(params || []));
+    const db = await getDatabase();
+    return db.get<T>(sql, ...(params || []));
 }
 
 /**
  * 执行更新操作并返回受影响的行数
  */
 export async function execute(sql: string, params?: any[]): Promise<number> {
-  const db = await getDatabase();
-  const result = await db.run(sql, ...(params || []));
+    const db = await getDatabase();
+    const result = await db.run(sql, ...(params || []));
   return result.changes;
 }
 

@@ -167,13 +167,13 @@ export async function GET() {
               FROM post_categories pc
               JOIN posts p ON pc.post_id = p.id
               WHERE pc.category_id IN (${placeholders})
-              AND p.published = 1
+              AND p.is_published = 1
             `, ...ids) as { count: number };
             
             return result?.count || 0;
           } catch (err2) {
             // 如果两者都失败，则返回0
-            console.log(`[API] 使用published也失败:`, err2);
+            console.log(`[API] 使用is_published也失败:`, err2);
             return 0;
           }
         }

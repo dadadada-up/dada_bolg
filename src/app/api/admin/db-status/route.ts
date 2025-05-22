@@ -71,7 +71,7 @@ export async function GET() {
       const postsResult = await db.get('SELECT COUNT(*) as total FROM posts');
       stats.posts.total = postsResult?.total || 0;
       
-      const publishedResult = await db.get('SELECT COUNT(*) as published FROM posts WHERE published = 1');
+      const publishedResult = await db.get('SELECT COUNT(*) as published FROM posts WHERE is_published = 1');
       stats.posts.published = publishedResult?.published || 0;
       
       // 获取分类统计

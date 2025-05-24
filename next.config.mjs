@@ -112,7 +112,11 @@ const nextConfig = {
   reactStrictMode: true,
   
   // 优化构建
-  swcMinify: true
+  swcMinify: true,
+
+  experimental: {
+    serverComponentsExternalPackages: ['sqlite', 'sqlite3', '@libsql/client']
+  }
 };
 
 export default nextConfig; 

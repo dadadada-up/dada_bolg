@@ -43,6 +43,8 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.0.0",
     "sharp": "^0.33.5",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
     "swr": "^2.2.0",
     "tailwind-merge": "^2.6.0",
     "unified": "^11.0.4"
@@ -65,5 +67,12 @@
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "packageManager": "pnpm@10.11.0+sha1.9a2c0f6d2c6c1d1db2a27000db5e47a4739a74bc",
+  "pnpm": {
+    "patchedDependencies": {},
+    "overrides": {
+      "sqlite3": "^5.1.7"
+    }
   }
 }

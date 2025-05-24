@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getChineseCategoryName, getEnglishCategorySlug } from '@/lib/content/category-service';
-import { dynamicConfig, getQueryParam } from '@/lib/api/route-config';
+import { dynamicConfig, getQueryParam, shouldUseMockData } from '@/lib/api/route-config';
 
 // 强制动态路由，防止静态生成
 export const dynamic = 'force-dynamic';
@@ -9,6 +9,15 @@ export const revalidate = 0;
 // 分类名称中英互译
 export async function GET(request: Request) {
   try {
+    // 检查是否应该返回模拟数据
+    if (shouldUseMockData('分类翻译API')) {
+      // 返回模拟翻译结果
+      return Response.json({ 
+        translatedName: '模拟翻译结果',
+        source: 'vercel-mock'
+      });
+    }
+    
     const name = getQueryParam(request, 'name', '');
     const direction = getQueryParam(request, 'direction', 'toChinese');
     

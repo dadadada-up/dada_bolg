@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { dynamicConfig, getQueryParam } from '@/lib/api/route-config';
+import { isVercelEnv } from '@/lib/db/env-config';
 
 // 强制动态路由，防止静态生成
 export const dynamic = 'force-dynamic';
@@ -12,6 +13,20 @@ export const revalidate = 0;
  */
 export async function GET(request: NextRequest) {
   try {
+    // 检测是否在Vercel环境中
+    if (isVercelEnv) {
+      console.log('[API] Vercel环境，代理请求返回模拟数据');
+      // 返回一个空的图片响应
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': 'https://placehold.co/600x400?text=Image+Proxy+Placeholder',
+          'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    }
+    
     // 从URL参数中获取原始图片URL
     const url = getQueryParam(request, 'url');
     

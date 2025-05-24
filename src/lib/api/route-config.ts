@@ -3,6 +3,8 @@
  * 提供通用的API路由配置和辅助函数
  */
 
+import { isVercelEnv } from '@/lib/db/env-config';
+
 // 强制动态路由，防止静态生成
 export const dynamicConfig = {
   dynamic: 'force-dynamic',
@@ -80,4 +82,17 @@ export function handleApiError(error: any): Response {
   console.error('[API] 错误:', error);
   const message = error instanceof Error ? error.message : String(error);
   return errorResponse(message);
+}
+
+/**
+ * 检查是否应该返回Vercel环境的模拟数据
+ * @param routeName API路由名称，用于日志记录
+ * @returns 如果在Vercel环境中，返回true
+ */
+export function shouldUseMockData(routeName: string = 'API'): boolean {
+  if (isVercelEnv) {
+    console.log(`[${routeName}] 检测到Vercel环境，将返回模拟数据`);
+    return true;
+  }
+  return false;
 } 

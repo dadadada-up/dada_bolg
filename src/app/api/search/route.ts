@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createDataService } from "@/lib/services/data/service";
-import { dynamicConfig, getQueryParam, getNumberQueryParam } from '@/lib/api/route-config';
+import { dynamicConfig, getQueryParam, getNumberQueryParam, shouldUseMockData } from '@/lib/api/route-config';
 
 // 强制动态路由，防止静态生成
 export const dynamic = 'force-dynamic';
@@ -8,6 +8,32 @@ export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {
+    // 检查是否应该返回模拟数据
+    if (shouldUseMockData('搜索API')) {
+      // 返回模拟搜索结果
+      return Response.json({
+        posts: [
+          {
+            id: 1,
+            title: "Next.js 14 新特性解析",
+            slug: "nextjs-14-features",
+            excerpt: "Next.js 14 带来了许多激动人心的新特性，本文将详细解析这些特性及其应用场景。",
+            is_published: true,
+            is_featured: true,
+            imageUrl: "https://example.com/images/nextjs14.jpg",
+            date: new Date().toISOString(),
+            categories: ["技术", "前端"],
+            tags: ["Next.js", "React", "Web开发"]
+          }
+        ],
+        query: "nextjs",
+        total: 1,
+        page: 1,
+        totalPages: 1,
+        source: "vercel-mock"
+      });
+    }
+    
     // 获取查询参数
     const query = getQueryParam(request, "q", "").toLowerCase();
     const page = getNumberQueryParam(request, "page", 1);

@@ -21,6 +21,12 @@ import {
 import { TursoDatabase } from '@/lib/db/turso-adapter';
 import { SQLiteDatabase } from '@/lib/db/sqlite-adapter';
 import { Database } from '@/lib/db/types';
+import { 
+  getAggregateFunction, 
+  safeParseJsonArray, 
+  buildSafeQuery, 
+  safeCoalesce 
+} from './service-fixes';
 
 // 数据服务接口定义
 export interface DataService {
@@ -126,37 +132,17 @@ export class DataServiceImpl implements DataService {
     let tags = [];
     
     try {
-      // 尝试解析JSON字符串
+      // 使用安全解析函数处理分类和标签
       if (dbPost.categories_json) {
-        categories = JSON.parse(dbPost.categories_json);
+        categories = safeParseJsonArray(dbPost.categories_json);
       } else if (dbPost.categories_str) {
-        // 如果是字符串，则按逗号拆分
-        // 处理可能的JSON数组格式
-        if (dbPost.categories_str.startsWith('[') && dbPost.categories_str.endsWith(']')) {
-          try {
-            categories = JSON.parse(dbPost.categories_str);
-          } catch (e) {
-            categories = dbPost.categories_str.split(',').filter(Boolean);
-          }
-        } else {
-          categories = dbPost.categories_str.split(',').filter(Boolean);
-        }
+        categories = safeParseJsonArray(dbPost.categories_str);
       }
       
       if (dbPost.tags_json) {
-        tags = JSON.parse(dbPost.tags_json);
+        tags = safeParseJsonArray(dbPost.tags_json);
       } else if (dbPost.tags_str) {
-        // 如果是字符串，则按逗号拆分
-        // 处理可能的JSON数组格式
-        if (dbPost.tags_str.startsWith('[') && dbPost.tags_str.endsWith(']')) {
-          try {
-            tags = JSON.parse(dbPost.tags_str);
-          } catch (e) {
-            tags = dbPost.tags_str.split(',').filter(Boolean);
-          }
-        } else {
-          tags = dbPost.tags_str.split(',').filter(Boolean);
-        }
+        tags = safeParseJsonArray(dbPost.tags_str);
       }
     } catch (e) {
       console.error('解析分类或标签失败:', e);
@@ -198,7 +184,7 @@ export class DataServiceImpl implements DataService {
       console.log(`[DataService] 开始获取文章列表: ${JSON.stringify(options)}`);
 
       // 根据数据库类型选择不同的聚合函数
-      const groupConcatFn = this.isVercel ? 'json_group_array' : 'GROUP_CONCAT';
+      const groupConcatFn = getAggregateFunction(this.isVercel);
 
       // 构建SQL查询
       let sql = `
@@ -206,8 +192,8 @@ export class DataServiceImpl implements DataService {
           p.id, p.title, p.slug, p.content, p.excerpt, p.description, 
           p.is_published, p.is_featured, 
           p.image_url as imageUrl, p.created_at, p.updated_at,
-          COALESCE(${groupConcatFn}(DISTINCT c.name), '[]') as categories_str,
-          COALESCE(${groupConcatFn}(DISTINCT t.name), '[]') as tags_str
+          ${safeCoalesce(`COALESCE(${groupConcatFn}(DISTINCT c.name), '[]')`)} as categories_str,
+          ${safeCoalesce(`COALESCE(${groupConcatFn}(DISTINCT t.name), '[]')`)} as tags_str
         FROM posts p
         LEFT JOIN post_categories pc ON p.id = pc.post_id
         LEFT JOIN categories c ON pc.category_id = c.id
@@ -372,7 +358,7 @@ export class DataServiceImpl implements DataService {
       // 如果找到了post_id，获取完整文章信息
       if (postId) {
         // 根据数据库类型选择不同的聚合函数
-        const groupConcatFn = this.isVercel ? 'json_group_array' : 'json_group_array';
+        const groupConcatFn = getAggregateFunction(this.isVercel);
         
         const postSql = `
           SELECT 
@@ -380,18 +366,18 @@ export class DataServiceImpl implements DataService {
             p.is_published, p.is_featured, 
             p.image_url as imageUrl, p.reading_time,
             p.created_at, p.updated_at,
-            COALESCE(
+            ${safeCoalesce(`COALESCE(
               (SELECT ${groupConcatFn}(c.name) FROM post_categories pc 
                JOIN categories c ON pc.category_id = c.id 
                WHERE pc.post_id = p.id),
               '[]'
-            ) as categories_json,
-            COALESCE(
+            )`)} as categories_json,
+            ${safeCoalesce(`COALESCE(
               (SELECT ${groupConcatFn}(t.name) FROM post_tags pt 
                JOIN tags t ON pt.tag_id = t.id 
                WHERE pt.post_id = p.id),
               '[]'
-            ) as tags_json,
+            )`)} as tags_json,
             substr(p.created_at, 1, 10) as date
           FROM posts p
           WHERE p.id = ?
@@ -460,7 +446,7 @@ export class DataServiceImpl implements DataService {
       const { limit = 20, offset = 0 } = options;
       
       // 根据数据库类型选择不同的聚合函数
-      const groupConcatFn = this.isVercel ? 'json_group_array' : 'json_group_array';
+      const groupConcatFn = getAggregateFunction(this.isVercel);
 
       // 构建搜索SQL
       const searchSql = `
@@ -469,18 +455,18 @@ export class DataServiceImpl implements DataService {
           p.is_published, p.is_featured, 
           p.image_url as imageUrl, p.reading_time,
           p.created_at, p.updated_at,
-          COALESCE(
+          ${safeCoalesce(`COALESCE(
             (SELECT ${groupConcatFn}(c.name) FROM post_categories pc 
              JOIN categories c ON pc.category_id = c.id 
              WHERE pc.post_id = p.id),
             '[]'
-          ) as categories_json,
-          COALESCE(
+          )`)} as categories_json,
+          ${safeCoalesce(`COALESCE(
             (SELECT ${groupConcatFn}(t.name) FROM post_tags pt 
              JOIN tags t ON pt.tag_id = t.id 
              WHERE pt.post_id = p.id),
             '[]'
-          ) as tags_json,
+          )`)} as tags_json,
           substr(p.created_at, 1, 10) as date
         FROM posts p
         WHERE p.is_published = 1

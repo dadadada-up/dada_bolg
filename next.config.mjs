@@ -11,6 +11,9 @@ const __dirname = path.dirname(__filename);
 // 确定基本URL
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dada-blog.vercel.app';
 
+// 检测是否在Vercel环境中
+const isVercel = process.env.VERCEL === '1';
+
 const nextConfig = {
   output: process.env.NEXT_PUBLIC_OUTPUT || 'standalone',
   
@@ -18,6 +21,7 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_SITE_URL: baseUrl,
     VERCEL: process.env.VERCEL === '1' ? '1' : '0', // 确保环境变量正确传递
+    IS_VERCEL: isVercel ? 'true' : 'false', // 添加一个明确的环境标识
     
     // 确保Turso配置被正确传递
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
@@ -146,7 +150,13 @@ const nextConfig = {
     },
     
     // 优化内存使用
-    optimizePackageImports: ['@/lib', '@/components']
+    optimizePackageImports: ['@/lib', '@/components'],
+    
+    // 添加更多优化配置
+    turbotrace: {
+      // 忽略SQLite相关依赖
+      ignoredPackages: ['sqlite', 'sqlite3', '@libsql/client', 'better-sqlite3']
+    }
   }
 };
 

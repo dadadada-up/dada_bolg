@@ -131,8 +131,22 @@ const nextConfig = {
     
     // 防止静态生成动态API路由
     outputFileTracingExcludes: {
-      '/api/**/*': ['**/*']
-    }
+      '/api/**/*': ['**/*'],
+      // 排除特定的动态路由
+      '/api/categories/translate/**': ['**/*'],
+      '/api/categories/translate-batch/**': ['**/*'],
+      '/api/search/**': ['**/*'],
+      '/api/proxy/**': ['**/*'],
+      '/api/fs-count/**': ['**/*'],
+      '/api/posts-new-fixed/**': ['**/*'],
+      // 排除系统API路由
+      '/api/system/**': ['**/*'],
+      // 排除管理员API路由
+      '/api/admin/**': ['**/*'],
+    },
+    
+    // 优化内存使用
+    optimizePackageImports: ['@/lib', '@/components']
   }
 };
 

@@ -1,4 +1,9 @@
 import { NextRequest } from 'next/server';
+import { dynamicConfig, getQueryParam } from '@/lib/api/route-config';
+
+// 强制动态路由，防止静态生成
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 /**
  * 图片代理API，用于解决跨域问题
@@ -8,7 +13,7 @@ import { NextRequest } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     // 从URL参数中获取原始图片URL
-    const url = request.nextUrl.searchParams.get('url');
+    const url = getQueryParam(request, 'url');
     
     if (!url) {
       return new Response(JSON.stringify({ error: 'Missing URL parameter' }), { 

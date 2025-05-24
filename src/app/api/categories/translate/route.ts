@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
 import { getChineseCategoryName, getEnglishCategorySlug } from '@/lib/content/category-service';
+import { dynamicConfig, getQueryParam } from '@/lib/api/route-config';
+
+// 强制动态路由，防止静态生成
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // 分类名称中英互译
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const name = searchParams.get('name') || '';
-    const direction = searchParams.get('direction') || 'toChinese';
+    const name = getQueryParam(request, 'name', '');
+    const direction = getQueryParam(request, 'direction', 'toChinese');
     
     if (!name) {
       return Response.json(

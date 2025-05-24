@@ -131,14 +131,32 @@ export class DataServiceImpl implements DataService {
         categories = JSON.parse(dbPost.categories_json);
       } else if (dbPost.categories_str) {
         // 如果是字符串，则按逗号拆分
-        categories = dbPost.categories_str.split(',').filter(Boolean);
+        // 处理可能的JSON数组格式
+        if (dbPost.categories_str.startsWith('[') && dbPost.categories_str.endsWith(']')) {
+          try {
+            categories = JSON.parse(dbPost.categories_str);
+          } catch (e) {
+            categories = dbPost.categories_str.split(',').filter(Boolean);
+          }
+        } else {
+          categories = dbPost.categories_str.split(',').filter(Boolean);
+        }
       }
       
       if (dbPost.tags_json) {
         tags = JSON.parse(dbPost.tags_json);
       } else if (dbPost.tags_str) {
         // 如果是字符串，则按逗号拆分
-        tags = dbPost.tags_str.split(',').filter(Boolean);
+        // 处理可能的JSON数组格式
+        if (dbPost.tags_str.startsWith('[') && dbPost.tags_str.endsWith(']')) {
+          try {
+            tags = JSON.parse(dbPost.tags_str);
+          } catch (e) {
+            tags = dbPost.tags_str.split(',').filter(Boolean);
+          }
+        } else {
+          tags = dbPost.tags_str.split(',').filter(Boolean);
+        }
       }
     } catch (e) {
       console.error('解析分类或标签失败:', e);
@@ -188,8 +206,8 @@ export class DataServiceImpl implements DataService {
           p.id, p.title, p.slug, p.content, p.excerpt, p.description, 
           p.is_published, p.is_featured, 
           p.image_url as imageUrl, p.created_at, p.updated_at,
-          ${groupConcatFn}(DISTINCT c.name) as categories_str,
-          ${groupConcatFn}(DISTINCT t.name) as tags_str
+          COALESCE(${groupConcatFn}(DISTINCT c.name), '[]') as categories_str,
+          COALESCE(${groupConcatFn}(DISTINCT t.name), '[]') as tags_str
         FROM posts p
         LEFT JOIN post_categories pc ON p.id = pc.post_id
         LEFT JOIN categories c ON pc.category_id = c.id
@@ -320,22 +338,6 @@ export class DataServiceImpl implements DataService {
     }
   }
 
-  // 同步到SQLite数据库（占位方法）
-  async syncToSQLite(): Promise<boolean> {
-    return true;
-  }
-
-  // 确保数据库已初始化
-  private async ensureDbInitialized(): Promise<void> {
-    try {
-      // 初始化数据库
-      await initializeDatabase();
-    } catch (error) {
-      console.error('[DataService] 数据库初始化失败:', error);
-      throw error;
-    }
-  }
-
   // 根据slug获取单篇文章
   async getPostBySlug(slug: string): Promise<Post | null> {
     try {
@@ -369,20 +371,23 @@ export class DataServiceImpl implements DataService {
 
       // 如果找到了post_id，获取完整文章信息
       if (postId) {
+        // 根据数据库类型选择不同的聚合函数
+        const groupConcatFn = this.isVercel ? 'json_group_array' : 'json_group_array';
+        
         const postSql = `
           SELECT 
             p.id, p.slug, p.title, p.content, p.excerpt, p.description,
             p.is_published, p.is_featured, 
-            p.cover_image as imageUrl, p.reading_time,
+            p.image_url as imageUrl, p.reading_time,
             p.created_at, p.updated_at,
             COALESCE(
-              (SELECT json_group_array(c.name) FROM post_categories pc 
+              (SELECT ${groupConcatFn}(c.name) FROM post_categories pc 
                JOIN categories c ON pc.category_id = c.id 
                WHERE pc.post_id = p.id),
               '[]'
             ) as categories_json,
             COALESCE(
-              (SELECT json_group_array(t.name) FROM post_tags pt 
+              (SELECT ${groupConcatFn}(t.name) FROM post_tags pt 
                JOIN tags t ON pt.tag_id = t.id 
                WHERE pt.post_id = p.id),
               '[]'
@@ -453,6 +458,9 @@ export class DataServiceImpl implements DataService {
 
       // 解构选项
       const { limit = 20, offset = 0 } = options;
+      
+      // 根据数据库类型选择不同的聚合函数
+      const groupConcatFn = this.isVercel ? 'json_group_array' : 'json_group_array';
 
       // 构建搜索SQL
       const searchSql = `
@@ -462,13 +470,13 @@ export class DataServiceImpl implements DataService {
           p.image_url as imageUrl, p.reading_time,
           p.created_at, p.updated_at,
           COALESCE(
-            (SELECT json_group_array(c.name) FROM post_categories pc 
+            (SELECT ${groupConcatFn}(c.name) FROM post_categories pc 
              JOIN categories c ON pc.category_id = c.id 
              WHERE pc.post_id = p.id),
             '[]'
           ) as categories_json,
           COALESCE(
-            (SELECT json_group_array(t.name) FROM post_tags pt 
+            (SELECT ${groupConcatFn}(t.name) FROM post_tags pt 
              JOIN tags t ON pt.tag_id = t.id 
              WHERE pt.post_id = p.id),
             '[]'
@@ -523,6 +531,22 @@ export class DataServiceImpl implements DataService {
     } catch (error) {
       console.error(`[DataService] 搜索文章失败:`, error);
       throw new Error(`搜索文章失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    }
+  }
+
+  // 同步到SQLite数据库（占位方法）
+  async syncToSQLite(): Promise<boolean> {
+    return true;
+  }
+
+  // 确保数据库已初始化
+  private async ensureDbInitialized(): Promise<void> {
+    try {
+      // 初始化数据库
+      await initializeDatabase();
+    } catch (error) {
+      console.error('[DataService] 数据库初始化失败:', error);
+      throw error;
     }
   }
 

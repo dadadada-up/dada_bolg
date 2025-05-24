@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createDataService } from "@/lib/services/data/service";
+import { dynamicConfig, getQueryParam, getNumberQueryParam } from '@/lib/api/route-config';
+
+// 强制动态路由，防止静态生成
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {
     // 获取查询参数
-    const searchParams = request.nextUrl.searchParams;
-    const query = searchParams.get("q")?.toLowerCase() || "";
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
+    const query = getQueryParam(request, "q", "").toLowerCase();
+    const page = getNumberQueryParam(request, "page", 1);
+    const limit = getNumberQueryParam(request, "limit", 10);
     
     // 如果没有查询参数，返回空结果
     if (!query) {

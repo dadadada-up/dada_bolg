@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getEnglishCategorySlug } from '@/lib/content/category-service';
+import { dynamicConfig } from '@/lib/api/route-config';
+
+// 强制动态路由，防止静态生成
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function POST(request: Request) {
   try {

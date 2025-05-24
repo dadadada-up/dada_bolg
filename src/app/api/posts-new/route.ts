@@ -6,19 +6,30 @@
 
 import { NextResponse } from 'next/server';
 import { getAllPosts, searchPosts } from '@/lib/services/data';
+import { 
+  dynamicConfig, 
+  getQueryParam, 
+  getNumberQueryParam, 
+  getBooleanQueryParam,
+  handleApiError
+} from '@/lib/api/route-config';
+
+// 强制动态路由，防止静态生成
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '10', 10);
-    const category = searchParams.get('category') || undefined;
-    const tag = searchParams.get('tag') || undefined;
-    const status = searchParams.get('status') || undefined;
-    const search = searchParams.get('search') || undefined;
-    const sort = searchParams.get('sort') || undefined;
-    const order = searchParams.get('order') as 'asc' | 'desc' | undefined;
-    const admin = searchParams.get('admin') === 'true'; // 管理员模式，包含未发布的文章
+    // 使用安全的查询参数获取方法
+    const page = getNumberQueryParam(request, 'page', 1);
+    const limit = getNumberQueryParam(request, 'limit', 10);
+    const category = getQueryParam(request, 'category');
+    const tag = getQueryParam(request, 'tag');
+    const status = getQueryParam(request, 'status');
+    const search = getQueryParam(request, 'search');
+    const sort = getQueryParam(request, 'sort');
+    const order = getQueryParam(request, 'order') as 'asc' | 'desc' | undefined;
+    const admin = getBooleanQueryParam(request, 'admin', false); // 管理员模式，包含未发布的文章
     
     // 计算偏移量
     const offset = (page - 1) * limit;

@@ -42,6 +42,22 @@ export async function getDatabase(): Promise<Database> {
 }
 
 /**
+ * 初始化数据库连接
+ * 兼容旧代码的函数，实际上调用getDatabase
+ */
+export async function initializeDatabase(): Promise<Database> {
+  console.log('[数据库] 开始初始化数据库...');
+  try {
+    const database = await getDatabase();
+    console.log('[数据库] 初始化成功');
+    return database;
+  } catch (error) {
+    console.error('[数据库] 初始化失败:', error);
+    throw error;
+  }
+}
+
+/**
  * 关闭数据库连接
  */
 export async function closeDatabase(): Promise<void> {

@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 import { fallbackCategories } from '@/lib/fallback-data';
 import { query } from '@/lib/db/database';
 import { initializeSchema } from '@/lib/db/init-schema';
+import { dynamicConfig, handleApiError } from '@/lib/api/route-config';
+
+// 强制动态路由，防止静态生成
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: Request) {
   try {

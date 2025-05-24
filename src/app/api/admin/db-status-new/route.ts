@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server';
 import { isVercelEnv } from '@/lib/db/env-config';
+import { dynamicConfig } from '@/lib/api/route-config';
+
+// 强制动态路由，防止静态生成
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // 检测是否在Vercel环境中
 const isVercel = isVercelEnv || process.env.VERCEL === '1';

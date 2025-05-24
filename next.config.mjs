@@ -127,7 +127,12 @@ const nextConfig = {
       'sqlite3', 
       '@libsql/client',
       'better-sqlite3'
-    ]
+    ],
+    
+    // 防止静态生成动态API路由
+    outputFileTracingExcludes: {
+      '/api/**/*': ['**/*']
+    }
   }
 };
 

@@ -3,7 +3,16 @@
  * 这个文件包含在Next.js静态生成时使用的工具函数，确保不依赖任何API调用
  */
 
-import { categoryRepository, tagRepository, postRepository } from '@/lib/db/repositories';
+import { 
+  categoryRepository, 
+  tagRepository, 
+  postRepository,
+  getAllPosts,
+  getAllCategories as getAllCategoriesRepo,
+  getAllTags as getAllTagsRepo,
+  getCategoryBySlug as getCategoryBySlugRepo,
+  getTagBySlug as getTagBySlugRepo
+} from '@/lib/db/repositories';
 import { Category, Post, Tag } from '@/types/post';
 import { isVercelBuild } from '@/lib/utils/env';
 
@@ -20,7 +29,7 @@ export async function getCategoryParams(): Promise<{ slug: string }[]> {
 
   try {
     // 直接使用分类仓库获取所有分类
-    const categories = await categoryRepository.getAllCategories();
+    const categories = await getAllCategoriesRepo();
     
     // 确保我们返回有效的结果，即使出现错误
     if (!categories || !Array.isArray(categories)) {
@@ -51,7 +60,7 @@ export async function getTagParams(): Promise<{ slug: string }[]> {
 
   try {
     // 直接使用标签仓库获取所有标签
-    const tags = await tagRepository.getAllTags();
+    const tags = await getAllTagsRepo();
     
     // 确保我们返回有效的结果，即使出现错误
     if (!tags || !Array.isArray(tags)) {
@@ -80,7 +89,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   }
 
   try {
-    return await categoryRepository.getCategoryBySlug(slug);
+    return await getCategoryBySlugRepo(slug);
   } catch (error) {
     console.error(`获取分类信息失败 (${slug}):`, error);
     return null;
@@ -98,7 +107,7 @@ export async function getTagBySlug(slug: string): Promise<Tag | null> {
   }
 
   try {
-    return await tagRepository.getTagBySlug(slug);
+    return await getTagBySlugRepo(slug);
   } catch (error) {
     console.error(`获取标签信息失败 (${slug}):`, error);
     return null;
@@ -116,12 +125,8 @@ export async function getPostsByCategory(categorySlug: string): Promise<Post[]> 
   }
 
   try {
-    const { posts } = await postRepository.getAllPosts({
+    const { posts } = await getAllPosts({
       category: categorySlug,
-      limit: 1000,
-      published: true,
-      sortBy: 'created_at',
-      sortOrder: 'desc'
     });
     return posts;
   } catch (error) {
@@ -141,12 +146,8 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
   }
 
   try {
-    const { posts } = await postRepository.getAllPosts({
+    const { posts } = await getAllPosts({
       tag: tagSlug,
-      limit: 100,
-      published: true,
-      sortBy: 'created_at', 
-      sortOrder: 'desc'
     });
     return posts;
   } catch (error) {
@@ -166,7 +167,7 @@ export async function getAllCategories(): Promise<Category[]> {
   }
 
   try {
-    return await categoryRepository.getAllCategories();
+    return await getAllCategoriesRepo();
   } catch (error) {
     console.error('获取所有分类失败:', error);
     return [];
@@ -184,7 +185,7 @@ export async function getAllTags(): Promise<Tag[]> {
   }
 
   try {
-    return await tagRepository.getAllTags();
+    return await getAllTagsRepo();
   } catch (error) {
     console.error('获取所有标签失败:', error);
     return [];

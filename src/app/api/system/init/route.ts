@@ -30,7 +30,7 @@ export async function GET() {
       // 尝试针对单个列进行简单查询
       const columnsToCheck = [
         'id', 'slug', 'title', 'content', 'excerpt', 'is_published', 
-        'date', 'updated', 'is_featured', 'is_yaml_valid', 'is_manually_edited', 
+        'is_featured', 'image_url', 'is_yaml_valid', 'is_manually_edited', 
         'created_at', 'updated_at'
       ];
       

@@ -2,7 +2,7 @@ import { Database } from 'sqlite';
 import path from 'path';
 import fs from 'fs';
 import { Post } from '@/types/post';
-import { initializeDatabase as initDb, getDatabase, closeDatabase, query, queryOne, execute } from './database';
+import { initializeDatabase as initDb, getDatabase, closeDatabase, query, queryOne, execute, beginTransaction, commitTransaction, rollbackTransaction, withTransaction, getCurrentTimestamp } from './database';
 import { initializeSchema } from './init-schema';
 
 // 检测是否在Vercel环境中
@@ -201,7 +201,12 @@ export {
   closeDatabase,
   query,
   queryOne,
-  execute
+  execute,
+  beginTransaction,
+  commitTransaction,
+  rollbackTransaction,
+  withTransaction,
+  getCurrentTimestamp
 };
 
 // 导出替代别名
@@ -211,11 +216,6 @@ export const generateId = () => {
 };
 export const getTimestamp = () => {
   return Math.floor(Date.now() / 1000);
-};
-
-// 获取当前时间戳格式化为数据库日期时间
-export const getCurrentTimestamp = () => {
-  return new Date().toISOString().replace('T', ' ').substring(0, 19);
 };
 
 // 获取数据库状态信息

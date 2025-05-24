@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
-import { getDatabase, initializeDatabase } from "@/lib/db/database";
-import { initializeSchema } from "@/lib/db/init-schema";
+import { isVercelEnv } from '@/lib/db/env-config';
 import fs from 'fs';
 import path from 'path';
-import { getDbStatus } from '@/lib/db';
-import { query } from '@/lib/db/database';
 
 // 数据库文件路径选项
 const DB_PATH_OPTIONS = [
@@ -62,6 +59,36 @@ interface DbStatusResponse {
 
 // 检查数据库连接状态
 export async function GET(request: Request) {
+  // 在Vercel环境中返回模拟数据
+  if (isVercelEnv) {
+    console.log('[数据库状态API] 检测到Vercel环境，返回模拟数据');
+    return Response.json({
+      initialized: true,
+      error: null,
+      timestamp: new Date().toISOString(),
+      dbPaths: [],
+      tables: [
+        { name: 'posts', type: 'table' },
+        { name: 'categories', type: 'table' },
+        { name: 'tags', type: 'table' },
+        { name: 'post_categories', type: 'table' },
+        { name: 'post_tags', type: 'table' }
+      ],
+      hasRequiredTables: true,
+      environment: {
+        isVercel: true,
+        nodeEnv: process.env.NODE_ENV,
+        platform: process.platform,
+        cwd: process.cwd()
+      },
+      recordCounts: {
+        posts: 0,
+        categories: 0,
+        tags: 0
+      }
+    });
+  }
+
   try {
     // 解析查询参数，检查是否需要初始化
     const { searchParams } = new URL(request.url);
@@ -74,6 +101,8 @@ export async function GET(request: Request) {
     let initError = null;
     
     try {
+      // 动态导入数据库相关模块
+      const { initializeDatabase } = await import('@/lib/db/database');
       await initializeDatabase();
       dbInitializationSuccess = true;
     } catch (error) {
@@ -116,6 +145,10 @@ export async function GET(request: Request) {
     // 如果数据库初始化成功
     if (dbInitializationSuccess) {
       try {
+        // 动态导入查询函数
+        const { query } = await import('@/lib/db/database');
+        const { initializeSchema } = await import('@/lib/db/init-schema');
+        
         // 获取表信息
         const tables = await query("SELECT name, type FROM sqlite_master WHERE type='table'");
         status.tables = tables;

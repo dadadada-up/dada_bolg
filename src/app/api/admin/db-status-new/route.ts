@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/db/database';
+import { isVercelEnv } from '@/lib/db/env-config';
 
 // 检测是否在Vercel环境中
-const isVercel = process.env.VERCEL === '1';
+const isVercel = isVercelEnv || process.env.VERCEL === '1';
 
 export async function GET() {
   try {
@@ -33,6 +33,8 @@ export async function GET() {
 
     // 本地环境下进行实际数据库检查
     try {
+      // 动态导入数据库模块，以避免在Vercel构建时失败
+      const { getDatabase } = await import('@/lib/db/database');
       const db = await getDatabase();
       console.log('[API] 数据库初始化成功');
     
@@ -66,6 +68,7 @@ export async function GET() {
     
     try {
       // 获取统计数据
+      const { getDatabase } = await import('@/lib/db/database');
       const db = await getDatabase();
       
       // 获取文章统计

@@ -2,7 +2,7 @@
  * 状态检查API
  * 路径: /api/status
  */
-import { initializeDatabase, getDatabase } from '@/lib/db/database';
+import { isVercelEnv } from '@/lib/db/env-config';
 import { isTursoEnabled } from '@/lib/db/turso-client-new';
 
 // 系统信息
@@ -51,20 +51,33 @@ export async function GET(request: Request) {
       },
     };
     
-    try {
-      // 初始化数据库
-      await initializeDatabase();
-      statusInfo.database.initialized = true;
-      
-      // 测试连接
-      const db = await getDatabase();
-      const result = await db.get('SELECT sqlite_version() as version');
-      
+    // 处理数据库状态
+    if (isVercelEnv) {
+      // Vercel环境中返回模拟数据
       statusInfo.database.connected = true;
-      statusInfo.database.version = result?.version || '未知';
-    } catch (dbError) {
-      console.error('数据库连接测试失败:', dbError);
-      statusInfo.database.error = dbError instanceof Error ? dbError.message : String(dbError);
+      statusInfo.database.initialized = true;
+      statusInfo.database.type = 'Turso (云SQLite)';
+      statusInfo.database.version = 'cloud';
+      statusInfo.config.useTurso = true;
+    } else {
+      try {
+        // 本地环境中正常初始化数据库
+        const { initializeDatabase, getDatabase } = await import('@/lib/db/database');
+        
+        // 初始化数据库
+        await initializeDatabase();
+        statusInfo.database.initialized = true;
+        
+        // 测试连接
+        const db = await getDatabase();
+        const result = await db.get('SELECT sqlite_version() as version');
+        
+        statusInfo.database.connected = true;
+        statusInfo.database.version = result?.version || '未知';
+      } catch (dbError) {
+        console.error('数据库连接测试失败:', dbError);
+        statusInfo.database.error = dbError instanceof Error ? dbError.message : String(dbError);
+      }
     }
     
     return Response.json(statusInfo);

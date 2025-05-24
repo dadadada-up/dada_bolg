@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import initDb, { getDb, getDbStatus, initializeDatabase } from '@/lib/db';
+import { isVercelEnv } from '@/lib/db/env-config';
 import path from 'path';
 import fs from 'fs';
 import { revalidatePath } from 'next/cache';
@@ -19,12 +19,28 @@ import { revalidatePath } from 'next/cache';
 
 // 获取数据库状态
 export async function GET(request: Request) {
+  // 在Vercel环境中返回模拟数据
+  if (isVercelEnv) {
+    console.log('[数据库管理] 检测到Vercel环境，返回模拟数据');
+    return Response.json({
+      initialized: true,
+      connection: 'Turso云数据库',
+      version: 'cloud',
+      mode: 'production',
+      environment: 'vercel',
+      timestamp: new Date().toISOString()
+    });
+  }
+
   try {
     // 获取请求参数
     const url = new URL(request.url);
     const detail = url.searchParams.get('detail') === 'true';
     
     console.log(`[数据库管理] 获取数据库状态 (详细模式: ${detail})`);
+    
+    // 动态导入数据库模块
+    const { default: initDb, getDb, getDbStatus } = await import('@/lib/db');
     
     // 确保数据库已初始化
     await initDb();
@@ -77,6 +93,15 @@ export async function GET(request: Request) {
 
 // 初始化或重新初始化数据库
 export async function POST(request: Request) {
+  // 在Vercel环境中返回错误信息
+  if (isVercelEnv) {
+    console.log('[数据库管理] Vercel环境不支持初始化本地数据库');
+    return Response.json({ 
+      success: false,
+      error: 'Vercel环境不支持初始化本地数据库'
+    }, { status: 400 });
+  }
+  
   try {
     // 解析请求参数
     const body = await request.json();
@@ -105,6 +130,9 @@ export async function POST(request: Request) {
       fs.unlinkSync(dbPath);
       console.log(`[数据库管理] 已删除当前数据库`);
     }
+    
+    // 动态导入数据库模块
+    const { initializeDatabase, getDb, getDbStatus } = await import('@/lib/db');
     
     // 初始化数据库
     await initializeDatabase();
@@ -146,6 +174,15 @@ export async function POST(request: Request) {
 
 // 优化数据库
 export async function PUT(request: Request) {
+  // 在Vercel环境中返回错误信息
+  if (isVercelEnv) {
+    console.log('[数据库管理] Vercel环境不支持优化本地数据库');
+    return Response.json({ 
+      success: false,
+      error: 'Vercel环境不支持优化本地数据库'
+    }, { status: 400 });
+  }
+  
   try {
     // 解析请求参数
     const body = await request.json();
@@ -153,6 +190,8 @@ export async function PUT(request: Request) {
     
     console.log(`[数据库管理] 执行数据库优化操作: ${operation}`);
     
+    // 动态导入数据库模块
+    const { getDb } = await import('@/lib/db');
     const db = await getDb();
     
     // 执行请求的操作

@@ -5,7 +5,9 @@
  * 使系统其余部分可以无缝切换使用Turso或本地SQLite
  */
 
-import tursoClient from './turso-client-new';
+import { Database } from './types';
+import { getDatabaseUrl, getDatabaseAuthToken } from './env-config';
+import { createTursoClientInstance } from './turso-client-new';
 
 // 自定义Statement类型，避免从sqlite导入
 interface Statement {
@@ -27,66 +29,67 @@ interface TursoRunResult {
 /**
  * Turso数据库适配器，实现通用数据库接口
  */
-export class TursoDatabase {
-  /**
-   * 检查Turso客户端是否可用
-   */
-  private checkClient() {
-    if (!tursoClient) {
-      throw new Error('Turso客户端未初始化');
-    }
-    return true;
+export class TursoDatabase implements Database {
+  private client: any;
+  private initialized: boolean = false;
+
+  constructor() {
+    // 延迟初始化，避免在构建时执行
+    this.initialize();
   }
-  
+
+  private async initialize() {
+    if (this.initialized) return;
+
+    try {
+      // 获取Turso配置
+      const url = getDatabaseUrl();
+      const authToken = getDatabaseAuthToken();
+
+      if (!url || !authToken) {
+        throw new Error('缺少Turso配置: TURSO_DATABASE_URL或TURSO_AUTH_TOKEN未设置');
+      }
+
+      console.log(`[Turso] 连接到数据库: ${url}`);
+      
+      // 创建Turso客户端
+      this.client = createTursoClientInstance(url, authToken);
+
+      this.initialized = true;
+      console.log('[Turso] 数据库连接成功');
+    } catch (error) {
+      console.error('[Turso] 数据库连接失败:', error);
+      throw error;
+    }
+  }
+
   /**
    * 执行SQL查询并返回所有结果
    */
-  async all<T = any>(sql: string, ...params: any[]): Promise<T[]> {
-    this.checkClient();
-    
-    console.log('[TursoAdapter] all:', sql);
-    
-    const args = params.length ? params : undefined;
-    const result = await tursoClient!.execute({ sql, args });
+  async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    await this.initialize();
+    const result = await this.client.execute({ sql, args: params });
     return result.rows as T[];
   }
   
   /**
    * 执行SQL并返回单个结果
    */
-  async get<T = any>(sql: string, ...params: any[]): Promise<T | undefined> {
-    this.checkClient();
-    
-    console.log('[TursoAdapter] get:', sql);
-    
-    const args = params.length ? params : undefined;
-    const result = await tursoClient!.execute({ sql, args });
+  async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+    await this.initialize();
+    const result = await this.client.execute({ sql, args: params });
     return result.rows[0] as T | undefined;
   }
   
   /**
    * 执行SQL并返回受影响的行数
    */
-  async run(sql: string, ...params: any[]): Promise<TursoRunResult> {
-    this.checkClient();
-    
-    console.log('[TursoAdapter] run:', sql);
-    
-    const args = params.length ? params : undefined;
-    const result = await tursoClient!.execute({ sql, args });
-    
-    // 对于INSERT语句，尝试获取last_insert_rowid()
-    let lastID: number | undefined = undefined;
-    if (sql.trim().toUpperCase().startsWith('INSERT')) {
-      const idResult = await tursoClient!.execute({ 
-        sql: 'SELECT last_insert_rowid() as id' 
-      });
-      lastID = idResult.rows[0]?.id;
-    }
-    
+  async run(sql: string, params: any[] = []): Promise<{ lastID: number; changes: number }> {
+    await this.initialize();
+    const result = await this.client.execute({ sql, args: params });
     return {
-      lastID,
-      changes: 1 // Turso不提供直接的changes值，默认返回1
+      lastID: result.lastInsertId || 0,
+      changes: result.rowsAffected || 0,
     };
   }
   
@@ -94,9 +97,8 @@ export class TursoDatabase {
    * 执行SQL语句
    */
   async exec(sql: string): Promise<void> {
-    this.checkClient();
-    console.log('[TursoAdapter] exec:', sql);
-    await tursoClient!.execute({ sql });
+    await this.initialize();
+    await this.client.execute({ sql });
   }
   
   /**

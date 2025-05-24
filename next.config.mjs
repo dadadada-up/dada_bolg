@@ -8,17 +8,23 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// 确定基本URL
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dada-blog.vercel.app';
+
 const nextConfig = {
   output: process.env.NEXT_PUBLIC_OUTPUT || 'standalone',
   
   // 环境变量
   env: {
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://dada-blog.vercel.app',
+    NEXT_PUBLIC_SITE_URL: baseUrl,
     VERCEL: process.env.VERCEL === '1' ? '1' : '0', // 确保环境变量正确传递
     
     // 确保Turso配置被正确传递
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
-    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN
+    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
+    
+    // API基础URL
+    NEXT_PUBLIC_API_BASE_URL: baseUrl
   },
   
   images: {
@@ -115,7 +121,13 @@ const nextConfig = {
   swcMinify: true,
 
   experimental: {
-    serverComponentsExternalPackages: ['sqlite', 'sqlite3', '@libsql/client']
+    // 将所有SQLite相关包标记为外部包，避免构建问题
+    serverComponentsExternalPackages: [
+      'sqlite', 
+      'sqlite3', 
+      '@libsql/client',
+      'better-sqlite3'
+    ]
   }
 };
 

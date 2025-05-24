@@ -2,10 +2,9 @@
   "buildCommand": "pnpm run build",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": "nextjs",
-  "outputDirectory": ".next",
   "env": {
     "VERCEL": "1",
     "NODE_ENV": "production",
-    "NODE_OPTIONS": "--max-old-space-size=3072"
+    "NODE_OPTIONS": "--max-old-space-size=4096"
   }
 } 

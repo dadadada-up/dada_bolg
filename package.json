@@ -12,6 +12,7 @@
   "dependencies": {
     "@libsql/client": "0.15.6",
     "@radix-ui/react-dropdown-menu": "^2.0.0",
+    "better-sqlite3": "^9.5.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.17",
@@ -72,7 +73,12 @@
   "pnpm": {
     "patchedDependencies": {},
     "overrides": {
-      "sqlite3": "^5.1.7"
-    }
+      "sqlite3": "^5.1.7",
+      "better-sqlite3": "^9.5.0"
+    },
+    "neverBuiltDependencies": [
+      "sqlite3", 
+      "better-sqlite3"
+    ]
   }
 }

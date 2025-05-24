@@ -4,75 +4,50 @@
  * 在本地环境中使用 SQLite 数据库
  */
 
-import { TursoDatabase } from './turso-adapter';
+import { Database } from './types';
 import { SQLiteDatabase } from './sqlite-adapter';
-import { getDatabaseType, isVercelEnv } from './env-config';
+import { TursoDatabase } from './turso-adapter';
+import { getDatabaseType, isVercelBuild } from './env-config';
 
-// 单例数据库实例
-let dbInstance: GenericDatabase | null = null;
-
-// 使用通用数据库类型
-type GenericDatabase = {
-  get<T = any>(sql: string, ...params: any[]): Promise<T | undefined>;
-  all<T = any>(sql: string, ...params: any[]): Promise<T[]>;
-  run(sql: string, ...params: any[]): Promise<{ lastID: number; changes: number }>;
-  exec(sql: string): Promise<void>;
-  close(): Promise<void>;
-};
+let db: Database | null = null;
 
 /**
- * 获取数据库连接
+ * 获取数据库实例
+ * 根据环境配置返回适当的数据库实例
  */
-export async function getDatabase(): Promise<GenericDatabase> {
-  // 先检查本地实例
-  if (dbInstance) {
-    return dbInstance;
-  }
-  
-  // 初始化新连接
-  await initializeDatabase();
-  return dbInstance!;
-}
-
-/**
- * 初始化数据库连接
- */
-export async function initializeDatabase(): Promise<GenericDatabase> {
-  if (dbInstance) {
-    return dbInstance;
+export async function getDatabase(): Promise<Database> {
+  // 如果已经初始化，直接返回
+  if (db !== null) {
+    return db;
   }
 
-  console.log('[数据库] 开始初始化数据库连接...');
-  console.log(`[数据库] 环境变量: TURSO_DATABASE_URL=${!!process.env.TURSO_DATABASE_URL}, TURSO_AUTH_TOKEN=${!!process.env.TURSO_AUTH_TOKEN}`);
-  console.log(`[数据库] 数据库类型: ${getDatabaseType()}`);
-  console.log(`[数据库] Vercel环境: ${isVercelEnv}`);
-
-  try {
-    // 根据环境选择数据库
-    if (isVercelEnv) {
-      // Vercel环境使用Turso
-      dbInstance = new TursoDatabase() as GenericDatabase;
-      console.log('[数据库] Turso数据库初始化成功');
-    } else {
-      // 本地环境使用SQLite
-      dbInstance = new SQLiteDatabase() as GenericDatabase;
-      console.log('[数据库] SQLite数据库初始化成功');
-    }
-    
-    return dbInstance;
-  } catch (error) {
-    console.error('[数据库] 数据库初始化失败:', error);
-    throw error;
+  // 在Vercel构建时，返回Turso数据库实例
+  if (isVercelBuild) {
+    console.log('[数据库] Vercel构建时使用Turso');
+    db = new TursoDatabase();
+    return db;
   }
+
+  // 根据环境配置选择数据库类型
+  const dbType = getDatabaseType();
+  console.log(`[数据库] 使用数据库类型: ${dbType}`);
+
+  if (dbType === 'turso') {
+    db = new TursoDatabase();
+  } else {
+    db = new SQLiteDatabase();
+  }
+
+  return db;
 }
 
 /**
  * 关闭数据库连接
  */
 export async function closeDatabase(): Promise<void> {
-  if (dbInstance) {
-    await dbInstance.close();
-    dbInstance = null;
+  if (db) {
+    await db.close();
+    db = null;
   }
 }
 

@@ -1,0 +1,21 @@
+# 内容目录（包含大量Markdown文件）
+/content/
+# 构建和依赖目录
+/blog-app/node_modules/
+/blog-app/.next/
+/node_modules/
+/.next/
+# 缓存和临时文件
+.cache/
+.DS_Store
+# 大型文件和二进制文件
+*.pack
+*.log
+*.zip
+*.gz
+# 数据库文件
+*.sqlite
+*.db
+# 其他不需要分析的文件
+.env
+.env.local

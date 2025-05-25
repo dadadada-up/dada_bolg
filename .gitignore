@@ -37,8 +37,57 @@ yarn-error.log*
 
 # IDE
 .idea
-.vscode 
+.vscode
+
+# 版本控制
+.git
+.github
+
+# 文档
+*.md
+!README.md
+
+# 环境变量
+.env
+.env.*
+!.env.example
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+data/db
+data/backup*
+data/storage
+data/reports
+data/temp
+data/tables
+
+# 脚本和工具
+scripts/cleanup
+scripts/utils/test
+scripts/*.sh
+scripts/restore-backup.js
+scripts/import-test-data.js
+
+# 大文件
+*.pack
+*.node
 
 # Typescript
 *.tsbuildinfo
-next-env.d.ts 
+next-env.d.ts
+
+# GitHub大文件限制（超过100MB）
+.next/cache/webpack/client-production/*.pack
+.next/cache/webpack/server-production/*.pack
+node_modules/@next/swc-darwin-arm64/*.node
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+
+# 日志文件
+*.log
+logs/ 

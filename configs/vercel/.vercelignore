@@ -1,10 +1,48 @@
-# 只忽略这些目录和文件
-backups/
-.git/
-node_modules/
-.cache/
-data/*.db
+# 版本控制
+.git
+.github
+.vscode
+
+# 依赖和构建
+node_modules
+.next/cache
+
+# 文档
+*.md
+!README.md
+
+# 环境变量
+.env
+.env.*
+!.env.example
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+data/db
+data/backup*
+data/storage
+data/reports
+data/temp
+data/tables
 data/backups/
+
+# 备份和缓存
+.backup-code
+.cache
+assets/db
+backups/
+
+# 日志
+*.log
+
+# 脚本和工具
+scripts/cleanup
+scripts/utils/test
+scripts/*.sh
+scripts/restore-backup.js
+scripts/import-test-data.js
 
 # 确保包含Turso相关文件
 !turso_schema_fixed.sql

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel:build",
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "devCommand": "npm run dev",
-  "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["iad1"],
   "public": true,
@@ -15,6 +15,9 @@
     "TURSO_AUTH_TOKEN": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDc0MDc4NDAsImlkIjoiODU2YmRjMDMtMjQ0OC00ZDI4LTgyNjctYzA0NjgzMzdkYjQ2IiwicmlkIjoiYTIyZjg1MzMtNmIyMC00YzkxLWE5ZTctMTFkZThmNzI2NzgyIn0.VPloGmK_AkhDNs-ZaskAM-3R2rL0dZXXj7saEwoJCjbBrjBHxau4HQn1yTltBZbRBo0UzfwrSad3dYtnXuv1BA",
     "NEXT_PUBLIC_DATABASE_MODE": "turso",
     "NEXT_PUBLIC_IS_VERCEL": "1",
+    "VERCEL": "1",
+    "NODE_ENV": "production",
+    "NODE_OPTIONS": "--max-old-space-size=4096",
     "VERCEL_FORCE_NO_BUILD_CACHE": "1",
     "NEXT_CONFIG": "configs/next.config.js"
   },

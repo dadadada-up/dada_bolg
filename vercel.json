@@ -1,10 +1,1 @@
-{
-  "buildCommand": "pnpm run build",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "framework": "nextjs",
-  "env": {
-    "VERCEL": "1",
-    "NODE_ENV": "production",
-    "NODE_OPTIONS": "--max-old-space-size=4096"
-  }
-} 
+configs/vercel/vercel.json

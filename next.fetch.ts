@@ -1,1 +1,1 @@
-configs/types/next.fetch.ts
+src/types/next.fetch.ts

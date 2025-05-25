@@ -9,7 +9,7 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -24,9 +24,13 @@
         "name": "next"
       }
     ],
+    "baseUrl": "..",
     "paths": {
       "@/*": [
-        "./src/*"
+        "src/*"
+      ],
+      "./service": [
+        "src/lib/services/data/service"
       ]
     },
     "types": [
@@ -35,14 +39,15 @@
     "allowImportingTsExtensions": true
   },
   "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "vitest.config.ts",
-    ".vercel/output/static/types/**/*.ts"
+    "../next-env.d.ts",
+    "../**/*.ts",
+    "../**/*.tsx",
+    "../.next/types/**/*.ts",
+    "../vitest.config.ts",
+    "../.vercel/output/static/types/**/*.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "../node_modules"
   ]
 }

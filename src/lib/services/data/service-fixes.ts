@@ -1,17 +1,15 @@
 /**
  * 数据服务修复工具
  * 
- * 用于解决Vercel部署中的数据库类型不匹配和其他问题
+ * 用于解决数据库类型不匹配和其他问题
  */
-
-import { isVercelEnv } from '@/lib/db/env-config';
 
 /**
- * 根据环境选择正确的聚合函数
- * SQLite和Turso在GROUP_CONCAT函数的处理上有差异
+ * 返回Turso兼容的聚合函数
+ * 由于我们只使用Turso，所以始终返回json_group_array
  */
-export function getAggregateFunction(isVercel: boolean = isVercelEnv): string {
-  return isVercel ? 'json_group_array' : 'GROUP_CONCAT';
+export function getAggregateFunction(): string {
+  return 'json_group_array';
 }
 
 /**
@@ -37,11 +35,11 @@ export function safeParseJsonArray(input: string): any[] {
 
 /**
  * 构建安全的SQL查询
- * 处理SQLite和Turso的语法差异
+ * 处理Turso的语法
  */
-export function buildSafeQuery(baseQuery: string, isVercel: boolean = isVercelEnv): string {
+export function buildSafeQuery(baseQuery: string): string {
   // 替换聚合函数
-  const aggregateFunction = getAggregateFunction(isVercel);
+  const aggregateFunction = getAggregateFunction();
   return baseQuery.replace(/\{\{AGGREGATE_FUNCTION\}\}/g, aggregateFunction);
 }
 

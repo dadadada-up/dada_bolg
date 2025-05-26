@@ -4,45 +4,39 @@ import React from 'react';
 
 interface ContentSectionProps {
   title: string;
-  actions?: React.ReactNode;
   children: React.ReactNode;
+  actions?: React.ReactNode;
   className?: string;
 }
 
-export function ContentSection({ 
-  title, 
-  actions, 
-  children, 
-  className = '' 
-}: ContentSectionProps) {
+export function ContentSection({ title, children, actions, className = '' }: ContentSectionProps) {
   return (
-    <div className={`content-section ${className}`}>
-      <div className="section-header">
-        <h3 className="section-title">{title}</h3>
-        {actions && <div className="section-actions">{actions}</div>}
+    <section className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${className}`}>
+      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <h2 className="text-lg font-medium">{title}</h2>
+        {actions && <div className="flex items-center space-x-2">{actions}</div>}
       </div>
-      <div className="p-6">
+      <div className="p-4">
         {children}
       </div>
-    </div>
+    </section>
   );
-}
-
-interface ContentSectionActionProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  variant?: 'primary' | 'secondary';
 }
 
 export function ContentSectionAction({ 
   children, 
   onClick, 
-  variant = 'primary' 
-}: ContentSectionActionProps) {
-  const buttonClass = variant === 'primary' ? 'primary-button' : 'secondary-button';
-  
+  className = ''
+}: { 
+  children: React.ReactNode; 
+  onClick?: () => void;
+  className?: string;
+}) {
   return (
-    <button className={buttonClass} onClick={onClick}>
+    <button
+      onClick={onClick}
+      className={`text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded ${className}`}
+    >
       {children}
     </button>
   );

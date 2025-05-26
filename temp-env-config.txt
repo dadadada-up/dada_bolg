@@ -2,7 +2,7 @@
 DATABASE_TYPE=turso
 DATABASE_URL=http://localhost:8080
 APP_MODE=development
-
+ 
 # 用于同步工具的配置
 LOCAL_DB_PATH=./data/blog-dev.db
 DEV_DATABASE_URL=http://localhost:8080

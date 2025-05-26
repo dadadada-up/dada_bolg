@@ -1,6 +1,6 @@
 import { Post } from '@/types/post';
 import { getAllFallbackPosts, getFallbackPostBySlug } from '@/lib/fallback-data';
-import { isTursoEnabled } from '@/lib/db/turso-client-new';
+import { isTursoEnabled } from '@/lib/db/turso-client';
 import { query, queryOne, execute } from '@/lib/db/database';
 
 /**

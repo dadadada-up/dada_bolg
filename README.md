@@ -1,12 +1,12 @@
 # Dada Blog
 
-基于Next.js 14开发的个人博客系统，支持本地SQLite数据库和Turso云数据库。
+基于Next.js 14开发的个人博客系统，使用Turso数据库。
 
 ## 技术栈
 
 - **前端框架**: Next.js 14 (App Router)
 - **UI组件**: Tailwind CSS + Shadcn UI
-- **数据库**: SQLite (本地开发) / Turso (生产环境)
+- **数据库**: Turso
 - **部署**: Vercel
 
 ## 特性
@@ -18,45 +18,112 @@
 - 管理员后台
 - 自动适应Vercel部署环境
 
-## 开发环境设置
+## 本地开发环境设置
 
-1. 克隆仓库
+### 前提条件
+
+- Node.js 18+
+- Docker
+- pnpm (推荐) 或 npm
+
+### 步骤1: 安装依赖
 
 ```bash
-git clone https://github.com/yourusername/dada_blog.git
-cd dada_blog
-```
-
-2. 安装依赖
-
-```bash
-# 推荐使用pnpm
 pnpm install
 ```
 
-3. 创建环境变量文件
+### 步骤2: 环境配置
 
-创建`.env.local`文件并添加以下内容:
+创建`.env.local`文件，添加以下内容：
 
 ```
-# 数据库配置
-DB_PATH=./data/blog.db
+# Turso数据库配置
+DATABASE_URL=http://localhost:8080
+DATABASE_AUTH_TOKEN=
 
-# Turso配置 (生产环境)
-TURSO_DATABASE_URL=your_turso_database_url
-TURSO_AUTH_TOKEN=your_turso_auth_token
+# 生产环境数据库配置 (用于数据同步)
+PROD_DATABASE_URL=https://your-prod-database-url
+PROD_DATABASE_TOKEN=your-prod-database-token
 
 # 站点URL
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-4. 运行开发服务器
+### 步骤3: 一键设置开发环境
 
 ```bash
+# 检查环境变量配置是否正确
+pnpm check-env
+
+# 一键设置开发环境（初始化数据库并从生产环境同步数据）
+pnpm setup-dev
+
+# 如果不需要从生产环境同步数据，可以使用：
+pnpm setup-dev:no-sync
+```
+
+或者，你也可以分步骤设置：
+
+```bash
+# 初始化本地Turso开发环境 (Docker)
+pnpm db:init
+
+# 从生产环境Turso数据库同步数据到本地 (可选)
+pnpm db:sync-from-prod
+
+# 创建SQLite文件用于Navicat查看 (可选)
+pnpm db:navicat
+```
+
+### 步骤4: 启动开发服务器
+
+```bash
+# 一键启动开发环境（包括Turso数据库和Next.js开发服务器）
+./start-dev.sh
+
+# 或者只启动Next.js开发服务器（如果Turso已运行）
 pnpm dev
 ```
 
-现在可以在浏览器中访问 [http://localhost:3000](http://localhost:3000) 查看博客。
+## 数据库管理
+
+本项目使用Turso数据库作为唯一的数据存储方案。
+
+### 通过Navicat查看数据库
+
+为方便查看和编辑数据库内容，项目提供了将Turso数据库同步到SQLite文件的功能，该文件可直接在Navicat中打开。
+
+```bash
+# 创建SQLite文件
+pnpm db:navicat
+```
+
+这将在`navicat_import/blog_database.db`创建一个SQLite文件，你可以在Navicat中打开它。
+
+### 手动管理Docker容器
+
+```bash
+# 查看容器状态
+pnpm turso:status
+
+# 停止并删除容器
+pnpm turso:stop
+
+# 启动新容器
+pnpm turso:start
+```
+
+### 数据库结构
+
+主要表结构:
+- `posts`: 博客文章
+- `categories`: 文章分类
+- `tags`: 文章标签
+- `post_categories`: 文章与分类的关联
+- `post_tags`: 文章与标签的关联
+- `slug_mapping`: URL别名映射
+
+更多数据库相关信息请参考 [DATABASE.md](./DATABASE.md)。
 
 ## 生产环境部署
 
@@ -64,16 +131,20 @@ pnpm dev
 
 确保在Vercel项目设置中添加以下环境变量:
 
-- `TURSO_DATABASE_URL`: Turso数据库URL
+- `DATABASE_URL`: Turso数据库URL（生产环境）
 - `TURSO_AUTH_TOKEN`: Turso认证令牌
 - `NEXT_PUBLIC_SITE_URL`: 生产环境的站点URL
 
-## 数据库迁移
+## 数据同步
 
-从本地开发环境迁移到生产环境:
+使用内置的同步工具在本地和生产环境之间同步内容:
 
 ```bash
-pnpm run db:sync
+# 同步所有内容到生产环境
+pnpm run sync-content
+
+# 试运行模式（不实际同步到生产环境）
+pnpm run sync-content:dry
 ```
 
 ## 项目结构
@@ -170,3 +241,35 @@ git push --no-verify origin clean-branch
 ## 许可证
 
 MIT 
+
+## 架构说明
+
+本项目使用：
+
+- **Next.js**: React框架
+- **Turso**: 分布式SQLite数据库
+- **Tailwind CSS**: 样式
+- **TypeScript**: 类型安全
+
+## 数据库迁移说明
+
+项目已从"同时支持SQLite和Turso"迁移到"仅使用Turso"。主要变更：
+
+1. 删除了不需要的数据库浏览页面和相关API
+2. 添加了将Turso数据库同步到SQLite文件的功能，以便在Navicat中查看
+3. 创建了初始化本地开发数据库的脚本
+4. 添加了数据库相关的文档
+
+## 常见问题
+
+### Docker容器无法启动
+
+检查Docker服务是否运行，可能需要以管理员/sudo权限运行。
+
+### 数据同步失败
+
+检查`.env.local`中的生产环境数据库配置是否正确。
+
+### 在Admin管理页面中查看数据库
+
+访问`http://localhost:3000/admin/sync`可以查看和管理数据同步状态。 

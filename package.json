@@ -9,16 +9,25 @@
     "lint": "next lint",
     "vercel:build": "next build",
     "dev:turso": "./start-dev.sh",
-    "turso:start": "docker run -d --name turso-local -p 8080:8080 ghcr.io/tursodatabase/libsql-server:latest",
+    "setup-dev": "node scripts/setup-dev-environment.js",
+    "setup-dev:no-sync": "node scripts/setup-dev-environment.js --no-sync",
+    "check-env": "node scripts/check-env.js",
+    "db:init": "node scripts/init-dev-db.js",
+    "db:sync-from-prod": "node scripts/sync-from-prod.js",
+    "db:navicat": "node scripts/create-sqlite-db.js",
+    "turso:start": "docker run -d --name turso-local -p 8080:8080 -v $(pwd)/data/turso:/var/lib/sqld --restart unless-stopped ghcr.io/tursodatabase/libsql-server:latest",
     "turso:stop": "docker stop turso-local && docker rm turso-local",
     "turso:status": "docker ps | grep turso-local || echo 'Turso服务器未运行'",
+    "turso:import": "./scripts/import-schema.sh",
+    "turso:reset": "npm run turso:stop && npm run turso:start && sleep 3 && npm run turso:import",
+    "turso:init": "node scripts/init-local-db.js",
+    "turso:navicat": "node scripts/create-sqlite-db.js",
     "sync-content": "node scripts/sync-content.js",
     "sync-content:dry": "node scripts/sync-content.js --dry-run"
   },
   "dependencies": {
     "@libsql/client": "0.15.6",
     "@radix-ui/react-dropdown-menu": "^2.0.0",
-    "better-sqlite3": "^9.5.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.17",
@@ -50,7 +59,6 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.0.0",
     "sharp": "^0.33.5",
-    "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
     "swr": "^2.2.0",
     "tailwind-merge": "^2.6.0",
@@ -78,13 +86,7 @@
   "packageManager": "pnpm@10.11.0+sha1.9a2c0f6d2c6c1d1db2a27000db5e47a4739a74bc",
   "pnpm": {
     "patchedDependencies": {},
-    "overrides": {
-      "sqlite3": "^5.1.7",
-      "better-sqlite3": "^9.5.0"
-    },
-    "neverBuiltDependencies": [
-      "sqlite3", 
-      "better-sqlite3"
-    ]
+    "overrides": {},
+    "neverBuiltDependencies": []
   }
 }

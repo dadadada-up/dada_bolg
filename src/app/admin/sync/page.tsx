@@ -27,21 +27,15 @@ export default function SyncPage() {
     status: 'idle',
     lastSync: null
   });
-  const [autoBackup, setAutoBackup] = useState(true);
   const [syncHistory, setSyncHistory] = useState<SyncHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   
-  // 同步选项
-  const [syncOptions, setSyncOptions] = useState({
-    categories: true,
-    tags: true,
-    posts: true,
-    postCategories: true,
-    postTags: true,
-    slugMappings: true
-  });
+  // Navicat同步状态
+  const [navicatSyncStatus, setNavicatSyncStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [navicatSyncMessage, setNavicatSyncMessage] = useState<string>('');
+  const [lastNavicatSyncTime, setLastNavicatSyncTime] = useState<string | null>(null);
 
   // 获取同步状态
   const fetchSyncStatus = async () => {
@@ -79,72 +73,61 @@ export default function SyncPage() {
     }
   };
 
-  // 执行同步
-  const startSync = async () => {
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
+  // 同步数据库到Navicat
+  const handleSyncToNavicat = async () => {
+    setNavicatSyncStatus('loading');
+    setNavicatSyncMessage('正在同步数据库到Navicat...');
     
     try {
-      const response = await fetch('/api/admin/sync-db', {
+      // 执行同步脚本
+      const response = await fetch('/api/admin/sync-to-navicat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          autoBackup,
-          options: syncOptions
-        })
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `同步失败: ${response.status}`);
+        throw new Error(`同步失败: ${response.status} ${response.statusText}`);
       }
       
       const result = await response.json();
       
       if (result.success) {
-        setSuccess('同步操作已成功启动，请等待完成');
-        
-        // 保存本次同步时间
-        const now = new Date().toISOString();
-        localStorage.setItem('lastSyncTime', now);
+        setNavicatSyncStatus('success');
+        setNavicatSyncMessage(result.message || '同步成功！');
+        setLastNavicatSyncTime(new Date().toLocaleString());
         
         // 添加到历史记录
+        const now = new Date().toISOString();
         const newHistoryItem: SyncHistoryItem = {
           id: Date.now().toString(),
           timestamp: now,
-          operation: 'Turso→SQLite',
+          operation: 'Turso→Navicat',
           status: 'success',
-          details: '已开始同步'
+          details: '已同步到Navicat'
         };
         
         const history = [...syncHistory, newHistoryItem];
         setSyncHistory(history);
         localStorage.setItem('syncHistory', JSON.stringify(history));
-        
-        // 更新状态
-        setSyncState({
-          status: 'success',
-          lastSync: now
-        });
       } else {
-        throw new Error(result.error || '同步请求失败');
+        throw new Error(result.error || '同步失败，请重试');
       }
     } catch (error) {
-      console.error('触发同步失败:', error);
-      setError(error instanceof Error ? error.message : '触发同步失败');
+      setNavicatSyncStatus('error');
+      setNavicatSyncMessage(`同步失败: ${error.message}`);
       
-      setSyncState({
-        ...syncState,
-        status: 'error'
-      });
-    } finally {
-      setLoading(false);
+      // 添加到历史记录
+      const now = new Date().toISOString();
+      const newHistoryItem: SyncHistoryItem = {
+        id: Date.now().toString(),
+        timestamp: now,
+        operation: 'Turso→Navicat',
+        status: 'error',
+        details: `同步失败: ${error.message}`
+      };
       
-      // 稍后刷新状态
-      setTimeout(fetchSyncStatus, 2000);
+      const history = [...syncHistory, newHistoryItem];
+      setSyncHistory(history);
+      localStorage.setItem('syncHistory', JSON.stringify(history));
     }
   };
 
@@ -160,197 +143,151 @@ export default function SyncPage() {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
+    <div className="container mx-auto px-4 py-6">
+      <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-2xl font-bold">数据库同步管理</h1>
-          <p className="text-gray-500 mt-1">在Turso云数据库和本地SQLite之间同步数据</p>
+          <h1 className="text-2xl font-bold">数据库同步中心</h1>
+          <p className="text-gray-500 mt-1">管理数据库同步操作</p>
         </div>
       </div>
 
-      {/* 状态指示器 */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-6 p-6">
-        <h2 className="text-xl font-semibold mb-4">同步状态</h2>
-        
-        <div className="flex items-center mb-4">
-          <div className={`w-3 h-3 rounded-full mr-2 ${
-            syncState.status === 'idle' ? 'bg-gray-400' :
-            syncState.status === 'syncing' ? 'bg-blue-500 animate-pulse' :
-            syncState.status === 'success' ? 'bg-green-500' :
-            'bg-red-500'
-          }`}></div>
-          <span className="font-medium">
-            {syncState.status === 'idle' && '空闲'}
-            {syncState.status === 'syncing' && '正在同步中...'}
-            {syncState.status === 'success' && '同步成功'}
-            {syncState.status === 'error' && '同步失败'}
-          </span>
-        </div>
-        
-        {syncState.lastSync && (
-          <div className="text-sm text-gray-500">
-            上次同步时间: {new Date(syncState.lastSync).toLocaleString()}
-          </div>
-        )}
+      {/* 通知横幅 */}
+      <div className="bg-blue-50 border-l-4 border-blue-500 p-3 text-blue-700 rounded mb-4 text-sm">
+        <p className="font-medium">数据库同步说明</p>
+        <p className="mt-1">
+          此页面用于更新Navicat数据库文件。如需初始化开发环境，请使用命令行：<code className="bg-blue-100 px-1 py-0.5 rounded">node scripts/init-turso.js</code>
+        </p>
       </div>
 
-      {/* 同步控制面板 */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold mb-4">Turso → SQLite 同步</h2>
+      {/* Navicat同步面板 */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-4">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold mb-3">更新Navicat数据库文件</h2>
           
-          <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mb-6">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
-              Turso是您的主数据库。此操作将把Turso云数据库中的数据同步到本地SQLite。
-              适用于本地开发环境，确保您在本地有与云端相同的数据。
+          <div className="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg mb-4 text-sm">
+            <p className="text-blue-800 dark:text-blue-200">
+              此操作将从本地Turso实例生成SQLite文件，方便使用Navicat等工具查看和分析数据。
+              生成的SQLite文件位于 /navicat_import/blog_database.db
             </p>
           </div>
           
-          {/* 备份选项 */}
-          <div className="mb-6">
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={autoBackup}
-                onChange={(e) => setAutoBackup(e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span>同步前自动备份当前SQLite数据库</span>
-            </label>
+          <div className="mb-4">
+            <div className="flex items-center mb-2">
+              <div className={`w-2.5 h-2.5 rounded-full mr-2 ${
+                navicatSyncStatus === 'idle' ? 'bg-gray-400' :
+                navicatSyncStatus === 'loading' ? 'bg-blue-500 animate-pulse' :
+                navicatSyncStatus === 'success' ? 'bg-green-500' :
+                'bg-red-500'
+              }`}></div>
+              <span className="font-medium text-sm">
+                {navicatSyncStatus === 'idle' && '准备就绪'}
+                {navicatSyncStatus === 'loading' && '正在同步中...'}
+                {navicatSyncStatus === 'success' && '同步成功'}
+                {navicatSyncStatus === 'error' && '同步失败'}
+              </span>
+            </div>
+          
+            {navicatSyncMessage && (
+              <div className={`text-sm ${
+                navicatSyncStatus === 'error' ? 'text-red-500' :
+                navicatSyncStatus === 'success' ? 'text-green-500' :
+                'text-gray-500'
+              }`}>
+                {navicatSyncMessage}
+              </div>
+            )}
+          
+            {lastNavicatSyncTime && (
+              <div className="text-xs text-gray-500 mt-1">
+                上次同步时间: {lastNavicatSyncTime}
+              </div>
+            )}
           </div>
           
-          {/* 同步项目选择 */}
-          <div className="mb-6">
-            <h3 className="font-medium mb-3">同步项目:</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={syncOptions.categories}
-                  onChange={(e) => setSyncOptions({...syncOptions, categories: e.target.checked})}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span>分类</span>
-              </label>
-              
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={syncOptions.tags}
-                  onChange={(e) => setSyncOptions({...syncOptions, tags: e.target.checked})}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span>标签</span>
-              </label>
-              
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={syncOptions.posts}
-                  onChange={(e) => setSyncOptions({...syncOptions, posts: e.target.checked})}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span>文章</span>
-              </label>
-              
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={syncOptions.postCategories}
-                  onChange={(e) => setSyncOptions({...syncOptions, postCategories: e.target.checked})}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span>分类关联</span>
-              </label>
-              
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={syncOptions.postTags}
-                  onChange={(e) => setSyncOptions({...syncOptions, postTags: e.target.checked})}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span>标签关联</span>
-              </label>
-              
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={syncOptions.slugMappings}
-                  onChange={(e) => setSyncOptions({...syncOptions, slugMappings: e.target.checked})}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span>Slug映射</span>
-              </label>
-            </div>
-          </div>
+          <button
+            onClick={handleSyncToNavicat}
+            disabled={navicatSyncStatus === 'loading'}
+            className={`px-3 py-1.5 text-sm rounded-md text-white ${
+              navicatSyncStatus === 'loading' ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {navicatSyncStatus === 'loading' ? '同步中...' : '更新Navicat数据库'}
+          </button>
+        </div>
+      </div>
+
+      {/* 数据库说明 */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-4">
+        <div className="p-4">
+          <h2 className="text-lg font-semibold mb-3">数据库说明</h2>
           
-          {/* 错误和成功消息 */}
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              <p>{error}</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="border border-gray-200 dark:border-gray-700 rounded p-3">
+              <h3 className="text-md font-medium text-blue-700 dark:text-blue-400 mb-2">Turso 云数据库</h3>
+              <p className="text-xs mb-2">
+                <span className="font-medium">作用：</span> 主数据库，存储所有博客数据的权威来源。
+              </p>
+              <ul className="list-disc pl-4 text-xs space-y-0.5">
+                <li>生产环境使用的是Turso云数据库</li>
+                <li>所有数据写入操作都应该直接针对Turso数据库</li>
+                <li>基于分布式SQLite，高性能且支持边缘部署</li>
+              </ul>
             </div>
-          )}
-          
-          {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-              <p>{success}</p>
-            </div>
-          )}
-          
-          {/* 操作按钮 */}
-          <div className="flex space-x-4">
-            <button
-              onClick={startSync}
-              disabled={loading || syncState.status === 'syncing'}
-              className={`px-4 py-2 rounded-md text-white font-medium ${
-                loading || syncState.status === 'syncing'
-                  ? 'bg-blue-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-            >
-              {loading ? '处理中...' : 
-               syncState.status === 'syncing' ? '同步中...' : 
-               '开始同步'}
-            </button>
             
-            <button
-              onClick={fetchSyncStatus}
-              className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
-            >
-              刷新状态
-            </button>
+            <div className="border border-gray-200 dark:border-gray-700 rounded p-3">
+              <h3 className="text-md font-medium text-green-700 dark:text-green-400 mb-2">本地Turso实例</h3>
+              <p className="text-xs mb-2">
+                <span className="font-medium">作用：</span> 开发环境的主数据库，在Docker容器中运行。
+              </p>
+              <ul className="list-disc pl-4 text-xs space-y-0.5">
+                <li>开发环境使用的是本地Docker容器中的Turso实例 (URL: http://localhost:8080)</li>
+                <li>可以通过初始化脚本从云端同步最新数据</li>
+                <li>适合在开发环境中进行数据操作和测试</li>
+              </ul>
+            </div>
+            
+            <div className="border border-gray-200 dark:border-gray-700 rounded p-3">
+              <h3 className="text-md font-medium text-purple-700 dark:text-purple-400 mb-2">Navicat 数据库文件</h3>
+              <p className="text-xs mb-2">
+                <span className="font-medium">作用：</span> 用于在Navicat等GUI工具中查看和分析数据的SQLite文件。
+              </p>
+              <ul className="list-disc pl-4 text-xs space-y-0.5">
+                <li>位置: /navicat_import/blog_database.db</li>
+                <li>仅用于数据查看和分析，不应直接修改</li>
+                <li>提供友好的图形界面查询和管理数据</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
 
       {/* 同步历史记录 */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-        <div className="p-6">
-          <h2 className="text-xl font-semibold mb-4">同步历史</h2>
+        <div className="p-4">
+          <h2 className="text-lg font-semibold mb-3">同步历史</h2>
           
           {syncHistory.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                 <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">时间</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">状态</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">详情</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">时间</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">状态</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">详情</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                   {syncHistory.map((item) => (
                     <tr key={item.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                         {new Date(item.timestamp).toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                         {item.operation}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      <td className="px-4 py-2 whitespace-nowrap">
+                        <span className={`px-1.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           item.status === 'success' 
                             ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
                             : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
@@ -358,7 +295,7 @@ export default function SyncPage() {
                           {item.status === 'success' ? '成功' : '失败'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                         {item.details}
                       </td>
                     </tr>
@@ -367,7 +304,7 @@ export default function SyncPage() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-500 dark:text-gray-400">暂无同步历史记录</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">暂无同步历史记录</p>
           )}
         </div>
       </div>

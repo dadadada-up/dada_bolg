@@ -1,11 +1,7 @@
 /**
  * 统一数据服务接口
  * 
- * 这个模块提供对数据库操作的统一抽象层，按照以下优先级尝试数据库连接：
- * 1. Turso云数据库
- * 2. 本地SQLite数据库
- * 
- * 如果所有数据库连接都失败，则直接抛出错误，不使用备用数据
+ * 这个模块提供对数据库操作的统一抽象层，使用Turso数据库
  */
 
 import { Post } from '@/types/post';
@@ -137,10 +133,10 @@ export async function deleteTag(id: number): Promise<boolean> {
   return service.deleteTag(id);
 }
 
-// 同步数据
+// 保留向后兼容性，但已废弃
 export async function syncToSQLite(): Promise<boolean> {
-  const service = getDataService();
-  return service.syncToSQLite();
+  console.log('syncToSQLite方法已废弃，项目现在只使用Turso数据库');
+  return true;
 }
 
 // 重新导出数据服务类型

@@ -7,7 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { isTursoEnabled } from '@/lib/db/turso-client-new';
+import { isTursoEnabled } from '@/lib/db/turso-client';
 import {
   query as dbQuery,
   queryOne as dbQueryOne,

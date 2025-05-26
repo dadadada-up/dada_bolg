@@ -635,6 +635,33 @@ export default function MaintenancePage() {
           <CategoryMaintenance />
         </TabsContent>
       </Tabs>
+      
+      <div className="mt-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4">其他工具</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border rounded p-4">
+              <h3 className="font-medium mb-2">清理临时文件</h3>
+              <p className="text-sm text-gray-600 mb-2">
+                清理系统中的临时文件和缓存。
+              </p>
+              <button className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                清理缓存
+              </button>
+            </div>
+            
+            <div className="border rounded p-4">
+              <h3 className="font-medium mb-2">重建索引</h3>
+              <p className="text-sm text-gray-600 mb-2">
+                重建数据库索引以提高查询性能。
+              </p>
+              <button className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                重建索引
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 } 

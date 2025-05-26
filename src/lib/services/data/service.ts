@@ -1,12 +1,11 @@
 /**
  * 统一数据服务实现
  * 
- * 本地开发环境使用SQLite
- * Vercel环境使用Turso
+ * 使用Turso数据库
  */
 
 import { Post, Category, Tag } from '@/types/post';
-import { getDatabaseType, isVercelEnv } from '@/lib/db/env-config';
+import { isVercelEnv } from '@/lib/db/env-config';
 import { 
   query as dbQuery, 
   queryOne as dbQueryOne, 
@@ -19,7 +18,6 @@ import {
   getCurrentTimestamp
 } from '@/lib/db/database';
 import { TursoDatabase } from '@/lib/db/turso-adapter';
-import { SQLiteDatabase } from '@/lib/db/sqlite-adapter';
 import { Database } from '@/lib/db/types';
 import { 
   getAggregateFunction, 
@@ -108,7 +106,7 @@ export interface DataService {
   // 删除标签
   deleteTag(id: number): Promise<boolean>;
   
-  // 同步数据
+  // 同步数据（已废弃）
   syncToSQLite(): Promise<boolean>;
 }
 
@@ -118,9 +116,9 @@ export class DataServiceImpl implements DataService {
   private isVercel: boolean;
 
   constructor() {
-    // 根据环境选择数据库
+    // 使用Turso数据库
     this.isVercel = isVercelEnv;
-    this.db = this.isVercel ? new TursoDatabase() : new SQLiteDatabase();
+    this.db = new TursoDatabase();
   }
 
   // 将数据库文章结果转换为Post对象
@@ -184,7 +182,7 @@ export class DataServiceImpl implements DataService {
       console.log(`[DataService] 开始获取文章列表: ${JSON.stringify(options)}`);
 
       // 根据数据库类型选择不同的聚合函数
-      const groupConcatFn = getAggregateFunction(this.isVercel);
+      const groupConcatFn = getAggregateFunction();
 
       // 构建SQL查询
       let sql = `
@@ -358,7 +356,7 @@ export class DataServiceImpl implements DataService {
       // 如果找到了post_id，获取完整文章信息
       if (postId) {
         // 根据数据库类型选择不同的聚合函数
-        const groupConcatFn = getAggregateFunction(this.isVercel);
+        const groupConcatFn = getAggregateFunction();
         
         const postSql = `
           SELECT 
@@ -446,7 +444,7 @@ export class DataServiceImpl implements DataService {
       const { limit = 20, offset = 0 } = options;
       
       // 根据数据库类型选择不同的聚合函数
-      const groupConcatFn = getAggregateFunction(this.isVercel);
+      const groupConcatFn = getAggregateFunction();
 
       // 构建搜索SQL
       const searchSql = `
@@ -522,6 +520,7 @@ export class DataServiceImpl implements DataService {
 
   // 同步到SQLite数据库（占位方法）
   async syncToSQLite(): Promise<boolean> {
+    console.log('[DataService] syncToSQLite方法已废弃，项目现在只使用Turso数据库');
     return true;
   }
 

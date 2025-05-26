@@ -1,19 +1,16 @@
 /**
  * 数据库访问层
- * 在 Vercel 环境中使用 Turso 云数据库
- * 在本地环境中使用 SQLite 数据库
+ * 使用 Turso 数据库
  */
 
 import { Database } from './types';
-import { SQLiteDatabase } from './sqlite-adapter';
 import { TursoDatabase } from './turso-adapter';
-import { getDatabaseType, isVercelBuild } from './env-config';
 
 let db: Database | null = null;
 
 /**
  * 获取数据库实例
- * 根据环境配置返回适当的数据库实例
+ * 返回Turso数据库实例
  */
 export async function getDatabase(): Promise<Database> {
   // 如果已经初始化，直接返回
@@ -21,23 +18,8 @@ export async function getDatabase(): Promise<Database> {
     return db;
   }
 
-  // 在Vercel构建时，返回Turso数据库实例
-  if (isVercelBuild) {
-    console.log('[数据库] Vercel构建时使用Turso');
+  console.log('[数据库] 初始化Turso数据库');
     db = new TursoDatabase();
-    return db;
-  }
-
-  // 根据环境配置选择数据库类型
-  const dbType = getDatabaseType();
-  console.log(`[数据库] 使用数据库类型: ${dbType}`);
-
-  if (dbType === 'turso') {
-    db = new TursoDatabase();
-  } else {
-    db = new SQLiteDatabase();
-  }
-
   return db;
 }
 
@@ -72,7 +54,7 @@ export async function closeDatabase(): Promise<void> {
  */
 export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> {
   const db = await getDatabase();
-  return db.all<T>(sql, ...(params || []));
+  return db.all<T>(sql, params || []);
 }
 
 /**
@@ -80,7 +62,7 @@ export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> 
  */
 export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T | undefined> {
   const db = await getDatabase();
-  return db.get<T>(sql, ...(params || []));
+  return db.get<T>(sql, params || []);
 }
 
 /**
@@ -88,7 +70,7 @@ export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T 
  */
 export async function execute(sql: string, params?: any[]): Promise<number> {
   const db = await getDatabase();
-  const result = await db.run(sql, ...(params || []));
+  const result = await db.run(sql, params || []);
   return result.changes;
 }
 

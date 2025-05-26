@@ -45,6 +45,33 @@ async function readFromNavicatDb(tableName) {
   });
 }
 
+// 获取Navicat数据库中的所有表
+async function getNavicatTables() {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database(config.navicatDbPath, sqlite3.OPEN_READONLY, (err) => {
+      if (err) {
+        reject(`打开Navicat数据库文件失败: ${err.message}`);
+        return;
+      }
+      
+      log(`成功打开Navicat数据库文件: ${config.navicatDbPath}`);
+      
+      db.all("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'", [], (err, rows) => {
+        if (err) {
+          db.close();
+          reject(`读取表列表失败: ${err.message}`);
+          return;
+        }
+        
+        const tables = rows.map(row => row.name);
+        log(`从Navicat数据库中读取到 ${tables.length} 个表: ${tables.join(', ')}`);
+        db.close();
+        resolve(tables);
+      });
+    });
+  });
+}
+
 // 向本地Turso实例发送查询
 async function executeQuery(query, params = []) {
   return new Promise((resolve, reject) => {
@@ -86,10 +113,60 @@ async function executeQuery(query, params = []) {
   });
 }
 
+// 创建表
+async function createTable(tableName, columns) {
+  try {
+    const columnDefs = columns.map(col => {
+      let def = `${col.name} ${col.type}`;
+      if (col.notnull === 1) def += ' NOT NULL';
+      if (col.dflt_value !== null) def += ` DEFAULT ${col.dflt_value}`;
+      if (col.pk === 1) def += ' PRIMARY KEY';
+      return def;
+    });
+    
+    const createSQL = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefs.join(', ')})`;
+    await executeQuery(createSQL);
+    log(`创建表 ${tableName} 成功`);
+    return true;
+  } catch (error) {
+    log(`创建表 ${tableName} 失败: ${error.message}`);
+    return false;
+  }
+}
+
+// 获取Navicat表结构
+async function getNavicatTableStructure(tableName) {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database(config.navicatDbPath, sqlite3.OPEN_READONLY, (err) => {
+      if (err) {
+        reject(`打开Navicat数据库文件失败: ${err.message}`);
+        return;
+      }
+      
+      db.all(`PRAGMA table_info(${tableName})`, [], (err, rows) => {
+        if (err) {
+          db.close();
+          reject(`获取表 ${tableName} 结构失败: ${err.message}`);
+          return;
+        }
+        
+        log(`从Navicat数据库中读取表 ${tableName} 结构: ${rows.length} 列`);
+        db.close();
+        resolve(rows);
+      });
+    });
+  });
+}
+
 // 获取表结构
 async function getTableStructure(tableName) {
   try {
     const result = await executeQuery(`PRAGMA table_info(${tableName})`);
+    
+    if (result && result.error) {
+      log(`表 ${tableName} 不存在，需要创建`);
+      return [];
+    }
     
     if (!result || !result[0] || !result[0].results || !result[0].results.rows) {
       throw new Error('无效的响应格式');
@@ -133,24 +210,47 @@ async function importDataToTable(tableName, data) {
     
     // 获取表结构
     const columns = await getTableStructure(tableName);
+    
+    // 如果表不存在，创建表
     if (columns.length === 0) {
-      throw new Error(`无法获取表 ${tableName} 的结构`);
+      log(`表 ${tableName} 不存在，尝试创建`);
+      const structure = await getNavicatTableStructure(tableName);
+      if (structure.length === 0) {
+        throw new Error(`无法获取表 ${tableName} 的结构`);
+      }
+      
+      // 创建表
+      await createTable(tableName, structure);
+      
+      // 重新获取列
+      const newColumns = await getTableStructure(tableName);
+      if (newColumns.length === 0) {
+        throw new Error(`创建表 ${tableName} 后仍无法获取列信息`);
+      }
+    } else {
+      log(`表 ${tableName} 的列: ${columns.join(', ')}`);
+      
+      // 清空表
+      await clearTable(tableName);
     }
-    
-    log(`表 ${tableName} 的列: ${columns.join(', ')}`);
-    
-    // 清空表
-    await clearTable(tableName);
     
     // 插入数据
     let successCount = 0;
     for (const row of data) {
       try {
-        // 准备列和值
-        const rowColumns = Object.keys(row).filter(col => columns.includes(col));
+        // 准备列和值，只包含目标表中存在的列
+        const availableColumns = await getTableStructure(tableName);
+        const rowColumns = Object.keys(row).filter(col => availableColumns.includes(col));
+        
+        if (rowColumns.length === 0) {
+          log(`警告: 行数据中没有与表 ${tableName} 匹配的列`);
+          continue;
+        }
+        
         const placeholders = rowColumns.map(() => '?').join(', ');
         const values = rowColumns.map(col => row[col]);
         
+        log(`向表 ${tableName} 插入数据，列: ${rowColumns.join(', ')}`);
         const insertSQL = `INSERT INTO ${tableName} (${rowColumns.join(', ')}) VALUES (${placeholders})`;
         
         await executeQuery(insertSQL, values);
@@ -203,13 +303,13 @@ async function main() {
       throw new Error(`Navicat数据库文件不存在: ${config.navicatDbPath}`);
     }
     
-    // 获取所有表
-    const tables = await getAllTables();
-    if (tables.length === 0) {
-      throw new Error('未找到任何表');
+    // 获取Navicat数据库中的所有表
+    const navicatTables = await getNavicatTables();
+    if (navicatTables.length === 0) {
+      throw new Error('Navicat数据库中未找到任何表');
     }
     
-    log(`找到 ${tables.length} 个表: ${tables.join(', ')}`);
+    log(`从Navicat数据库中找到 ${navicatTables.length} 个表: ${navicatTables.join(', ')}`);
     
     // 导入顺序：先导入基础表，再导入关联表
     const importOrder = [
@@ -218,18 +318,29 @@ async function main() {
       'sync_status', 'users', 'verification_test', 'test'
     ];
     
+    // 确保所有表都被导入
+    const allTables = [...new Set([...importOrder, ...navicatTables])];
+    
     // 按顺序导入
-    for (const tableName of importOrder) {
-      if (tables.includes(tableName)) {
+    for (const tableName of allTables) {
+      if (navicatTables.includes(tableName)) {
         log(`开始导入表 ${tableName}...`);
         
-        // 读取数据
-        const data = await readFromNavicatDb(tableName);
-        
-        // 导入数据
-        await importDataToTable(tableName, data);
+        try {
+          // 读取数据
+          const data = await readFromNavicatDb(tableName);
+          
+          // 导入数据
+          await importDataToTable(tableName, data);
+        } catch (tableError) {
+          log(`处理表 ${tableName} 时出错: ${tableError}`);
+        }
       }
     }
+    
+    // 检查导入结果
+    const tursoTables = await getAllTables();
+    log(`导入后本地Turso实例中有 ${tursoTables.length} 个表: ${tursoTables.join(', ')}`);
     
     log('数据导入完成');
   } catch (error) {

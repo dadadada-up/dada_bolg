@@ -428,6 +428,40 @@ const createNavicatFromCloud = async () => {
   }
 };
 
+// 步骤4: 将Navicat数据库文件中的数据导入到本地Turso实例
+const importToLocalTurso = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      console.log('步骤4: 将Navicat数据库文件中的数据导入到本地Turso实例...');
+      const importScript = path.join(__dirname, 'import-to-turso.js');
+      
+      if (!fs.existsSync(importScript)) {
+        console.error(`找不到导入脚本: ${importScript}`);
+        console.log('跳过导入步骤');
+        resolve(); // 即使找不到脚本也继续执行
+        return;
+      }
+      
+      try {
+        const output = execSync(`node "${importScript}"`, { 
+          encoding: 'utf-8',
+          stdio: 'inherit'
+        });
+        
+        console.log('数据导入到本地Turso实例成功');
+        resolve();
+      } catch (error) {
+        console.error('导入数据到本地Turso实例失败:', error);
+        console.log('请手动运行: node scripts/import-to-turso.js');
+        resolve(); // 即使导入失败也继续执行
+      }
+    } catch (error) {
+      console.error('导入数据到本地Turso实例过程中发生错误:', error);
+      resolve(); // 即使导入失败也继续执行
+    }
+  });
+};
+
 // 执行完整流程
 async function main() {
   try {
@@ -444,6 +478,9 @@ async function main() {
     // 步骤3: 直接从云端创建Navicat数据库文件
     console.log('检测到本地Turso实例可能不包含所有表，将直接从云端创建Navicat数据库文件');
     const cloudSuccess = await createNavicatFromCloud();
+    
+    // 步骤4: 将Navicat数据库文件中的数据导入到本地Turso实例
+    await importToLocalTurso();
     
     console.log('\n===========================');
     console.log('全部操作完成!');

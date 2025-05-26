@@ -37,7 +37,7 @@ yarn-error.log*
 
 # IDE
 .idea
-.vscode
+.vscode 
 
 # 版本控制
 .git
@@ -76,7 +76,7 @@ scripts/import-test-data.js
 
 # Typescript
 *.tsbuildinfo
-next-env.d.ts
+next-env.d.ts 
 
 # GitHub大文件限制（超过100MB）
 .next/cache/webpack/client-production/*.pack

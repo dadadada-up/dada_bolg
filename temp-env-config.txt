@@ -1,0 +1,10 @@
+# 本地开发环境配置
+DATABASE_TYPE=turso
+DATABASE_URL=http://localhost:8080
+APP_MODE=development
+
+# 用于同步工具的配置
+LOCAL_DB_PATH=./data/blog-dev.db
+DEV_DATABASE_URL=http://localhost:8080
+PROD_DATABASE_URL=libsql://your-prod-db.turso.io
+PROD_DATABASE_TOKEN=your-production-token 

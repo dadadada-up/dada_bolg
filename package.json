@@ -7,7 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel:build": "next build"
+    "vercel:build": "next build",
+    "dev:turso": "./start-dev.sh",
+    "turso:start": "docker run -d --name turso-local -p 8080:8080 ghcr.io/tursodatabase/libsql-server:latest",
+    "turso:stop": "docker stop turso-local && docker rm turso-local",
+    "turso:status": "docker ps | grep turso-local || echo 'Turso服务器未运行'",
+    "sync-content": "node scripts/sync-content.js",
+    "sync-content:dry": "node scripts/sync-content.js --dry-run"
   },
   "dependencies": {
     "@libsql/client": "0.15.6",

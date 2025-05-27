@@ -36,6 +36,13 @@ export default function SyncPage() {
   const [navicatSyncStatus, setNavicatSyncStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [navicatSyncMessage, setNavicatSyncMessage] = useState<string>('');
   const [lastNavicatSyncTime, setLastNavicatSyncTime] = useState<string | null>(null);
+  
+  // 生产环境同步状态
+  const [prodSyncStatus, setProdSyncStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [prodSyncMessage, setProdSyncMessage] = useState<string>('');
+  const [lastProdSyncTime, setLastProdSyncTime] = useState<string | null>(null);
+  const [selectedTables, setSelectedTables] = useState<string[]>(['posts', 'categories', 'tags', 'post_categories', 'post_tags', 'slug_mapping']);
+  const [isDryRun, setIsDryRun] = useState<boolean>(true);
 
   // 获取同步状态
   const fetchSyncStatus = async () => {
@@ -130,6 +137,86 @@ export default function SyncPage() {
       localStorage.setItem('syncHistory', JSON.stringify(history));
     }
   };
+  
+  // 同步数据库到生产环境
+  const handleSyncToProd = async () => {
+    setProdSyncStatus('loading');
+    setProdSyncMessage('正在同步数据库到生产环境...');
+    
+    try {
+      // 执行同步脚本
+      const response = await fetch('/api/admin/sync-to-prod', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          tables: selectedTables,
+          dryRun: isDryRun
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`同步失败: ${response.status} ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setProdSyncStatus('success');
+        setProdSyncMessage(isDryRun 
+          ? '试运行成功！请检查日志并关闭试运行模式以实际同步' 
+          : result.message || '同步成功！');
+        setLastProdSyncTime(new Date().toLocaleString());
+        
+        // 添加到历史记录
+        if (!isDryRun) {
+          const now = new Date().toISOString();
+          const newHistoryItem: SyncHistoryItem = {
+            id: Date.now().toString(),
+            timestamp: now,
+            operation: '本地→生产',
+            status: 'success',
+            details: `已同步表: ${selectedTables.join(', ')}`
+          };
+          
+          const history = [...syncHistory, newHistoryItem];
+          setSyncHistory(history);
+          localStorage.setItem('syncHistory', JSON.stringify(history));
+        }
+      } else {
+        throw new Error(result.error || '同步失败，请重试');
+      }
+    } catch (error) {
+      setProdSyncStatus('error');
+      setProdSyncMessage(`同步失败: ${error.message}`);
+      
+      // 添加到历史记录
+      if (!isDryRun) {
+        const now = new Date().toISOString();
+        const newHistoryItem: SyncHistoryItem = {
+          id: Date.now().toString(),
+          timestamp: now,
+          operation: '本地→生产',
+          status: 'error',
+          details: `同步失败: ${error.message}`
+        };
+        
+        const history = [...syncHistory, newHistoryItem];
+        setSyncHistory(history);
+        localStorage.setItem('syncHistory', JSON.stringify(history));
+      }
+    }
+  };
+  
+  // 处理表格选择变化
+  const handleTableSelectionChange = (table: string) => {
+    setSelectedTables(prev => 
+      prev.includes(table) 
+        ? prev.filter(t => t !== table) 
+        : [...prev, table]
+    );
+  };
 
   // 初始化
   useEffect(() => {
@@ -155,7 +242,7 @@ export default function SyncPage() {
       <div className="bg-blue-50 border-l-4 border-blue-500 p-3 text-blue-700 rounded mb-4 text-sm">
         <p className="font-medium">数据库同步说明</p>
         <p className="mt-1">
-          此页面用于更新Navicat数据库文件。如需初始化开发环境，请使用命令行：<code className="bg-blue-100 px-1 py-0.5 rounded">node scripts/init-turso.js</code>
+          此页面用于更新Navicat数据库文件和同步本地数据到生产环境。如需初始化开发环境，请使用命令行：<code className="bg-blue-100 px-1 py-0.5 rounded">node scripts/init-and-update.js</code>
         </p>
       </div>
 
@@ -212,6 +299,142 @@ export default function SyncPage() {
             }`}
           >
             {navicatSyncStatus === 'loading' ? '同步中...' : '更新Navicat数据库'}
+          </button>
+        </div>
+      </div>
+      
+      {/* 生产环境同步面板 */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-4">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold mb-3">同步数据到生产环境</h2>
+          
+          <div className="bg-yellow-50 dark:bg-yellow-900/30 p-3 rounded-lg mb-4 text-sm">
+            <p className="text-yellow-800 dark:text-yellow-200">
+              <span className="font-bold">警告：</span> 此操作将本地开发环境的数据同步到生产环境。请确保您了解此操作的影响，并在必要时先进行备份。
+            </p>
+          </div>
+          
+          <div className="mb-4">
+            <div className="flex items-center mb-2">
+              <div className={`w-2.5 h-2.5 rounded-full mr-2 ${
+                prodSyncStatus === 'idle' ? 'bg-gray-400' :
+                prodSyncStatus === 'loading' ? 'bg-blue-500 animate-pulse' :
+                prodSyncStatus === 'success' ? 'bg-green-500' :
+                'bg-red-500'
+              }`}></div>
+              <span className="font-medium text-sm">
+                {prodSyncStatus === 'idle' && '准备就绪'}
+                {prodSyncStatus === 'loading' && '正在同步中...'}
+                {prodSyncStatus === 'success' && '同步成功'}
+                {prodSyncStatus === 'error' && '同步失败'}
+              </span>
+            </div>
+          
+            {prodSyncMessage && (
+              <div className={`text-sm ${
+                prodSyncStatus === 'error' ? 'text-red-500' :
+                prodSyncStatus === 'success' ? 'text-green-500' :
+                'text-gray-500'
+              }`}>
+                {prodSyncMessage}
+              </div>
+            )}
+          
+            {lastProdSyncTime && (
+              <div className="text-xs text-gray-500 mt-1">
+                上次同步时间: {lastProdSyncTime}
+              </div>
+            )}
+          </div>
+          
+          <div className="mb-4">
+            <h3 className="text-sm font-medium mb-2">选择要同步的表</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <label className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  checked={selectedTables.includes('posts')} 
+                  onChange={() => handleTableSelectionChange('posts')}
+                  className="rounded text-blue-600"
+                />
+                <span className="text-sm">文章 (posts)</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  checked={selectedTables.includes('categories')} 
+                  onChange={() => handleTableSelectionChange('categories')}
+                  className="rounded text-blue-600"
+                />
+                <span className="text-sm">分类 (categories)</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  checked={selectedTables.includes('tags')} 
+                  onChange={() => handleTableSelectionChange('tags')}
+                  className="rounded text-blue-600"
+                />
+                <span className="text-sm">标签 (tags)</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  checked={selectedTables.includes('post_categories')} 
+                  onChange={() => handleTableSelectionChange('post_categories')}
+                  className="rounded text-blue-600"
+                />
+                <span className="text-sm">文章分类 (post_categories)</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  checked={selectedTables.includes('post_tags')} 
+                  onChange={() => handleTableSelectionChange('post_tags')}
+                  className="rounded text-blue-600"
+                />
+                <span className="text-sm">文章标签 (post_tags)</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  checked={selectedTables.includes('slug_mapping')} 
+                  onChange={() => handleTableSelectionChange('slug_mapping')}
+                  className="rounded text-blue-600"
+                />
+                <span className="text-sm">链接映射 (slug_mapping)</span>
+              </label>
+            </div>
+          </div>
+          
+          <div className="mb-4">
+            <label className="flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                checked={isDryRun} 
+                onChange={() => setIsDryRun(!isDryRun)}
+                className="rounded text-blue-600"
+              />
+              <span className="text-sm font-medium">试运行模式（不会实际修改生产数据库）</span>
+            </label>
+          </div>
+          
+          <button
+            onClick={handleSyncToProd}
+            disabled={prodSyncStatus === 'loading' || selectedTables.length === 0}
+            className={`px-3 py-1.5 text-sm rounded-md text-white ${
+              prodSyncStatus === 'loading' || selectedTables.length === 0 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : isDryRun 
+                  ? 'bg-yellow-600 hover:bg-yellow-700' 
+                  : 'bg-red-600 hover:bg-red-700'
+            }`}
+          >
+            {prodSyncStatus === 'loading' 
+              ? '同步中...' 
+              : isDryRun 
+                ? '试运行同步到生产环境' 
+                : '同步到生产环境'}
           </button>
         </div>
       </div>

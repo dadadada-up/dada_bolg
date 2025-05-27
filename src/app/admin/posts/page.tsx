@@ -414,6 +414,9 @@ export default function PostsPage() {
   const formatCompactDate = (dateString: string | number | undefined): string => {
     if (!dateString) return '未知日期';
     
+    // 处理空字符串或null值
+    if (dateString === '' || dateString === null) return '未知日期';
+    
     try {
       let date: Date;
       

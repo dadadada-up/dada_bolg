@@ -55,7 +55,24 @@ export default function NewPostPage() {
     setError(null);
     try {
       const slug = post.slug || slugify(post.title || '');
-      await createPost({ ...post, slug } as Post);
+      
+      // 确保日期字段是ISO格式字符串
+      let formattedDate = post.date;
+      if (formattedDate && !formattedDate.includes('T')) {
+        // 如果是YYYY-MM-DD格式，转换为ISO格式
+        formattedDate = new Date(`${formattedDate}T00:00:00.000Z`).toISOString();
+      }
+      
+      // 创建包含正确日期格式的文章对象
+      const postToCreate = {
+        ...post,
+        slug,
+        date: formattedDate,
+        created_at: formattedDate,
+        updated_at: formattedDate
+      };
+      
+      await createPost(postToCreate as Post);
       router.push('/admin');
     } catch (err) {
       setError(err instanceof Error ? err.message : '创建文章失败');
